@@ -50,7 +50,7 @@ const ClientOnboarding = () => {
                     </div>
                     <h2 className="h3 text-n-1 mb-4">Your Project Quote is Ready!</h2>
                     <p className="body-2 text-n-3 mb-6">
-                        We've prepared a custom project proposal for you. Let's create your account so you can view the details and track progress.
+                        We&apos;ve prepared a custom project proposal for you. Let&apos;s create your account so you can view the details and track progress.
                     </p>
                     {formData.projectName && (
                         <div className="bg-n-8 rounded-xl border border-n-6 p-4 mb-6">
@@ -155,7 +155,7 @@ const ClientOnboarding = () => {
                             <div>
                                 <h4 className="text-sm font-medium text-blue-400 mb-1">What happens next?</h4>
                                 <p className="text-sm text-blue-300">
-                                    After creating your account, you'll be able to view detailed project steps, track progress, 
+                                    After creating your account, you&apos;ll be able to view detailed project steps, track progress, 
                                     communicate with your consultant, and manage payments.
                                 </p>
                             </div>

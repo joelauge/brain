@@ -140,20 +140,6 @@ const Header = ({}: HeaderProps) => {
                     <SignedOut>
                         <SignUpButton 
                             mode="modal"
-                            appearance={{
-                                elements: {
-                                    modalContent: "bg-n-8 border border-n-6",
-                                    modalCloseButton: "text-n-1 hover:text-color-1",
-                                    card: "bg-n-8 border border-n-6",
-                                    headerTitle: "text-n-1",
-                                    headerSubtitle: "text-n-3",
-                                    socialButtonsBlockButton: "bg-n-7 border border-n-5 text-n-1 hover:bg-n-6",
-                                    formButtonPrimary: "bg-color-1 hover:bg-color-1/90 text-n-8",
-                                    formFieldInput: "bg-n-7 border-2 border-n-5 text-n-1 placeholder:text-n-4 focus:border-color-1 focus:outline-none px-3 py-2 rounded-lg",
-                                    formFieldLabel: "text-n-2 font-medium",
-                                    footerActionLink: "text-color-1 hover:text-color-1/80"
-                                }
-                            }}
                         >
                             <button className="button hidden mr-8 text-n-1/50 transition-colors hover:text-n-1 lg:block">
                                 New account
@@ -161,20 +147,6 @@ const Header = ({}: HeaderProps) => {
                         </SignUpButton>
                         <SignInButton 
                             mode="modal"
-                            appearance={{
-                                elements: {
-                                    modalContent: "bg-n-8 border border-n-6",
-                                    modalCloseButton: "text-n-1 hover:text-color-1",
-                                    card: "bg-n-8 border border-n-6",
-                                    headerTitle: "text-n-1",
-                                    headerSubtitle: "text-n-3",
-                                    socialButtonsBlockButton: "bg-n-7 border border-n-5 text-n-1 hover:bg-n-6",
-                                    formButtonPrimary: "bg-color-1 hover:bg-color-1/90 text-n-8",
-                                    formFieldInput: "bg-n-7 border-2 border-n-5 text-n-1 placeholder:text-n-4 focus:border-color-1 focus:outline-none px-3 py-2 rounded-lg",
-                                    formFieldLabel: "text-n-2 font-medium",
-                                    footerActionLink: "text-color-1 hover:text-color-1/80"
-                                }
-                            }}
                         >
                             <Button className="hidden lg:flex">
                                 Sign in

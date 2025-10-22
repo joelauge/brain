@@ -115,7 +115,7 @@ const AdminDashboard = () => {
         };
 
         loadData();
-    }, [isLoaded, user, isAdmin]);
+    }, [isLoaded, user, isAdmin, selectedProject, selectedRequest]);
 
     // Auto-expand active step when project changes
     useEffect(() => {
@@ -737,7 +737,7 @@ const AdminDashboard = () => {
                     <div className="container">
                         <div className="text-center">
                             <h2 className="h2 mb-4">Access Denied</h2>
-                            <p className="body-2 text-n-3 mb-8">You don't have permission to access the admin dashboard.</p>
+                            <p className="body-2 text-n-3 mb-8">You don&apos;t have permission to access the admin dashboard.</p>
                             <Button href="/">Go Home</Button>
                         </div>
                     </div>
@@ -1816,7 +1816,7 @@ const AdminDashboard = () => {
                         
                         <div className="mb-6">
                             <p className="body-2 text-n-2 mb-3">
-                                Are you sure you want to delete <strong className="text-n-1">"{selectedProject.projectName}"</strong>?
+                                Are you sure you want to delete <strong className="text-n-1">&quot;{selectedProject.projectName}&quot;</strong>?
                             </p>
                             <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3">
                                 <p className="caption text-red-400">

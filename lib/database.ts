@@ -102,6 +102,11 @@ export class DatabaseService {
       completionDate: project.completionDate?.toISOString(),
       createdAt: project.createdAt.toISOString(),
       updatedAt: project.updatedAt.toISOString(),
+      client: {
+        ...project.client,
+        firstName: project.client.firstName || undefined,
+        lastName: project.client.lastName || undefined
+      },
       steps: project.steps.map(step => ({
         ...step,
         completedDate: step.completedDate?.toISOString(),
@@ -109,6 +114,8 @@ export class DatabaseService {
         updatedAt: step.updatedAt.toISOString(),
         resourceRequests: step.resourceRequests.map(req => ({
           ...req,
+          projectId: req.projectId || undefined,
+          stepId: req.stepId || undefined,
           amount: req.amount / 100, // Convert from cents
           requestedAt: req.requestedAt.toISOString(),
           approvedAt: req.approvedAt?.toISOString(),
@@ -117,6 +124,8 @@ export class DatabaseService {
       })),
       resourceRequests: project.resourceRequests.map(req => ({
         ...req,
+        projectId: req.projectId || undefined,
+        stepId: req.stepId || undefined,
         amount: req.amount / 100, // Convert from cents
         requestedAt: req.requestedAt.toISOString(),
         approvedAt: req.approvedAt?.toISOString(),
@@ -170,6 +179,11 @@ export class DatabaseService {
       completionDate: project.completionDate?.toISOString(),
       createdAt: project.createdAt.toISOString(),
       updatedAt: project.updatedAt.toISOString(),
+      client: {
+        ...project.client,
+        firstName: project.client.firstName || undefined,
+        lastName: project.client.lastName || undefined
+      },
       steps: project.steps.map(step => ({
         ...step,
         completedDate: step.completedDate?.toISOString(),
@@ -177,6 +191,8 @@ export class DatabaseService {
         updatedAt: step.updatedAt.toISOString(),
         resourceRequests: step.resourceRequests.map(req => ({
           ...req,
+          projectId: req.projectId || undefined,
+          stepId: req.stepId || undefined,
           amount: req.amount / 100,
           requestedAt: req.requestedAt.toISOString(),
           approvedAt: req.approvedAt?.toISOString(),
@@ -185,6 +201,8 @@ export class DatabaseService {
       })),
       resourceRequests: project.resourceRequests.map(req => ({
         ...req,
+        projectId: req.projectId || undefined,
+        stepId: req.stepId || undefined,
         amount: req.amount / 100,
         requestedAt: req.requestedAt.toISOString(),
         approvedAt: req.approvedAt?.toISOString(),
@@ -257,6 +275,8 @@ export class DatabaseService {
       updatedAt: step.updatedAt.toISOString(),
       resourceRequests: step.resourceRequests.map(req => ({
         ...req,
+        projectId: req.projectId || undefined,
+        stepId: req.stepId || undefined,
         amount: req.amount / 100,
         requestedAt: req.requestedAt.toISOString(),
         approvedAt: req.approvedAt?.toISOString(),
@@ -279,8 +299,15 @@ export class DatabaseService {
     return requests.map(request => ({
       ...request,
       reviewedAt: request.reviewedAt?.toISOString(),
+      reviewedBy: request.reviewedBy || undefined,
+      notes: request.notes || undefined,
       createdAt: request.createdAt.toISOString(),
-      updatedAt: request.updatedAt.toISOString()
+      updatedAt: request.updatedAt.toISOString(),
+      client: {
+        ...request.client,
+        firstName: request.client.firstName || undefined,
+        lastName: request.client.lastName || undefined
+      }
     }))
   }
 
@@ -299,8 +326,15 @@ export class DatabaseService {
     return {
       ...request,
       reviewedAt: request.reviewedAt?.toISOString(),
+      reviewedBy: request.reviewedBy || undefined,
+      notes: request.notes || undefined,
       createdAt: request.createdAt.toISOString(),
-      updatedAt: request.updatedAt.toISOString()
+      updatedAt: request.updatedAt.toISOString(),
+      client: {
+        ...request.client,
+        firstName: request.client.firstName || undefined,
+        lastName: request.client.lastName || undefined
+      }
     }
   }
 
@@ -323,8 +357,15 @@ export class DatabaseService {
     return {
       ...request,
       reviewedAt: request.reviewedAt?.toISOString(),
+      reviewedBy: request.reviewedBy || undefined,
+      notes: request.notes || undefined,
       createdAt: request.createdAt.toISOString(),
-      updatedAt: request.updatedAt.toISOString()
+      updatedAt: request.updatedAt.toISOString(),
+      client: {
+        ...request.client,
+        firstName: request.client.firstName || undefined,
+        lastName: request.client.lastName || undefined
+      }
     }
   }
 
@@ -342,6 +383,8 @@ export class DatabaseService {
 
     return requests.map(request => ({
       ...request,
+      projectId: request.projectId || undefined,
+      stepId: request.stepId || undefined,
       amount: request.amount / 100,
       requestedAt: request.requestedAt.toISOString(),
       approvedAt: request.approvedAt?.toISOString(),
@@ -371,6 +414,8 @@ export class DatabaseService {
 
     return {
       ...request,
+      projectId: request.projectId || undefined,
+      stepId: request.stepId || undefined,
       amount: request.amount / 100,
       requestedAt: request.requestedAt.toISOString(),
       approvedAt: request.approvedAt?.toISOString(),
@@ -397,6 +442,8 @@ export class DatabaseService {
 
     return {
       ...request,
+      projectId: request.projectId || undefined,
+      stepId: request.stepId || undefined,
       amount: request.amount / 100,
       requestedAt: request.requestedAt.toISOString(),
       approvedAt: request.approvedAt?.toISOString(),

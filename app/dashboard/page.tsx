@@ -179,7 +179,7 @@ const ClientDashboard = () => {
                 <div className="container max-w-4xl mx-auto px-5 py-12">
                     <div className="text-center mb-8">
                         <h1 className="h2 text-n-1 mb-4">Welcome to Your Dashboard</h1>
-                        <p className="body-2 text-n-3 mb-8">You don't have any projects yet. Request a new project to get started.</p>
+                        <p className="body-2 text-n-3 mb-8">You don&apos;t have any projects yet. Request a new project to get started.</p>
                         <Button onClick={() => setShowProjectRequestForm(true)}>
                             Request New Project
                         </Button>

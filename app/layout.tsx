@@ -2,7 +2,7 @@ import "@splidejs/react-splide/css";
 import "tippy.js/animations/shift-toward.css";
 import "./globals.css";
 import { Sora, Source_Code_Pro, Space_Grotesk } from "next/font/google";
-import ClerkWrapper from "@/components/ClerkWrapper";
+import { ClerkProvider } from "@clerk/nextjs";
 import { ReactNode } from "react";
 
 const sora = Sora({
@@ -41,7 +41,7 @@ export default function RootLayout({
     children: ReactNode;
 }) {
     return (
-        <ClerkWrapper>
+        <ClerkProvider publishableKey={process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY!}>
             <html lang="en">
                 <head>
                 <meta
@@ -142,6 +142,6 @@ export default function RootLayout({
                 </svg>
             </body>
         </html>
-        </ClerkWrapper>
+        </ClerkProvider>
     );
 }
