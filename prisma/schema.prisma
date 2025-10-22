@@ -1,0 +1,117 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  clerkId   String   @unique
+  email     String   @unique
+  firstName String?
+  lastName  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Invite tracking fields
+  inviteSentAt    DateTime?
+  inviteAcceptedAt DateTime?
+  lastInviteSentAt DateTime?
+
+  // Relations
+  projects        Project[]
+  projectRequests ProjectRequest[]
+
+  @@map("users")
+}
+
+model Project {
+  id                String   @id @default(cuid())
+  clientId          String
+  projectName       String
+  projectDescription String
+  assignedConsultant String
+  quotedAmount      Int      // Amount in cents
+  totalProgress     Int      @default(0)
+  paymentStatus     String   @default("pending") // pending, partial, complete
+  projectStatus     String   @default("quoted") // quoted, active, completed, delivered
+  finalClientSignOff Boolean @default(false)
+  finalConsultantSignOff Boolean @default(false)
+  finalPaymentRequired Boolean @default(false)
+  completionDate    DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  client          User            @relation(fields: [clientId], references: [id])
+  steps           ProjectStep[]
+  resourceRequests ResourceRequest[]
+
+  @@map("projects")
+}
+
+model ProjectStep {
+  id               String   @id @default(cuid())
+  projectId        String
+  title            String
+  text             String
+  date             String   // Step 1, Step 2, etc.
+  status           String   @default("pending") // pending, in-progress, done
+  clientNotes      String   @default("")
+  consultantNotes  String   @default("")
+  clientSignOff    Boolean  @default(false)
+  consultantSignOff Boolean  @default(false)
+  completedDate    DateTime?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // Relations
+  project          Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  resourceRequests ResourceRequest[]
+
+  @@map("project_steps")
+}
+
+model ProjectRequest {
+  id                String   @id @default(cuid())
+  clientId          String
+  projectTitle      String
+  projectDescription String
+  status            String   @default("pending") // pending, reviewed, approved, rejected
+  reviewedAt        DateTime?
+  reviewedBy        String?
+  notes             String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  client User @relation(fields: [clientId], references: [id])
+
+  @@map("project_requests")
+}
+
+model ResourceRequest {
+  id          String   @id @default(cuid())
+  projectId   String?
+  stepId      String?
+  title       String
+  description String
+  amount      Int      // Amount in cents
+  status      String   @default("pending") // pending, approved, rejected
+  requestedBy String   @default("admin") // admin, consultant
+  requestedAt DateTime @default(now())
+  approvedAt  DateTime?
+  rejectedAt  DateTime?
+
+  // Relations
+  project Project?     @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  step    ProjectStep? @relation(fields: [stepId], references: [id], onDelete: Cascade)
+
+  @@map("resource_requests")
+}
