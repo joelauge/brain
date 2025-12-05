@@ -170,7 +170,8 @@ export async function POST(request: NextRequest) {
     // Convert file to buffer and save
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-    await writeFile(filePath, buffer);
+    // Convert Buffer to Uint8Array for writeFile compatibility
+    await writeFile(filePath, new Uint8Array(buffer));
 
     // Return success with file info
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 
