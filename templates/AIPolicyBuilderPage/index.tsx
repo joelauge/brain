@@ -1,0 +1,40 @@
+"use client";
+
+import { useState } from "react";
+import Layout from "@/components/Layout";
+import Join from "@/components/Join";
+import Hero from "./Hero";
+import Questionnaire from "./Questionnaire";
+import Results from "./Results";
+import { PolicyAssessment } from "@/mocks/ai-policy-questions";
+
+const AIPolicyBuilderPage = () => {
+    const [assessment, setAssessment] = useState<PolicyAssessment | null>(null);
+    const [showResults, setShowResults] = useState(false);
+
+    const handleComplete = (completedAssessment: PolicyAssessment) => {
+        setAssessment(completedAssessment);
+        setShowResults(true);
+    };
+
+    const handleRestart = () => {
+        setAssessment(null);
+        setShowResults(false);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    return (
+        <Layout>
+            <Hero />
+            {!showResults ? (
+                <Questionnaire onComplete={handleComplete} />
+            ) : (
+                assessment && <Results assessment={assessment} onRestart={handleRestart} />
+            )}
+            {!showResults && <Join />}
+        </Layout>
+    );
+};
+
+export default AIPolicyBuilderPage;
+
