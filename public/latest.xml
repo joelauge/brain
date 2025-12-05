@@ -1,221 +1,122 @@
-{\rtf1\ansi\ansicpg1252\cocoartf2822
-\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fnil\fcharset0 Menlo-Regular;}
-{\colortbl;\red255\green255\blue255;\red109\green109\blue109;\red23\green24\blue24;\red70\green137\blue204;
-\red202\green202\blue202;\red140\green211\blue254;\red194\green126\blue101;\red109\green115\blue120;\red212\green212\blue212;
-\red113\green192\blue131;}
-{\*\expandedcolortbl;;\cssrgb\c50196\c50196\c50196;\cssrgb\c11765\c12157\c12549;\cssrgb\c33725\c61176\c83922;
-\cssrgb\c83137\c83137\c83137;\cssrgb\c61176\c86275\c99608;\cssrgb\c80784\c56863\c47059;\cssrgb\c50196\c52549\c54510;\cssrgb\c86275\c86275\c86275;
-\cssrgb\c50588\c78824\c58431;}
-\margl1440\margr1440\vieww11520\viewh8400\viewkind0
-\deftab720
-\pard\pardeftab720\partightenfactor0
-
-\f0\fs28 \cf2 \cb3 \expnd0\expndtw0\kerning0
-\outl0\strokewidth0 \strokec2 <\cf4 \strokec4 daily_news\cf5 \strokec5  \cf6 \strokec6 date\cf5 \strokec5 =\cf7 \strokec7 "2025-12-05"\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\pard\pardeftab720\partightenfactor0
-\cf5 \cb3   \cf8 \strokec8 <!-- Article 1: NVIDIA (Compute & Chips) -->\cf5 \cb1 \strokec5 \
-\cb3   \cf2 \strokec2 <\cf4 \strokec4 article\cf5 \strokec5  \cf6 \strokec6 id\cf5 \strokec5 =\cf7 \strokec7 "7f8a9b2c1d3e4f5g6h7i8j9k0l1m2n3o"\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 title\cf2 \strokec2 >\cf5 \strokec5 NVIDIA CUDA 13.1 Powers Next-Gen GPU Programming with Tile Optimization\cf2 \strokec2 </\cf4 \strokec4 title\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 url\cf2 \strokec2 >\cf5 \strokec5 https://developer.nvidia.com/blog/cuda-13-1-powers-next-gen-gpu-programming/\cf2 \strokec2 </\cf4 \strokec4 url\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 domain\cf2 \strokec2 >\cf5 \strokec5 developer.nvidia.com\cf2 \strokec2 </\cf4 \strokec4 domain\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 published_at\cf2 \strokec2 >\cf5 \strokec5 2025-12-04T14:00:00Z\cf2 \strokec2 </\cf4 \strokec4 published_at\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 summary\cf2 \strokec2 >\cf5 \strokec5 NVIDIA has released CUDA 13.1, introducing "Tile" programming to simplify GPU memory management and boost performance for next-gen workloads.\cf2 \strokec2 </\cf4 \strokec4 summary\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 content_body\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3       \cf9 \strokec9 <![CDATA[\cf5 \strokec5  \cb1 \
-\cb3         <h2>The Release</h2>\cb1 \
-\cb3         <p>NVIDIA released <strong>CUDA 13.1</strong> today, marking one of the most significant updates to the platform in years. The headline feature is the introduction of <strong>CUDA Tile</strong>, a new abstraction layer that simplifies how developers manage data movement between global memory and shared memory.</p>\cb1 \
-\cb3         <h3>Technical Impact</h3>\cb1 \
-\cb3         <p>This update specifically targets the complexity of programming for the latest Blackwell architecture. By abstracting tile-based memory operations, developers can achieve:</p>\cb1 \
-\cb3         <ul>\cb1 \
-\cb3           <li>Higher memory throughput without manual tuning.</li>\cb1 \
-\cb3           <li>Reduced code complexity for large-scale training clusters.</li>\cb1 \
-\cb3           <li>Better compatibility with next-gen Tensor Cores.</li>\cb1 \
-\cb3         </ul>\cb1 \
-\cb3         <p>This release is immediately available for download via the NVIDIA Developer zone.</p>\cb1 \
-\cb3       \cf9 \strokec9 ]]>\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 </\cf4 \strokec4 content_body\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 image_url\cf2 \strokec2 >\cf5 \strokec5 https://developer.nvidia.com/blog/wp-content/uploads/2025/12/cuda-13-1-banner.jpg\cf2 \strokec2 </\cf4 \strokec4 image_url\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 category\cf2 \strokec2 >\cf5 \strokec5 Compute \cf10 \strokec10 &amp;\cf5 \strokec5  Chips\cf2 \strokec2 </\cf4 \strokec4 category\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 tags\cf2 \strokec2 >\cf5 \strokec5 NVIDIA, CUDA, GPU, Blackwell, Infrastructure\cf2 \strokec2 </\cf4 \strokec4 tags\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 entities\cf2 \strokec2 >\cf5 \strokec5 NVIDIA, Jensen Huang\cf2 \strokec2 </\cf4 \strokec4 entities\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 score\cf2 \strokec2 >\cf5 \strokec5 9\cf2 \strokec2 </\cf4 \strokec4 score\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 source_type\cf2 \strokec2 >\cf5 \strokec5 Official Blog\cf2 \strokec2 </\cf4 \strokec4 source_type\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 is_primary_source\cf2 \strokec2 >\cf5 \strokec5 true\cf2 \strokec2 </\cf4 \strokec4 is_primary_source\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 content_hash\cf2 \strokec2 >\cf5 \strokec5 a1b2c3d4e5f6g7h8\cf2 \strokec2 </\cf4 \strokec4 content_hash\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3   \cf2 \strokec2 </\cf4 \strokec4 article\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\
-\cb3   \cf8 \strokec8 <!-- Article 2: Hugging Face (Generative Media) -->\cf5 \cb1 \strokec5 \
-\cb3   \cf2 \strokec2 <\cf4 \strokec4 article\cf5 \strokec5  \cf6 \strokec6 id\cf5 \strokec5 =\cf7 \strokec7 "9a8b7c6d5e4f3g2h1i0j9k8l7m6n5o4p"\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 title\cf2 \strokec2 >\cf5 \strokec5 Reward Forcing: Efficient Streaming Video Generation\cf2 \strokec2 </\cf4 \strokec4 title\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 url\cf2 \strokec2 >\cf5 \strokec5 https://huggingface.co/papers/2512.01234\cf2 \strokec2 </\cf4 \strokec4 url\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 domain\cf2 \strokec2 >\cf5 \strokec5 huggingface.co\cf2 \strokec2 </\cf4 \strokec4 domain\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 published_at\cf2 \strokec2 >\cf5 \strokec5 2025-12-04T09:30:00Z\cf2 \strokec2 </\cf4 \strokec4 published_at\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 summary\cf2 \strokec2 >\cf5 \strokec5 A new paper introduces "Reward Forcing," a technique that stabilizes streaming video generation by prioritizing dynamic content updates.\cf2 \strokec2 </\cf4 \strokec4 summary\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 content_body\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3       \cf9 \strokec9 <![CDATA[\cf5 \strokec5  \cb1 \
-\cb3         <h2>The Research</h2>\cb1 \
-\cb3         <p>A new paper titled <strong>"Reward Forcing: Efficient Streaming Video Generation"</strong> has trended to #1 on Hugging Face Daily Papers. The authors propose a novel method to solve the "flicker" and consistency issues in real-time video generation.</p>\cb1 \
-\cb3         <h3>Methodology</h3>\cb1 \
-\cb3         <p>The technique uses <strong>Rewarded Distribution Matching Distillation</strong> to update "sink tokens" dynamically. Unlike previous diffusion methods that generate frames sequentially, Reward Forcing allows the model to:</p>\cb1 \
-\cb3         <ul>\cb1 \
-\cb3           <li>Predict motion vectors ahead of time.</li>\cb1 \
-\cb3           <li>Reduce computational overhead by 40%.</li>\cb1 \
-\cb3           <li>Maintain temporal consistency over long contexts (up to 5 minutes).</li>\cb1 \
-\cb3         </ul>\cb1 \
-\cb3         <p>The code and weights have been open-sourced on GitHub, signaling a potential shift in how open-source video models (like CogVideo) might evolve.</p>\cb1 \
-\cb3       \cf9 \strokec9 ]]>\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 </\cf4 \strokec4 content_body\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 image_url\cf2 \strokec2 >\cf5 \strokec5 https://huggingface.co/front/assets/huggingface_logo-noborder.svg\cf2 \strokec2 </\cf4 \strokec4 image_url\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 category\cf2 \strokec2 >\cf5 \strokec5 Generative Media\cf2 \strokec2 </\cf4 \strokec4 category\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 tags\cf2 \strokec2 >\cf5 \strokec5 Video Generation, Research, Open Source, Hugging Face\cf2 \strokec2 </\cf4 \strokec4 tags\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 entities\cf2 \strokec2 >\cf5 \strokec5 Hugging Face, GitHub\cf2 \strokec2 </\cf4 \strokec4 entities\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 score\cf2 \strokec2 >\cf5 \strokec5 8\cf2 \strokec2 </\cf4 \strokec4 score\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 source_type\cf2 \strokec2 >\cf5 \strokec5 Whitepaper\cf2 \strokec2 </\cf4 \strokec4 source_type\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 is_primary_source\cf2 \strokec2 >\cf5 \strokec5 true\cf2 \strokec2 </\cf4 \strokec4 is_primary_source\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 content_hash\cf2 \strokec2 >\cf5 \strokec5 z1y2x3w4v5u6t7s8\cf2 \strokec2 </\cf4 \strokec4 content_hash\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3   \cf2 \strokec2 </\cf4 \strokec4 article\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\
-\cb3   \cf8 \strokec8 <!-- Article 3: Amazon Science (Security) -->\cf5 \cb1 \strokec5 \
-\cb3   \cf2 \strokec2 <\cf4 \strokec4 article\cf5 \strokec5  \cf6 \strokec6 id\cf5 \strokec5 =\cf7 \strokec7 "1q2w3e4r5t6y7u8i9o0p1a2s3d4f5g6h"\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 title\cf2 \strokec2 >\cf5 \strokec5 Active Exploitation of React2Shell Vulnerability in React Server Components\cf2 \strokec2 </\cf4 \strokec4 title\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 url\cf2 \strokec2 >\cf5 \strokec5 https://aws.amazon.com/blogs/security/china-nexus-cyber-threat-groups-rapidly-exploit-react2shell-vulnerability-cve-2025-55182/\cf2 \strokec2 </\cf4 \strokec4 url\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 domain\cf2 \strokec2 >\cf5 \strokec5 aws.amazon.com\cf2 \strokec2 </\cf4 \strokec4 domain\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 published_at\cf2 \strokec2 >\cf5 \strokec5 2025-12-04T08:00:00Z\cf2 \strokec2 </\cf4 \strokec4 published_at\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 summary\cf2 \strokec2 >\cf5 \strokec5 AWS Security has identified active exploitation of CVE-2025-55182 ("React2Shell"), a critical deserialization vulnerability in React Server Components.\cf2 \strokec2 </\cf4 \strokec4 summary\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 content_body\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3       \cf9 \strokec9 <![CDATA[\cf5 \strokec5  \cb1 \
-\cb3         <h2>Security Alert</h2>\cb1 \
-\cb3         <p><strong>Amazon Security</strong> released a critical advisory today regarding <strong>CVE-2025-55182</strong>, dubbed "React2Shell." This vulnerability affects React Server Components (RSC) and allows attackers to execute arbitrary code via unsafe deserialization.</p>\cb1 \
-\cb3         <h3>The Threat</h3>\cb1 \
-\cb3         <p>AWS threat intelligence has observed active exploitation attempts by state-nexus threat groups within hours of public disclosure. The exploit targets unpatched Next.js and React applications running in containerized environments.</p>\cb1 \
-\cb3         <p><strong>Mitigation:</strong> AWS has deployed managed rules for WAF customers, but users running self-hosted Next.js clusters are urged to patch immediately to the latest version released yesterday.</p>\cb1 \
-\cb3       \cf9 \strokec9 ]]>\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 </\cf4 \strokec4 content_body\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 image_url\cf2 \strokec2 >\cf5 \strokec5 https://d1.awsstatic.com/webteam/homepage/Logos/Global-Navigation/AWS_logo_RGB.png\cf2 \strokec2 </\cf4 \strokec4 image_url\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 category\cf2 \strokec2 >\cf5 \strokec5 Enterprise AI\cf2 \strokec2 </\cf4 \strokec4 category\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 tags\cf2 \strokec2 >\cf5 \strokec5 Cybersecurity, AWS, React, Vulnerability, Exploit\cf2 \strokec2 </\cf4 \strokec4 tags\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 entities\cf2 \strokec2 >\cf5 \strokec5 Amazon Web Services, React Team\cf2 \strokec2 </\cf4 \strokec4 entities\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 score\cf2 \strokec2 >\cf5 \strokec5 10\cf2 \strokec2 </\cf4 \strokec4 score\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 source_type\cf2 \strokec2 >\cf5 \strokec5 Official Blog\cf2 \strokec2 </\cf4 \strokec4 source_type\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 is_primary_source\cf2 \strokec2 >\cf5 \strokec5 true\cf2 \strokec2 </\cf4 \strokec4 is_primary_source\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 content_hash\cf2 \strokec2 >\cf5 \strokec5 m1n2b3v4c5x6z7l8\cf2 \strokec2 </\cf4 \strokec4 content_hash\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3   \cf2 \strokec2 </\cf4 \strokec4 article\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\
-\cb3   \cf8 \strokec8 <!-- Article 4: GitHub (Agentic AI) -->\cf5 \cb1 \strokec5 \
-\cb3   \cf2 \strokec2 <\cf4 \strokec4 article\cf5 \strokec5  \cf6 \strokec6 id\cf5 \strokec5 =\cf7 \strokec7 "p0o9i8u7y6t5r4e3w2q1a0s9d8f7g6h5"\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 title\cf2 \strokec2 >\cf5 \strokec5 New Copilot Actions for Debugging in Visual Studio 2026\cf2 \strokec2 </\cf4 \strokec4 title\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 url\cf2 \strokec2 >\cf5 \strokec5 https://github.blog/changelog/2025-12-04-github-copilot-in-visual-studio-november-update/\cf2 \strokec2 </\cf4 \strokec4 url\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 domain\cf2 \strokec2 >\cf5 \strokec5 github.blog\cf2 \strokec2 </\cf4 \strokec4 domain\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 published_at\cf2 \strokec2 >\cf5 \strokec5 2025-12-04T10:15:00Z\cf2 \strokec2 </\cf4 \strokec4 published_at\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 summary\cf2 \strokec2 >\cf5 \strokec5 GitHub has rolled out "Copilot Actions" in Visual Studio 2026, allowing developers to delegate complex debugging tasks to AI agents.\cf2 \strokec2 </\cf4 \strokec4 summary\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 content_body\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3       \cf9 \strokec9 <![CDATA[\cf5 \strokec5  \cb1 \
-\cb3         <h2>Product Update</h2>\cb1 \
-\cb3         <p>GitHub announced the general availability of <strong>Visual Studio 2026</strong> today, featuring a major upgrade to Copilot: <strong>Cloud Agents</strong>.</p>\cb1 \
-\cb3         <h3>Agentic Capabilities</h3>\cb1 \
-\cb3         <p>Developers can now right-click a stack trace and select "Debug with Copilot." Unlike previous chat-based assistance, this new Agent:</p>\cb1 \
-\cb3         <ul>\cb1 \
-\cb3           <li>Can read file context across the entire repository.</li>\cb1 \
-\cb3           <li>Proposes multi-file edits to fix the root cause.</li>\cb1 \
-\cb3           <li>Automatically runs local unit tests to verify the fix.</li>\cb1 \
-\cb3         </ul>\cb1 \
-\cb3         <p>This moves Copilot from a "autocomplete" tool to a "tier 1 support engineer," aligning with the industry trend toward agentic coding workflows.</p>\cb1 \
-\cb3       \cf9 \strokec9 ]]>\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 </\cf4 \strokec4 content_body\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 image_url\cf2 \strokec2 >\cf5 \strokec5 https://github.blog/wp-content/uploads/2024/11/visual-studio-2026-hero.png\cf2 \strokec2 </\cf4 \strokec4 image_url\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 category\cf2 \strokec2 >\cf5 \strokec5 Agentic AI \cf10 \strokec10 &amp;\cf5 \strokec5  Engineering\cf2 \strokec2 </\cf4 \strokec4 category\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 tags\cf2 \strokec2 >\cf5 \strokec5 GitHub, Copilot, Visual Studio, Agents, Coding\cf2 \strokec2 </\cf4 \strokec4 tags\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 entities\cf2 \strokec2 >\cf5 \strokec5 GitHub, Microsoft\cf2 \strokec2 </\cf4 \strokec4 entities\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 score\cf2 \strokec2 >\cf5 \strokec5 8\cf2 \strokec2 </\cf4 \strokec4 score\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 source_type\cf2 \strokec2 >\cf5 \strokec5 Official Blog\cf2 \strokec2 </\cf4 \strokec4 source_type\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 is_primary_source\cf2 \strokec2 >\cf5 \strokec5 true\cf2 \strokec2 </\cf4 \strokec4 is_primary_source\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 content_hash\cf2 \strokec2 >\cf5 \strokec5 k1j2h3g4f5d6s7a8\cf2 \strokec2 </\cf4 \strokec4 content_hash\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3   \cf2 \strokec2 </\cf4 \strokec4 article\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\
-\cb3   \cf8 \strokec8 <!-- Article 5: AMD (Compute) -->\cf5 \cb1 \strokec5 \
-\cb3   \cf2 \strokec2 <\cf4 \strokec4 article\cf5 \strokec5  \cf6 \strokec6 id\cf5 \strokec5 =\cf7 \strokec7 "5t4r3e2w1q0a9s8d7f6g5h4j3k2l1z0x"\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 title\cf2 \strokec2 >\cf5 \strokec5 AMD Enterprise AI Suite: Performance Without Complexity\cf2 \strokec2 </\cf4 \strokec4 title\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 url\cf2 \strokec2 >\cf5 \strokec5 https://www.amd.com/en/blogs/business/2025/12/04/amd-offers-businesses-enterprise-performance.html\cf2 \strokec2 </\cf4 \strokec4 url\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 domain\cf2 \strokec2 >\cf5 \strokec5 amd.com\cf2 \strokec2 </\cf4 \strokec4 domain\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 published_at\cf2 \strokec2 >\cf5 \strokec5 2025-12-04T12:00:00Z\cf2 \strokec2 </\cf4 \strokec4 published_at\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 summary\cf2 \strokec2 >\cf5 \strokec5 AMD has launched a new "Enterprise AI Suite" designed to bring high-performance inference to mid-sized businesses using ROCm and EPYC CPUs.\cf2 \strokec2 </\cf4 \strokec4 summary\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 content_body\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3       \cf9 \strokec9 <![CDATA[\cf5 \strokec5  \cb1 \
-\cb3         <h2>Strategy Shift</h2>\cb1 \
-\cb3         <p>AMD is aggressively targeting the "Mid-Market" AI sector with today's launch of the <strong>Enterprise AI Suite</strong>. While NVIDIA dominates the hyperscaler market, AMD's new offering focuses on on-premise, accessible compute.</p>\cb1 \
-\cb3         <h3>Key Offerings</h3>\cb1 \
-\cb3         <p>The suite includes pre-configured racks featuring <strong>MI325X GPUs</strong> and <strong>EPYC CPUs</strong>, optimized for:</p>\cb1 \
-\cb3         <ul>\cb1 \
-\cb3           <li>Fine-tuning open-source models (Llama 3, Qwen 2.5).</li>\cb1 \
-\cb3           <li>Private RAG (Retrieval Augmented Generation) deployments.</li>\cb1 \
-\cb3           <li>Lower total cost of ownership (TCO) compared to H100 clusters.</li>\cb1 \
-\cb3         </ul>\cb1 \
-\cb3       \cf9 \strokec9 ]]>\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 </\cf4 \strokec4 content_body\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 image_url\cf2 \strokec2 >\cf5 \strokec5 https://www.amd.com/content/dam/amd/en/images/backgrounds/blog/amd-business-blog-hero.jpg\cf2 \strokec2 </\cf4 \strokec4 image_url\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 category\cf2 \strokec2 >\cf5 \strokec5 Compute \cf10 \strokec10 &amp;\cf5 \strokec5  Chips\cf2 \strokec2 </\cf4 \strokec4 category\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 tags\cf2 \strokec2 >\cf5 \strokec5 AMD, ROCm, Enterprise, Hardware, Inference\cf2 \strokec2 </\cf4 \strokec4 tags\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 entities\cf2 \strokec2 >\cf5 \strokec5 AMD, Lisa Su\cf2 \strokec2 </\cf4 \strokec4 entities\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 score\cf2 \strokec2 >\cf5 \strokec5 7\cf2 \strokec2 </\cf4 \strokec4 score\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 source_type\cf2 \strokec2 >\cf5 \strokec5 Official Blog\cf2 \strokec2 </\cf4 \strokec4 source_type\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 is_primary_source\cf2 \strokec2 >\cf5 \strokec5 true\cf2 \strokec2 </\cf4 \strokec4 is_primary_source\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 content_hash\cf2 \strokec2 >\cf5 \strokec5 q1w2e3r4t5y6u7i8\cf2 \strokec2 </\cf4 \strokec4 content_hash\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3   \cf2 \strokec2 </\cf4 \strokec4 article\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\
-\cb3   \cf8 \strokec8 <!-- Article 6: Meta AI (Policy/Copyright) -->\cf5 \cb1 \strokec5 \
-\cb3   \cf2 \strokec2 <\cf4 \strokec4 article\cf5 \strokec5  \cf6 \strokec6 id\cf5 \strokec5 =\cf7 \strokec7 "x1y2z3a4b5c6d7e8f9g0h1i2j3k4l5m6"\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 title\cf2 \strokec2 >\cf5 \strokec5 Meta Signs Real-Time AI Licensing Deals with Reuters \cf10 \strokec10 &amp;\cf5 \strokec5  Le Monde\cf2 \strokec2 </\cf4 \strokec4 title\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 url\cf2 \strokec2 >\cf5 \strokec5 https://about.fb.com/news/2025/12/meta-signs-new-ai-licensing-deals/\cf2 \strokec2 </\cf4 \strokec4 url\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 domain\cf2 \strokec2 >\cf5 \strokec5 about.fb.com\cf2 \strokec2 </\cf4 \strokec4 domain\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 published_at\cf2 \strokec2 >\cf5 \strokec5 2025-12-05T10:00:00Z\cf2 \strokec2 </\cf4 \strokec4 published_at\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 summary\cf2 \strokec2 >\cf5 \strokec5 Meta has announced a multi-year partnership with Reuters, Le Monde, and USA Today to license real-time news content for Meta AI.\cf2 \strokec2 </\cf4 \strokec4 summary\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 content_body\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3       \cf9 \strokec9 <![CDATA[\cf5 \strokec5  \cb1 \
-\cb3         <h2>The Deal</h2>\cb1 \
-\cb3         <p>In a move to bolster the factual accuracy of <strong>Meta AI</strong>, the company announced licensing agreements with several major global publishers today. This allows Meta's Llama-based models to access <strong>real-time news feeds</strong> for current events queries.</p>\cb1 \
-\cb3         <h3>Why It Matters</h3>\cb1 \
-\cb3         <p>This deal marks a divergence from OpenAI's recent legal battles. By paying for licensed access, Meta is attempting to:</p>\cb1 \
-\cb3         <ul>\cb1 \
-\cb3           <li>Avoid the copyright lawsuits currently plaguing competitors.</li>\cb1 \
-\cb3           <li>Improve the "freshness" of Llama 4's knowledge base.</li>\cb1 \
-\cb3           <li>Provide citations and direct links to publisher content within Facebook and Instagram.</li>\cb1 \
-\cb3         </ul>\cb1 \
-\cb3       \cf9 \strokec9 ]]>\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 </\cf4 \strokec4 content_body\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 image_url\cf2 \strokec2 >\cf5 \strokec5 https://about.fb.com/wp-content/uploads/2023/09/Meta-AI-Connect-2023_Header.jpg\cf2 \strokec2 </\cf4 \strokec4 image_url\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 category\cf2 \strokec2 >\cf5 \strokec5 Copyright \cf10 \strokec10 &amp;\cf5 \strokec5  IP\cf2 \strokec2 </\cf4 \strokec4 category\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 tags\cf2 \strokec2 >\cf5 \strokec5 Meta, Journalism, Licensing, Llama, Policy\cf2 \strokec2 </\cf4 \strokec4 tags\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 entities\cf2 \strokec2 >\cf5 \strokec5 Meta, Mark Zuckerberg, Reuters\cf2 \strokec2 </\cf4 \strokec4 entities\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 score\cf2 \strokec2 >\cf5 \strokec5 9\cf2 \strokec2 </\cf4 \strokec4 score\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 source_type\cf2 \strokec2 >\cf5 \strokec5 Official Blog\cf2 \strokec2 </\cf4 \strokec4 source_type\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 is_primary_source\cf2 \strokec2 >\cf5 \strokec5 true\cf2 \strokec2 </\cf4 \strokec4 is_primary_source\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 content_hash\cf2 \strokec2 >\cf5 \strokec5 v1c2x3z4a5s6d7f8\cf2 \strokec2 </\cf4 \strokec4 content_hash\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3   \cf2 \strokec2 </\cf4 \strokec4 article\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\
-\cb3   \cf8 \strokec8 <!-- Article 7: DeepMind (Science) -->\cf5 \cb1 \strokec5 \
-\cb3   \cf2 \strokec2 <\cf4 \strokec4 article\cf5 \strokec5  \cf6 \strokec6 id\cf5 \strokec5 =\cf7 \strokec7 "b1n2m3k4j5h6g7f8d9s0a1q2w3e4r5t6"\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 title\cf2 \strokec2 >\cf5 \strokec5 Formalizing Mathematics: AI Solves 240 Erd\uc0\u337 s Problems\cf2 \strokec2 </\cf4 \strokec4 title\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 url\cf2 \strokec2 >\cf5 \strokec5 https://deepmind.google/discover/blog/formalization-of-erdos-problems/\cf2 \strokec2 </\cf4 \strokec4 url\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 domain\cf2 \strokec2 >\cf5 \strokec5 deepmind.google\cf2 \strokec2 </\cf4 \strokec4 domain\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 published_at\cf2 \strokec2 >\cf5 \strokec5 2025-12-05T08:30:00Z\cf2 \strokec2 </\cf4 \strokec4 published_at\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 summary\cf2 \strokec2 >\cf5 \strokec5 Google DeepMind's "Formal Conjectures" project has successfully formalized and solved 240 of Paul Erd\uc0\u337 s's mathematical problems using AlphaProof.\cf2 \strokec2 </\cf4 \strokec4 summary\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 content_body\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3       \cf9 \strokec9 <![CDATA[\cf5 \strokec5  \cb1 \
-\cb3         <h2>Scientific Breakthrough</h2>\cb1 \
-\cb3         <p>Google DeepMind, in collaboration with the <strong>Xena Project</strong>, published a guest post detailing the progress of AI in formal mathematics. Using a combination of <strong>AlphaProof</strong> and the <strong>Lean</strong> theorem prover, the system has now formalized 240 problems posed by the legendary Paul Erd\uc0\u337 s.</p>\cb1 \
-\cb3         <h3>The Significance</h3>\cb1 \
-\cb3         <p>Mathematical formalization is the "gold standard" for AI reasoning. Unlike natural language tasks where "hallucination" is possible, formal proofs are verifiable. This milestone demonstrates that AI agents are moving from simple arithmetic to novel mathematical discovery.</p>\cb1 \
-\cb3       \cf9 \strokec9 ]]>\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 </\cf4 \strokec4 content_body\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 image_url\cf2 \strokec2 >\cf5 \strokec5 https://lh3.googleusercontent.com/feed-image.jpg\cf2 \strokec2 </\cf4 \strokec4 image_url\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 category\cf2 \strokec2 >\cf5 \strokec5 Science \cf10 \strokec10 &amp;\cf5 \strokec5  BioTech\cf2 \strokec2 </\cf4 \strokec4 category\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 tags\cf2 \strokec2 >\cf5 \strokec5 DeepMind, Mathematics, AlphaProof, Lean, Research\cf2 \strokec2 </\cf4 \strokec4 tags\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 entities\cf2 \strokec2 >\cf5 \strokec5 Google DeepMind, Paul Erd\uc0\u337 s\cf2 \strokec2 </\cf4 \strokec4 entities\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 score\cf2 \strokec2 >\cf5 \strokec5 8\cf2 \strokec2 </\cf4 \strokec4 score\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 source_type\cf2 \strokec2 >\cf5 \strokec5 Official Blog\cf2 \strokec2 </\cf4 \strokec4 source_type\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 is_primary_source\cf2 \strokec2 >\cf5 \strokec5 true\cf2 \strokec2 </\cf4 \strokec4 is_primary_source\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3     \cf2 \strokec2 <\cf4 \strokec4 content_hash\cf2 \strokec2 >\cf5 \strokec5 l1k2j3h4g5f6d7s8\cf2 \strokec2 </\cf4 \strokec4 content_hash\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\cb3   \cf2 \strokec2 </\cf4 \strokec4 article\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-\pard\pardeftab720\partightenfactor0
-\cf2 \cb3 \strokec2 </\cf4 \strokec4 daily_news\cf2 \strokec2 >\cf5 \cb1 \strokec5 \
-}
+<?xml version="1.0" encoding="UTF-8"?>
+<daily_news date="2025-12-05">
+  <!-- Article 1: NVIDIA (Compute & Chips) -->
+  <article id="7f8a9b2c1d3e4f5g6h7i8j9k0l1m2n3o">
+    <title>NVIDIA CUDA 13.1 Powers Next-Gen GPU Programming with Tile Optimization</title>
+    <url>https://developer.nvidia.com/blog/cuda-13-1-powers-next-gen-gpu-programming/</url>
+    <domain>developer.nvidia.com</domain>
+    <published_at>2025-12-04T14:00:00Z</published_at>
+    <summary>NVIDIA has released CUDA 13.1, introducing "Tile" programming to simplify GPU memory management and boost performance for next-gen workloads.</summary>
+    <content_body><![CDATA[ <h2>The Release</h2><p>NVIDIA released <strong>CUDA 13.1</strong> today, marking one of the most significant updates to the platform in years. The headline feature is the introduction of <strong>CUDA Tile</strong>, a new abstraction layer that simplifies how developers manage data movement between global memory and shared memory.</p><h3>Technical Impact</h3><p>This update specifically targets the complexity of programming for the latest Blackwell architecture. By abstracting tile-based memory operations, developers can achieve:</p><ul><li>Higher memory throughput without manual tuning.</li><li>Reduced code complexity for large-scale training clusters.</li><li>Better compatibility with next-gen Tensor Cores.</li></ul><p>This release is immediately available for download via the NVIDIA Developer zone.</p> ]]></content_body>
+    <image_url>https://developer.nvidia.com/blog/wp-content/uploads/2025/12/cuda-13-1-banner.jpg</image_url>
+    <category>Compute &amp; Chips</category>
+    <tags>NVIDIA, CUDA, GPU, Blackwell, Infrastructure</tags>
+    <entities>NVIDIA, Jensen Huang</entities>
+    <score>9</score>
+    <source_type>Official Blog</source_type>
+    <is_primary_source>true</is_primary_source>
+    <content_hash>a1b2c3d4e5f6g7h8</content_hash>
+  </article>
+  <!-- Article 2: Hugging Face (Generative Media) -->
+  <article id="9a8b7c6d5e4f3g2h1i0j9k8l7m6n5o4p">
+    <title>Reward Forcing: Efficient Streaming Video Generation</title>
+    <url>https://huggingface.co/papers/2512.01234</url>
+    <domain>huggingface.co</domain>
+    <published_at>2025-12-04T09:30:00Z</published_at>
+    <summary>A new paper introduces "Reward Forcing," a technique that stabilizes streaming video generation by prioritizing dynamic content updates.</summary>
+    <content_body><![CDATA[ <h2>The Research</h2><p>A new paper titled <strong>"Reward Forcing: Efficient Streaming Video Generation"</strong> has trended to #1 on Hugging Face Daily Papers. The authors propose a novel method to solve the "flicker" and consistency issues in real-time video generation.</p><h3>Methodology</h3><p>The technique uses <strong>Rewarded Distribution Matching Distillation</strong> to update "sink tokens" dynamically. Unlike previous diffusion methods that generate frames sequentially, Reward Forcing allows the model to:</p><ul><li>Predict motion vectors ahead of time.</li><li>Reduce computational overhead by 40%.</li><li>Maintain temporal consistency over long contexts (up to 5 minutes).</li></ul><p>The code and weights have been open-sourced on GitHub, signaling a potential shift in how open-source video models (like CogVideo) might evolve.</p> ]]></content_body>
+    <image_url>https://huggingface.co/front/assets/huggingface_logo-noborder.svg</image_url>
+    <category>Generative Media</category>
+    <tags>Video Generation, Research, Open Source, Hugging Face</tags>
+    <entities>Hugging Face, GitHub</entities>
+    <score>8</score>
+    <source_type>Whitepaper</source_type>
+    <is_primary_source>true</is_primary_source>
+    <content_hash>z1y2x3w4v5u6t7s8</content_hash>
+  </article>
+  <!-- Article 3: Amazon Science (Security) -->
+  <article id="1q2w3e4r5t6y7u8i9o0p1a2s3d4f5g6h">
+    <title>Active Exploitation of React2Shell Vulnerability in React Server Components</title>
+    <url>https://aws.amazon.com/blogs/security/china-nexus-cyber-threat-groups-rapidly-exploit-react2shell-vulnerability-cve-2025-55182/</url>
+    <domain>aws.amazon.com</domain>
+    <published_at>2025-12-04T08:00:00Z</published_at>
+    <summary>AWS Security has identified active exploitation of CVE-2025-55182 ("React2Shell"), a critical deserialization vulnerability in React Server Components.</summary>
+    <content_body><![CDATA[ <h2>Security Alert</h2><p><strong>Amazon Security</strong> released a critical advisory today regarding <strong>CVE-2025-55182</strong>, dubbed "React2Shell." This vulnerability affects React Server Components (RSC) and allows attackers to execute arbitrary code via unsafe deserialization.</p><h3>The Threat</h3><p>AWS threat intelligence has observed active exploitation attempts by state-nexus threat groups within hours of public disclosure. The exploit targets unpatched Next.js and React applications running in containerized environments.</p><p><strong>Mitigation:</strong> AWS has deployed managed rules for WAF customers, but users running self-hosted Next.js clusters are urged to patch immediately to the latest version released yesterday.</p> ]]></content_body>
+    <image_url>https://d1.awsstatic.com/webteam/homepage/Logos/Global-Navigation/AWS_logo_RGB.png</image_url>
+    <category>Enterprise AI</category>
+    <tags>Cybersecurity, AWS, React, Vulnerability, Exploit</tags>
+    <entities>Amazon Web Services, React Team</entities>
+    <score>10</score>
+    <source_type>Official Blog</source_type>
+    <is_primary_source>true</is_primary_source>
+    <content_hash>m1n2b3v4c5x6z7l8</content_hash>
+  </article>
+  <!-- Article 4: GitHub (Agentic AI) -->
+  <article id="p0o9i8u7y6t5r4e3w2q1a0s9d8f7g6h5">
+    <title>New Copilot Actions for Debugging in Visual Studio 2026</title>
+    <url>https://github.blog/changelog/2025-12-04-github-copilot-in-visual-studio-november-update/</url>
+    <domain>github.blog</domain>
+    <published_at>2025-12-04T10:15:00Z</published_at>
+    <summary>GitHub has rolled out "Copilot Actions" in Visual Studio 2026, allowing developers to delegate complex debugging tasks to AI agents.</summary>
+    <content_body><![CDATA[ <h2>Product Update</h2><p>GitHub announced the general availability of <strong>Visual Studio 2026</strong> today, featuring a major upgrade to Copilot: <strong>Cloud Agents</strong>.</p><h3>Agentic Capabilities</h3><p>Developers can now right-click a stack trace and select "Debug with Copilot." Unlike previous chat-based assistance, this new Agent:</p><ul><li>Can read file context across the entire repository.</li><li>Proposes multi-file edits to fix the root cause.</li><li>Automatically runs local unit tests to verify the fix.</li></ul><p>This moves Copilot from a "autocomplete" tool to a "tier 1 support engineer," aligning with the industry trend toward agentic coding workflows.</p> ]]></content_body>
+    <image_url>https://github.blog/wp-content/uploads/2024/11/visual-studio-2026-hero.png</image_url>
+    <category>Agentic AI &amp; Engineering</category>
+    <tags>GitHub, Copilot, Visual Studio, Agents, Coding</tags>
+    <entities>GitHub, Microsoft</entities>
+    <score>8</score>
+    <source_type>Official Blog</source_type>
+    <is_primary_source>true</is_primary_source>
+    <content_hash>k1j2h3g4f5d6s7a8</content_hash>
+  </article>
+  <!-- Article 5: AMD (Compute) -->
+  <article id="5t4r3e2w1q0a9s8d7f6g5h4j3k2l1z0x">
+    <title>AMD Enterprise AI Suite: Performance Without Complexity</title>
+    <url>https://www.amd.com/en/blogs/business/2025/12/04/amd-offers-businesses-enterprise-performance.html</url>
+    <domain>amd.com</domain>
+    <published_at>2025-12-04T12:00:00Z</published_at>
+    <summary>AMD has launched a new "Enterprise AI Suite" designed to bring high-performance inference to mid-sized businesses using ROCm and EPYC CPUs.</summary>
+    <content_body><![CDATA[ <h2>Strategy Shift</h2><p>AMD is aggressively targeting the "Mid-Market" AI sector with today's launch of the <strong>Enterprise AI Suite</strong>. While NVIDIA dominates the hyperscaler market, AMD's new offering focuses on on-premise, accessible compute.</p><h3>Key Offerings</h3><p>The suite includes pre-configured racks featuring <strong>MI325X GPUs</strong> and <strong>EPYC CPUs</strong>, optimized for:</p><ul><li>Fine-tuning open-source models (Llama 3, Qwen 2.5).</li><li>Private RAG (Retrieval Augmented Generation) deployments.</li><li>Lower total cost of ownership (TCO) compared to H100 clusters.</li></ul> ]]></content_body>
+    <image_url>https://www.amd.com/content/dam/amd/en/images/backgrounds/blog/amd-business-blog-hero.jpg</image_url>
+    <category>Compute &amp; Chips</category>
+    <tags>AMD, ROCm, Enterprise, Hardware, Inference</tags>
+    <entities>AMD, Lisa Su</entities>
+    <score>7</score>
+    <source_type>Official Blog</source_type>
+    <is_primary_source>true</is_primary_source>
+    <content_hash>q1w2e3r4t5y6u7i8</content_hash>
+  </article>
+  <!-- Article 6: Meta AI (Policy/Copyright) -->
+  <article id="x1y2z3a4b5c6d7e8f9g0h1i2j3k4l5m6">
+    <title>Meta Signs Real-Time AI Licensing Deals with Reuters &amp; Le Monde</title>
+    <url>https://about.fb.com/news/2025/12/meta-signs-new-ai-licensing-deals/</url>
+    <domain>about.fb.com</domain>
+    <published_at>2025-12-05T10:00:00Z</published_at>
+    <summary>Meta has announced a multi-year partnership with Reuters, Le Monde, and USA Today to license real-time news content for Meta AI.</summary>
+    <content_body><![CDATA[ <h2>The Deal</h2><p>In a move to bolster the factual accuracy of <strong>Meta AI</strong>, the company announced licensing agreements with several major global publishers today. This allows Meta's Llama-based models to access <strong>real-time news feeds</strong> for current events queries.</p><h3>Why It Matters</h3><p>This deal marks a divergence from OpenAI's recent legal battles. By paying for licensed access, Meta is attempting to:</p><ul><li>Avoid the copyright lawsuits currently plaguing competitors.</li><li>Improve the "freshness" of Llama 4's knowledge base.</li><li>Provide citations and direct links to publisher content within Facebook and Instagram.</li></ul> ]]></content_body>
+    <image_url>https://about.fb.com/wp-content/uploads/2023/09/Meta-AI-Connect-2023_Header.jpg</image_url>
+    <category>Copyright &amp; IP</category>
+    <tags>Meta, Journalism, Licensing, Llama, Policy</tags>
+    <entities>Meta, Mark Zuckerberg, Reuters</entities>
+    <score>9</score>
+    <source_type>Official Blog</source_type>
+    <is_primary_source>true</is_primary_source>
+    <content_hash>v1c2x3z4a5s6d7f8</content_hash>
+  </article>
+  <!-- Article 7: DeepMind (Science) -->
+  <article id="b1n2m3k4j5h6g7f8d9s0a1q2w3e4r5t6">
+    <title>Formalizing Mathematics: AI Solves 240 Erdős Problems</title>
+    <url>https://deepmind.google/discover/blog/formalization-of-erdos-problems/</url>
+    <domain>deepmind.google</domain>
+    <published_at>2025-12-05T08:30:00Z</published_at>
+    <summary>Google DeepMind's "Formal Conjectures" project has successfully formalized and solved 240 of Paul Erdős's mathematical problems using AlphaProof.</summary>
+    <content_body><![CDATA[ <h2>Scientific Breakthrough</h2><p>Google DeepMind, in collaboration with the <strong>Xena Project</strong>, published a guest post detailing the progress of AI in formal mathematics. Using a combination of <strong>AlphaProof</strong> and the <strong>Lean</strong> theorem prover, the system has now formalized 240 problems posed by the legendary Paul Erdős.</p><h3>The Significance</h3><p>Mathematical formalization is the "gold standard" for AI reasoning. Unlike natural language tasks where "hallucination" is possible, formal proofs are verifiable. This milestone demonstrates that AI agents are moving from simple arithmetic to novel mathematical discovery.</p> ]]></content_body>
+    <image_url>https://lh3.googleusercontent.com/feed-image.jpg</image_url>
+    <category>Science &amp; BioTech</category>
+    <tags>DeepMind, Mathematics, AlphaProof, Lean, Research</tags>
+    <entities>Google DeepMind, Paul Erdős</entities>
+    <score>8</score>
+    <source_type>Official Blog</source_type>
+    <is_primary_source>true</is_primary_source>
+    <content_hash>l1k2j3h4g5f6d7s8</content_hash>
+  </article>
+</daily_news>
