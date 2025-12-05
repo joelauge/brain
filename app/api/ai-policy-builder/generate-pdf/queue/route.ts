@@ -18,15 +18,26 @@ export async function POST(request: NextRequest) {
         }
 
         // Create job in database
-        // @ts-ignore
-        const job = await prisma.pDFGenerationJob.create({
-            data: {
-                status: 'pending',
-                progress: 0,
-                statusMessage: 'Job created, waiting to start...',
-                assessmentData: JSON.stringify(assessment),
-            },
-        });
+        let job;
+        try {
+            // @ts-ignore - Prisma Client type generation
+            job = await prisma.pDFGenerationJob.create({
+                data: {
+                    status: 'pending',
+                    progress: 0,
+                    statusMessage: 'Job created, waiting to start...',
+                    assessmentData: JSON.stringify(assessment),
+                },
+            });
+        } catch (dbError: any) {
+            console.error('Database error creating job:', dbError);
+            // If table doesn't exist, provide helpful error
+            if (dbError?.message?.includes('does not exist') || dbError?.code === 'P2001') {
+                console.error('PDFGenerationJob table may not exist. Run: npx prisma db push');
+                throw new Error('Database table not found. Please run database migrations.');
+            }
+            throw dbError;
+        }
 
         // Start processing in background (don't await)
         processPDFJob(job.id).catch((error) => {
@@ -41,8 +52,16 @@ export async function POST(request: NextRequest) {
         });
     } catch (error: any) {
         console.error('Error creating PDF generation job:', error);
+        console.error('Error details:', {
+            message: error?.message,
+            name: error?.name,
+            stack: error?.stack,
+        });
         return NextResponse.json(
-            { error: 'Failed to create job' },
+            { 
+                error: 'Failed to create job',
+                details: process.env.NODE_ENV === 'development' ? error?.message : undefined
+            },
             { status: 500 }
         );
     }
