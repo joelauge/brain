@@ -86,8 +86,8 @@ export async function POST(request: NextRequest) {
       const contentDisposition = request.headers.get('content-disposition');
       fileName = extractFilename(contentDisposition);
       
-      // Create a File-like object for validation
-      file = new File([buffer], fileName, { type: contentType });
+      // Create a File-like object for validation (convert Buffer to Uint8Array)
+      file = new File([new Uint8Array(buffer)], fileName, { type: contentType });
     }
     // Handle JSON with base64 encoded file
     else if (contentType.includes('application/json')) {
@@ -103,7 +103,8 @@ export async function POST(request: NextRequest) {
           const base64Data = fileContent.replace(/^data:.*,/, ''); // Remove data URL prefix if present
           const buffer = Buffer.from(base64Data, 'base64');
           fileName = fileType.endsWith('.xml') ? fileType : `${fileType}.xml`;
-          file = new File([buffer], fileName, { type: 'application/xml' });
+          // Convert Buffer to Uint8Array for File constructor
+          file = new File([new Uint8Array(buffer)], fileName, { type: 'application/xml' });
         } else {
           return NextResponse.json(
             { 
