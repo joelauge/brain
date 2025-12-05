@@ -238,7 +238,7 @@ async function generatePDF(
     logoPath: string
 ): Promise<Buffer> {
     const { renderToBuffer } = await import('@react-pdf/renderer');
-    const { createAIPolicyDocument } = await import('@/lib/pdf-generator.tsx');
+    const { createAIPolicyDocument } = await import('@/lib/pdf-generator');
     
     const pdfDoc = createAIPolicyDocument(assessment, aiContent, logoPath);
     const pdfBuffer = await renderToBuffer(pdfDoc);
