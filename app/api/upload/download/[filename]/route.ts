@@ -3,7 +3,12 @@ import { readFile } from 'fs/promises';
 import { existsSync } from 'fs';
 import path from 'path';
 
-const UPLOAD_DIR = path.join('/tmp', 'uploads', 'xml');
+// Use the same conditional logic as upload endpoints
+// On Vercel, use /tmp for writable storage, otherwise use public/uploads/xml
+const isVercel = process.env.VERCEL === '1';
+const UPLOAD_DIR = isVercel 
+  ? path.join('/tmp', 'uploads', 'xml')
+  : path.join(process.cwd(), 'public', 'uploads', 'xml');
 
 export async function GET(
   request: NextRequest,
@@ -46,4 +51,3 @@ export async function GET(
     );
   }
 }
-

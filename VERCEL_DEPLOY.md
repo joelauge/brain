@@ -1,7 +1,6 @@
 # Vercel Deployment Guide
 
 ## Your Vercel Project
-- **Project ID**: `prj_xUlapPT1tbkM2xmjNvyYvpJVpuHd`
 - **Platform**: Vercel ✅ (Perfect for Next.js API routes!)
 
 ## Pre-Deployment Checklist

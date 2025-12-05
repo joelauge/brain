@@ -1,7 +1,7 @@
 # 🚀 Quick Deploy Guide - Vercel
 
 ## Your Setup
-- **Vercel Project**: `prj_xUlapPT1tbkM2xmjNvyYvpJVpuHd`
+- **Vercel Project**: [Your Project ID]
 - **Status**: Ready to deploy! ✅
 
 ## ⚠️ CRITICAL: Set Environment Variable First!
