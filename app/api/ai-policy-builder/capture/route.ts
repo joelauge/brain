@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { PolicyAssessment } from '@/mocks/ai-policy-questions';
+import { prisma } from '@/lib/prisma';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -213,6 +214,31 @@ export async function POST(request: NextRequest) {
             }
         } else if (process.env.RESEND_API_KEY) {
             console.log('ℹ️ RESEND_AUDIENCE_ID not configured, skipping contact addition');
+        }
+
+        // Save assessment to database for follow-up email
+        try {
+            await prisma.aIPolicyAssessment.create({
+                data: {
+                    email: assessment.email,
+                    firstName: assessment.firstName,
+                    lastName: assessment.lastName,
+                    company: assessment.company,
+                    stance: assessment.stance,
+                    acumen: assessment.acumen,
+                    concerns: JSON.stringify(assessment.concerns),
+                    useCases: JSON.stringify(assessment.useCases),
+                    riskTolerance: assessment.riskTolerance,
+                    compliance: JSON.stringify(assessment.compliance),
+                    training: assessment.training,
+                    governance: assessment.governance,
+                    additionalContext: assessment.additionalContext,
+                },
+            });
+            console.log('✅ Assessment saved to database');
+        } catch (error) {
+            console.error('Error saving assessment to database:', error);
+            // Continue even if database save fails
         }
 
         // Send notification emails to David and Joel

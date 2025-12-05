@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Section from "@/components/Section";
 import Tagline from "@/components/Tagline";
 import Button from "@/components/Button";
@@ -12,6 +13,40 @@ type ResultsProps = {
 };
 
 const Results = ({ assessment, onRestart }: ResultsProps) => {
+    const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+
+    const handleDownloadPDF = async () => {
+        setIsGeneratingPDF(true);
+        try {
+            const response = await fetch('/api/ai-policy-builder/generate-pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(assessment),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to generate PDF');
+            }
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `draft-ai-policy-${assessment.company || 'policy'}-${Date.now()}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        } catch (error) {
+            console.error('Error downloading PDF:', error);
+            alert('Failed to generate PDF. Please try again.');
+        } finally {
+            setIsGeneratingPDF(false);
+        }
+    };
+
     const getStanceLabel = (stance: string) => {
         const labels: Record<string, string> = {
             'strict-prohibition': 'Strict Prohibition',
@@ -192,6 +227,24 @@ const Results = ({ assessment, onRestart }: ResultsProps) => {
                                 </p>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                {/* PDF Download Section */}
+                <div className="bg-n-8 rounded-2xl border border-n-6 p-8 md:p-12 mb-15">
+                    <Tagline className="mb-6">Your Draft Policy</Tagline>
+                    <div className="text-center">
+                        <p className="body-1 text-n-3 mb-6">
+                            Download your personalized draft AI policy document to share with your team and stakeholders.
+                        </p>
+                        <Button 
+                            onClick={handleDownloadPDF}
+                            disabled={isGeneratingPDF}
+                            white
+                            className="px-8"
+                        >
+                            {isGeneratingPDF ? 'Generating PDF...' : 'Download Your Draft AI Policy'}
+                        </Button>
                     </div>
                 </div>
 

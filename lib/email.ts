@@ -718,3 +718,142 @@ export async function sendBookingReceipt(data: BookingReceiptData): Promise<bool
     return false;
   }
 }
+
+export interface AIPolicyFollowUpData {
+  email: string;
+  firstName?: string;
+  lastName?: string;
+  company?: string;
+}
+
+export function generateAIPolicyFollowUpEmail(data: AIPolicyFollowUpData): string {
+  const firstName = data.firstName || 'there';
+  const bookingUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://brainmediaconsulting.com'}/booking`;
+  
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Follow-up: AI Policy Builder</title>
+      <style>
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          line-height: 1.6;
+          color: #333;
+          max-width: 600px;
+          margin: 0 auto;
+          padding: 20px;
+          background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+        }
+        .container {
+          background: #0a0a0a;
+          border-radius: 16px;
+          padding: 40px;
+          border: 1px solid #2a2a2a;
+        }
+        .header {
+          text-align: center;
+          margin-bottom: 30px;
+        }
+        .logo {
+          font-size: 32px;
+          font-weight: bold;
+          color: #AC6AFF;
+          margin-bottom: 20px;
+        }
+        .content {
+          color: #ffffff;
+        }
+        .greeting {
+          font-size: 18px;
+          margin-bottom: 20px;
+        }
+        .message {
+          font-size: 16px;
+          color: #a1a1aa;
+          margin-bottom: 30px;
+          line-height: 1.8;
+        }
+        .cta-button {
+          display: inline-block;
+          background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+          color: #ffffff;
+          padding: 16px 32px;
+          text-decoration: none;
+          border-radius: 12px;
+          font-weight: 600;
+          font-size: 16px;
+          margin: 20px 0;
+          text-align: center;
+        }
+        .footer {
+          margin-top: 40px;
+          padding-top: 20px;
+          border-top: 1px solid #2a2a2a;
+          color: #6b7280;
+          font-size: 14px;
+        }
+        .signature {
+          color: #ffffff;
+          margin-top: 20px;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <div class="logo">BRAIN</div>
+        </div>
+        <div class="content">
+          <div class="greeting">Hi ${firstName},</div>
+          <div class="message">
+            It's Joel from Brain Consulting. You completed our AI Policy Builder online and I'd love to follow up with you and see how we may be able to help implement some of these guidelines in your organization.
+          </div>
+          <div class="message">
+            The easiest next step would be to book a quick follow up here on our booking page:
+          </div>
+          <div style="text-align: center;">
+            <a href="${bookingUrl}" class="cta-button">Book a Consultation</a>
+          </div>
+          <div class="signature">
+            Best regards,<br>
+            Joel Auge<br>
+            Brain Media Consulting
+          </div>
+        </div>
+        <div class="footer">
+          <p>This email was sent by Brain Media Consulting</p>
+          <p>If you have any questions, please don't hesitate to reach out.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
+export async function sendAIPolicyFollowUp(data: AIPolicyFollowUpData): Promise<boolean> {
+  try {
+    if (!process.env.RESEND_API_KEY) {
+      console.log('📧 [DEV] AI Policy Follow-up Email (not sent):', {
+        to: data.email,
+        subject: 'Follow-up: AI Policy Builder',
+      });
+      return true;
+    }
+
+    const result = await resend.emails.send({
+      from: 'Joel Auge <joel@brainmediaconsulting.com>',
+      to: [data.email],
+      subject: 'Follow-up: AI Policy Builder',
+      html: generateAIPolicyFollowUpEmail(data),
+    });
+
+    console.log('📧 AI Policy Follow-up Sent:', result);
+    return true;
+  } catch (error) {
+    console.error('Error sending AI Policy follow-up:', error);
+    return false;
+  }
+}

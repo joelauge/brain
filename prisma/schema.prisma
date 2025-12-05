@@ -115,3 +115,26 @@ model ResourceRequest {
 
   @@map("resource_requests")
 }
+
+model AIPolicyAssessment {
+  id                String   @id @default(cuid())
+  email             String
+  firstName         String?
+  lastName          String?
+  company           String?
+  stance            String
+  acumen            String
+  concerns          String   // JSON array
+  useCases          String   // JSON array
+  riskTolerance     String
+  compliance        String   // JSON array
+  training          String
+  governance        String
+  additionalContext String?
+  followUpSent      Boolean  @default(false)
+  followUpSentAt    DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@map("ai_policy_assessments")
+}
