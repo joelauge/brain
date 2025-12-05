@@ -3,9 +3,6 @@
   "devCommand": "npm run dev",
   "installCommand": "npm install",
   "framework": "nextjs",
-  "regions": ["iad1"],
-  "env": {
-    "UPLOAD_API_KEY": "@upload_api_key"
-  }
+  "regions": ["iad1"]
 }
 
