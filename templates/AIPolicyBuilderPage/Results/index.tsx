@@ -64,24 +64,52 @@ const Results = ({ assessment, onRestart }: ResultsProps) => {
                         
                         // Download PDF
                         if (jobStatus.pdfUrl) {
-                            // Convert data URI to blob
-                            const response = await fetch(jobStatus.pdfUrl);
-                            const blob = await response.blob();
-                            
-                            const url = window.URL.createObjectURL(blob);
-                            const a = document.createElement('a');
-                            a.href = url;
-                            a.download = `draft-ai-policy-${assessment.company || 'policy'}-${Date.now()}.pdf`;
-                            document.body.appendChild(a);
-                            a.click();
-                            window.URL.revokeObjectURL(url);
-                            document.body.removeChild(a);
-                            
-                            setProgressStatus('Download complete!');
-                            setTimeout(() => {
+                            try {
+                                // Handle data URI
+                                if (jobStatus.pdfUrl.startsWith('data:')) {
+                                    // Convert data URI to blob
+                                    const base64Data = jobStatus.pdfUrl.split(',')[1];
+                                    const byteCharacters = atob(base64Data);
+                                    const byteNumbers = new Array(byteCharacters.length);
+                                    for (let i = 0; i < byteCharacters.length; i++) {
+                                        byteNumbers[i] = byteCharacters.charCodeAt(i);
+                                    }
+                                    const byteArray = new Uint8Array(byteNumbers);
+                                    const blob = new Blob([byteArray], { type: 'application/pdf' });
+                                    
+                                    const url = window.URL.createObjectURL(blob);
+                                    const a = document.createElement('a');
+                                    a.href = url;
+                                    a.download = `draft-ai-policy-${assessment.company || 'policy'}-${Date.now()}.pdf`;
+                                    document.body.appendChild(a);
+                                    a.click();
+                                    window.URL.revokeObjectURL(url);
+                                    document.body.removeChild(a);
+                                } else {
+                                    // Regular URL
+                                    const response = await fetch(jobStatus.pdfUrl);
+                                    const blob = await response.blob();
+                                    
+                                    const url = window.URL.createObjectURL(blob);
+                                    const a = document.createElement('a');
+                                    a.href = url;
+                                    a.download = `draft-ai-policy-${assessment.company || 'policy'}-${Date.now()}.pdf`;
+                                    document.body.appendChild(a);
+                                    a.click();
+                                    window.URL.revokeObjectURL(url);
+                                    document.body.removeChild(a);
+                                }
+                                
+                                setProgressStatus('Download complete!');
+                                setTimeout(() => {
+                                    setProgressStatus('');
+                                    setProgress(0);
+                                }, 2000);
+                            } catch (downloadError) {
+                                console.error('Error downloading PDF:', downloadError);
                                 setProgressStatus('');
-                                setProgress(0);
-                            }, 2000);
+                                alert('PDF generated but download failed. Please contact support.');
+                            }
                         }
                         setIsGeneratingPDF(false);
                     } else if (jobStatus.status === 'failed') {
