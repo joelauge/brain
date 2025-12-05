@@ -12,10 +12,10 @@ const UPLOAD_DIR = isVercel
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { filename: string } }
+  { params }: { params: Promise<{ filename: string }> }
 ) {
   try {
-    const filename = params.filename;
+    const { filename } = await params;
     
     // Security: Only allow XML files and prevent directory traversal
     if (!filename.toLowerCase().endsWith('.xml') || filename.includes('..') || filename.includes('/')) {
@@ -36,7 +36,8 @@ export async function GET(
 
     const fileContent = await readFile(filePath);
     
-    return new NextResponse(fileContent, {
+    // Convert Buffer to Uint8Array for NextResponse compatibility
+    return new NextResponse(new Uint8Array(fileContent), {
       headers: {
         'Content-Type': 'application/xml',
         'Content-Disposition': `inline; filename="${filename}"`,
@@ -51,3 +52,4 @@ export async function GET(
     );
   }
 }
+
