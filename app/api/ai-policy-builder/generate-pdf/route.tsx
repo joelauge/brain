@@ -2,8 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { PolicyAssessment } from '@/mocks/ai-policy-questions';
 import { renderToBuffer } from '@react-pdf/renderer';
 import React from 'react';
-import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
+import { Document, Page, Text, View, StyleSheet, Image } from '@react-pdf/renderer';
 import { generateAIPolicyContent } from '@/lib/ai-policy-generator';
+import path from 'path';
+import fs from 'fs';
 
 // Create styles
 const styles = StyleSheet.create({
@@ -83,6 +85,20 @@ const styles = StyleSheet.create({
         color: '#757185',
         borderTop: '1px solid #3F3A52',
         paddingTop: 10,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 8,
+    },
+    logoImage: {
+        width: 60,
+        height: 20,
+        objectFit: 'contain',
+    },
+    footerLogo: {
+        width: 40,
+        height: 14,
+        objectFit: 'contain',
     },
 });
 
@@ -100,10 +116,12 @@ function getStanceLabel(stance: string): string {
 
 function AIPolicyDocument({ 
     assessment, 
-    aiContent 
+    aiContent,
+    logoPath
 }: { 
     assessment: PolicyAssessment;
     aiContent: Awaited<ReturnType<typeof generateAIPolicyContent>>;
+    logoPath: string;
 }) {
     const fullName = [assessment.firstName, assessment.lastName].filter(Boolean).join(' ') || 'Executive';
     const company = assessment.company || 'Your Organization';
@@ -113,7 +131,11 @@ function AIPolicyDocument({
             {/* Cover Page */}
             <Page size="A4" style={styles.page}>
                 <View style={styles.header}>
-                    <Text style={styles.logo}>BRAIN</Text>
+                    {logoPath ? (
+                        <Image src={logoPath} style={styles.logoImage} />
+                    ) : (
+                        <Text style={styles.logo}>BRAIN</Text>
+                    )}
                     <Text style={styles.title}>Your Draft AI Policy</Text>
                     <Text style={styles.subtitle}>
                         Prepared for {fullName} at {company}
@@ -132,16 +154,23 @@ function AIPolicyDocument({
                     <Text style={styles.text}>{aiContent.executiveSummary}</Text>
                 </View>
 
-                <Text style={styles.footer}>
-                    This is a draft policy document prepared by Brain Media Consulting.{'\n'}
-                    For questions or to schedule a consultation, visit brainmediaconsulting.com
-                </Text>
+                <View style={styles.footer}>
+                    {logoPath && <Image src={logoPath} style={styles.footerLogo} />}
+                    <Text style={{ fontSize: 10, color: '#757185' }}>
+                        This is a draft policy document prepared by Brain Media Consulting.{'\n'}
+                        For questions or to schedule a consultation, visit brainmediaconsulting.com
+                    </Text>
+                </View>
             </Page>
 
             {/* Policy Content Pages */}
             <Page size="A4" style={styles.page}>
                 <View style={styles.header}>
-                    <Text style={styles.logo}>BRAIN</Text>
+                    {logoPath ? (
+                        <Image src={logoPath} style={styles.logoImage} />
+                    ) : (
+                        <Text style={styles.logo}>BRAIN</Text>
+                    )}
                     <Text style={styles.title}>AI Policy Document</Text>
                 </View>
 
@@ -155,14 +184,21 @@ function AIPolicyDocument({
                     <Text style={styles.text}>{aiContent.scopeAndDefinitions}</Text>
                 </View>
 
-                <Text style={styles.footer}>
-                    Page 2 of 4 - Brain Media Consulting
-                </Text>
+                <View style={styles.footer}>
+                    {logoPath && <Image src={logoPath} style={styles.footerLogo} />}
+                    <Text style={{ fontSize: 10, color: '#757185' }}>
+                        Page 2 of 5 - Brain Media Consulting
+                    </Text>
+                </View>
             </Page>
 
             <Page size="A4" style={styles.page}>
                 <View style={styles.header}>
-                    <Text style={styles.logo}>BRAIN</Text>
+                    {logoPath ? (
+                        <Image src={logoPath} style={styles.logoImage} />
+                    ) : (
+                        <Text style={styles.logo}>BRAIN</Text>
+                    )}
                     <Text style={styles.title}>AI Policy Document</Text>
                 </View>
 
@@ -181,14 +217,21 @@ function AIPolicyDocument({
                     <Text style={styles.text}>{aiContent.dataPrivacyAndSecurity}</Text>
                 </View>
 
-                <Text style={styles.footer}>
-                    Page 3 of 4 - Brain Media Consulting
-                </Text>
+                <View style={styles.footer}>
+                    {logoPath && <Image src={logoPath} style={styles.footerLogo} />}
+                    <Text style={{ fontSize: 10, color: '#757185' }}>
+                        Page 3 of 5 - Brain Media Consulting
+                    </Text>
+                </View>
             </Page>
 
             <Page size="A4" style={styles.page}>
                 <View style={styles.header}>
-                    <Text style={styles.logo}>BRAIN</Text>
+                    {logoPath ? (
+                        <Image src={logoPath} style={styles.logoImage} />
+                    ) : (
+                        <Text style={styles.logo}>BRAIN</Text>
+                    )}
                     <Text style={styles.title}>AI Policy Document</Text>
                 </View>
 
@@ -207,14 +250,21 @@ function AIPolicyDocument({
                     <Text style={styles.text}>{aiContent.trainingAndSupport}</Text>
                 </View>
 
-                <Text style={styles.footer}>
-                    Page 4 of 4 - Brain Media Consulting
-                </Text>
+                <View style={styles.footer}>
+                    {logoPath && <Image src={logoPath} style={styles.footerLogo} />}
+                    <Text style={{ fontSize: 10, color: '#757185' }}>
+                        Page 4 of 5 - Brain Media Consulting
+                    </Text>
+                </View>
             </Page>
 
             <Page size="A4" style={styles.page}>
                 <View style={styles.header}>
-                    <Text style={styles.logo}>BRAIN</Text>
+                    {logoPath ? (
+                        <Image src={logoPath} style={styles.logoImage} />
+                    ) : (
+                        <Text style={styles.logo}>BRAIN</Text>
+                    )}
                     <Text style={styles.title}>AI Policy Document</Text>
                 </View>
 
@@ -244,10 +294,13 @@ function AIPolicyDocument({
                     </Text>
                 </View>
 
-                <Text style={styles.footer}>
-                    This is a draft policy document prepared by Brain Media Consulting.{'\n'}
-                    For questions or to schedule a consultation, visit brainmediaconsulting.com
-                </Text>
+                <View style={styles.footer}>
+                    {logoPath && <Image src={logoPath} style={styles.footerLogo} />}
+                    <Text style={{ fontSize: 10, color: '#757185' }}>
+                        Page 5 of 5 - This is a draft policy document prepared by Brain Media Consulting.{'\n'}
+                        For questions or to schedule a consultation, visit brainmediaconsulting.com
+                    </Text>
+                </View>
             </Page>
         </Document>
     );
@@ -268,6 +321,20 @@ export async function POST(request: NextRequest) {
                 { error: 'Invalid assessment data' },
                 { status: 400 }
             );
+        }
+
+        // Get logo path - convert to base64 data URI for React PDF
+        let logoPath: string;
+        try {
+            const logoFilePath = path.join(process.cwd(), 'public', 'images', 'brain__white_official_logo.png');
+            const logoBuffer = fs.readFileSync(logoFilePath);
+            const logoBase64 = logoBuffer.toString('base64');
+            logoPath = `data:image/png;base64,${logoBase64}`;
+            console.log('✅ Logo loaded successfully');
+        } catch (logoError) {
+            console.error('Error loading logo, using text fallback:', logoError);
+            // Fallback to text if logo can't be loaded
+            logoPath = '';
         }
 
         // Generate AI policy content
@@ -294,7 +361,7 @@ export async function POST(request: NextRequest) {
             };
         }
 
-        const pdfDoc = <AIPolicyDocument assessment={assessment} aiContent={aiContent} />;
+        const pdfDoc = <AIPolicyDocument assessment={assessment} aiContent={aiContent} logoPath={logoPath} />;
         
         console.log('Rendering PDF to buffer...');
         const pdfBuffer = await renderToBuffer(pdfDoc);

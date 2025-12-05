@@ -14,10 +14,68 @@ type ResultsProps = {
 
 const Results = ({ assessment, onRestart }: ResultsProps) => {
     const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+    const [progressStatus, setProgressStatus] = useState<string>('');
+
+    const getStatusMessages = () => {
+        const messages = [];
+        
+        // Based on their stance
+        if (assessment.stance === 'strict-prohibition' || assessment.stance === 'highly-restricted') {
+            messages.push('Analyzing your strict AI guidelines...');
+        } else if (assessment.stance === 'full-embrace') {
+            messages.push('Crafting comprehensive AI adoption framework...');
+        } else {
+            messages.push('Reviewing your organizational stance...');
+        }
+
+        // Based on concerns
+        if (assessment.concerns.includes('data-privacy')) {
+            messages.push('Incorporating data privacy requirements...');
+        }
+        if (assessment.concerns.includes('compliance')) {
+            messages.push('Addressing compliance considerations...');
+        }
+        if (assessment.concerns.includes('bias-discrimination')) {
+            messages.push('Integrating ethical guidelines...');
+        }
+
+        // Based on use cases
+        if (assessment.useCases.length > 0) {
+            messages.push(`Tailoring policy for ${assessment.useCases.length} identified use case${assessment.useCases.length > 1 ? 's' : ''}...`);
+        }
+
+        // Based on compliance
+        if (assessment.compliance.length > 0) {
+            messages.push(`Ensuring ${assessment.compliance.join(', ').toUpperCase()} compliance...`);
+        }
+
+        // Based on governance
+        if (assessment.governance === 'centralized') {
+            messages.push('Structuring centralized governance framework...');
+        } else if (assessment.governance === 'decentralized') {
+            messages.push('Designing decentralized governance model...');
+        }
+
+        // Final steps
+        messages.push('Generating comprehensive policy document...');
+        messages.push('Finalizing your personalized AI policy...');
+
+        return messages;
+    };
 
     const handleDownloadPDF = async () => {
         setIsGeneratingPDF(true);
+        const statusMessages = getStatusMessages();
+        
         try {
+            // Simulate progress with status messages
+            for (let i = 0; i < statusMessages.length; i++) {
+                setProgressStatus(statusMessages[i]);
+                // Small delay to show progress
+                await new Promise(resolve => setTimeout(resolve, 300));
+            }
+
+            setProgressStatus('Connecting to AI policy generator...');
             const response = await fetch('/api/ai-policy-builder/generate-pdf', {
                 method: 'POST',
                 headers: {
@@ -32,7 +90,10 @@ const Results = ({ assessment, onRestart }: ResultsProps) => {
                 throw new Error(errorData.error || errorData.details || 'Failed to generate PDF');
             }
 
+            setProgressStatus('Rendering PDF document...');
             const blob = await response.blob();
+            
+            setProgressStatus('Preparing download...');
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -41,8 +102,14 @@ const Results = ({ assessment, onRestart }: ResultsProps) => {
             a.click();
             window.URL.revokeObjectURL(url);
             document.body.removeChild(a);
+            
+            setProgressStatus('Complete!');
+            setTimeout(() => {
+                setProgressStatus('');
+            }, 500);
         } catch (error: any) {
             console.error('Error downloading PDF:', error);
+            setProgressStatus('');
             alert(`Failed to generate PDF: ${error.message || 'Unknown error'}. Please try again or contact support.`);
         } finally {
             setIsGeneratingPDF(false);
@@ -239,6 +306,26 @@ const Results = ({ assessment, onRestart }: ResultsProps) => {
                         <p className="body-1 text-n-3 mb-6">
                             Download your personalized draft AI policy document to share with your team and stakeholders.
                         </p>
+                        
+                        {isGeneratingPDF && (
+                            <div className="mb-6">
+                                <div className="w-full bg-n-6 rounded-full h-2 mb-4 overflow-hidden">
+                                    <div 
+                                        className="bg-color-1 h-full rounded-full transition-all duration-300 ease-out"
+                                        style={{
+                                            width: progressStatus ? '100%' : '0%',
+                                            animation: progressStatus ? 'pulse 2s ease-in-out infinite' : 'none'
+                                        }}
+                                    />
+                                </div>
+                                {progressStatus && (
+                                    <p className="body-2 text-n-3 animate-pulse">
+                                        {progressStatus}
+                                    </p>
+                                )}
+                            </div>
+                        )}
+                        
                         <Button 
                             onClick={handleDownloadPDF}
                             disabled={isGeneratingPDF}
