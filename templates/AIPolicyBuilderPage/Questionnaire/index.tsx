@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Section from "@/components/Section";
 import Tagline from "@/components/Tagline";
 import Button from "@/components/Button";
@@ -20,9 +20,20 @@ const Questionnaire = ({ onComplete }: QuestionnaireProps) => {
         lastName: '',
         company: ''
     });
+    const questionRef = useRef<HTMLDivElement>(null);
 
     const question = aiPolicyQuestions[currentQuestion];
     const progress = ((currentQuestion + 1) / aiPolicyQuestions.length) * 100;
+
+    // Auto-scroll to top when question changes
+    useEffect(() => {
+        if (questionRef.current) {
+            questionRef.current.scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'start' 
+            });
+        }
+    }, [currentQuestion]);
 
     const handleAnswer = (value: any) => {
         setAnswers(prev => ({
@@ -79,6 +90,7 @@ const Questionnaire = ({ onComplete }: QuestionnaireProps) => {
     const handleBack = () => {
         if (currentQuestion > 0) {
             setCurrentQuestion(currentQuestion - 1);
+            // Scroll will happen automatically via useEffect
         }
     };
 
@@ -175,7 +187,7 @@ const Questionnaire = ({ onComplete }: QuestionnaireProps) => {
 
     return (
         <Section id="questionnaire">
-            <div className="container max-w-[70rem]">
+            <div className="container max-w-[70rem]" ref={questionRef}>
                 {/* Progress Indicator */}
                 <div className="mb-15">
                     <div className="flex items-center justify-between mb-4">
