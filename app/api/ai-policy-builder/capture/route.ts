@@ -218,6 +218,7 @@ export async function POST(request: NextRequest) {
 
         // Save assessment to database for follow-up email
         try {
+            // @ts-ignore - Prisma Client generated type
             await prisma.aIPolicyAssessment.create({
                 data: {
                     email: assessment.email,

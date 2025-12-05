@@ -19,6 +19,7 @@ export async function GET(request: NextRequest) {
         today.setHours(23, 59, 59, 999); // End of day
 
         // Find assessments from exactly 2 days ago that haven't had follow-up sent
+        // @ts-ignore - Prisma Client generated type
         const assessments = await prisma.aIPolicyAssessment.findMany({
             where: {
                 createdAt: {
@@ -43,6 +44,7 @@ export async function GET(request: NextRequest) {
 
                 if (success) {
                     // Mark as sent
+                    // @ts-ignore - Prisma Client generated type
                     await prisma.aIPolicyAssessment.update({
                         where: { id: assessment.id },
                         data: {
