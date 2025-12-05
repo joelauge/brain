@@ -242,6 +242,8 @@ async function generatePDF(
     
     const pdfDoc = createAIPolicyDocument(assessment, aiContent, logoPath);
     const pdfBuffer = await renderToBuffer(pdfDoc);
-    return Buffer.from(pdfBuffer);
+    
+    // renderToBuffer already returns a Buffer, just ensure it's a Buffer type
+    return Buffer.isBuffer(pdfBuffer) ? pdfBuffer : Buffer.from(pdfBuffer);
 }
 
