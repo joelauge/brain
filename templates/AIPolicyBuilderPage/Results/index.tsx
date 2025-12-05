@@ -15,68 +15,17 @@ type ResultsProps = {
 const Results = ({ assessment, onRestart }: ResultsProps) => {
     const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
     const [progressStatus, setProgressStatus] = useState<string>('');
-
-    const getStatusMessages = () => {
-        const messages = [];
-        
-        // Based on their stance
-        if (assessment.stance === 'strict-prohibition' || assessment.stance === 'highly-restricted') {
-            messages.push('Analyzing your strict AI guidelines...');
-        } else if (assessment.stance === 'full-embrace') {
-            messages.push('Crafting comprehensive AI adoption framework...');
-        } else {
-            messages.push('Reviewing your organizational stance...');
-        }
-
-        // Based on concerns
-        if (assessment.concerns.includes('data-privacy')) {
-            messages.push('Incorporating data privacy requirements...');
-        }
-        if (assessment.concerns.includes('compliance')) {
-            messages.push('Addressing compliance considerations...');
-        }
-        if (assessment.concerns.includes('bias-discrimination')) {
-            messages.push('Integrating ethical guidelines...');
-        }
-
-        // Based on use cases
-        if (assessment.useCases.length > 0) {
-            messages.push(`Tailoring policy for ${assessment.useCases.length} identified use case${assessment.useCases.length > 1 ? 's' : ''}...`);
-        }
-
-        // Based on compliance
-        if (assessment.compliance.length > 0) {
-            messages.push(`Ensuring ${assessment.compliance.join(', ').toUpperCase()} compliance...`);
-        }
-
-        // Based on governance
-        if (assessment.governance === 'centralized') {
-            messages.push('Structuring centralized governance framework...');
-        } else if (assessment.governance === 'decentralized') {
-            messages.push('Designing decentralized governance model...');
-        }
-
-        // Final steps
-        messages.push('Generating comprehensive policy document...');
-        messages.push('Finalizing your personalized AI policy...');
-
-        return messages;
-    };
+    const [progress, setProgress] = useState<number>(0);
+    const [jobId, setJobId] = useState<string | null>(null);
 
     const handleDownloadPDF = async () => {
         setIsGeneratingPDF(true);
-        const statusMessages = getStatusMessages();
+        setProgress(0);
+        setProgressStatus('Creating PDF generation job...');
         
         try {
-            // Simulate progress with status messages
-            for (let i = 0; i < statusMessages.length; i++) {
-                setProgressStatus(statusMessages[i]);
-                // Small delay to show progress
-                await new Promise(resolve => setTimeout(resolve, 300));
-            }
-
-            setProgressStatus('Connecting to AI policy generator...');
-            const response = await fetch('/api/ai-policy-builder/generate-pdf', {
+            // Step 1: Create job
+            const createResponse = await fetch('/api/ai-policy-builder/generate-pdf/queue', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -84,34 +33,86 @@ const Results = ({ assessment, onRestart }: ResultsProps) => {
                 body: JSON.stringify(assessment),
             });
 
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-                console.error('PDF generation error:', errorData);
-                throw new Error(errorData.error || errorData.details || 'Failed to generate PDF');
+            if (!createResponse.ok) {
+                const errorData = await createResponse.json().catch(() => ({ error: 'Unknown error' }));
+                throw new Error(errorData.error || 'Failed to create PDF generation job');
             }
 
-            setProgressStatus('Rendering PDF document...');
-            const blob = await response.blob();
-            
-            setProgressStatus('Preparing download...');
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `draft-ai-policy-${assessment.company || 'policy'}-${Date.now()}.pdf`;
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
-            document.body.removeChild(a);
-            
-            setProgressStatus('Complete!');
+            const { jobId: newJobId } = await createResponse.json();
+            setJobId(newJobId);
+
+            // Step 2: Poll for status
+            const pollInterval = setInterval(async () => {
+                try {
+                    const statusResponse = await fetch(`/api/ai-policy-builder/generate-pdf/status/${newJobId}`);
+                    
+                    if (!statusResponse.ok) {
+                        throw new Error('Failed to fetch job status');
+                    }
+
+                    const jobStatus = await statusResponse.json();
+                    
+                    // Update progress
+                    setProgress(jobStatus.progress);
+                    setProgressStatus(jobStatus.statusMessage || 'Processing...');
+
+                    // Check if completed
+                    if (jobStatus.status === 'completed') {
+                        clearInterval(pollInterval);
+                        setProgress(100);
+                        setProgressStatus('PDF ready! Downloading...');
+                        
+                        // Download PDF
+                        if (jobStatus.pdfUrl) {
+                            // Convert data URI to blob
+                            const response = await fetch(jobStatus.pdfUrl);
+                            const blob = await response.blob();
+                            
+                            const url = window.URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = `draft-ai-policy-${assessment.company || 'policy'}-${Date.now()}.pdf`;
+                            document.body.appendChild(a);
+                            a.click();
+                            window.URL.revokeObjectURL(url);
+                            document.body.removeChild(a);
+                            
+                            setProgressStatus('Download complete!');
+                            setTimeout(() => {
+                                setProgressStatus('');
+                                setProgress(0);
+                            }, 2000);
+                        }
+                        setIsGeneratingPDF(false);
+                    } else if (jobStatus.status === 'failed') {
+                        clearInterval(pollInterval);
+                        setIsGeneratingPDF(false);
+                        setProgressStatus('');
+                        throw new Error(jobStatus.error || 'PDF generation failed');
+                    }
+                } catch (error: any) {
+                    clearInterval(pollInterval);
+                    setIsGeneratingPDF(false);
+                    setProgressStatus('');
+                    throw error;
+                }
+            }, 500); // Poll every 500ms
+
+            // Timeout after 2 minutes
             setTimeout(() => {
-                setProgressStatus('');
-            }, 500);
+                clearInterval(pollInterval);
+                if (isGeneratingPDF) {
+                    setIsGeneratingPDF(false);
+                    setProgressStatus('');
+                    alert('PDF generation is taking longer than expected. Please try again or contact support.');
+                }
+            }, 120000);
+
         } catch (error: any) {
             console.error('Error downloading PDF:', error);
             setProgressStatus('');
+            setProgress(0);
             alert(`Failed to generate PDF: ${error.message || 'Unknown error'}. Please try again or contact support.`);
-        } finally {
             setIsGeneratingPDF(false);
         }
     };
@@ -313,14 +314,14 @@ const Results = ({ assessment, onRestart }: ResultsProps) => {
                                     <div 
                                         className="bg-color-1 h-full rounded-full transition-all duration-300 ease-out"
                                         style={{
-                                            width: progressStatus ? '100%' : '0%',
+                                            width: `${progress}%`,
                                             animation: progressStatus ? 'pulse 2s ease-in-out infinite' : 'none'
                                         }}
                                     />
                                 </div>
                                 {progressStatus && (
                                     <p className="body-2 text-n-3 animate-pulse">
-                                        {progressStatus}
+                                        {progressStatus} ({progress}%)
                                     </p>
                                 )}
                             </div>
