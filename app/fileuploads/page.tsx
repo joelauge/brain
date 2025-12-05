@@ -1,8 +1,12 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 import Layout from "@/components/Layout";
 import Button from "@/components/Button";
+import Section from "@/components/Section";
+import Heading from "@/components/Heading";
 
 interface UploadedFile {
   fileName: string;
@@ -13,11 +17,20 @@ interface UploadedFile {
 }
 
 export default function FileUploadsPage() {
+  const { user, isLoaded } = useUser();
+  const router = useRouter();
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (isLoaded && !user) {
+      router.push('/login');
+    }
+  }, [isLoaded, user, router]);
 
   useEffect(() => {
     loadFiles();
@@ -102,6 +115,34 @@ export default function FileUploadsPage() {
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleString();
   };
+
+  // Show loading state while checking authentication
+  if (!isLoaded) {
+    return (
+      <Layout>
+        <Section className="pt-32 pb-16">
+          <div className="container mx-auto text-center">
+            <Heading titleLarge="Loading..." className="mb-8" />
+          </div>
+        </Section>
+      </Layout>
+    );
+  }
+
+  // Show message if not authenticated (will redirect, but show something in the meantime)
+  if (!user) {
+    return (
+      <Layout>
+        <Section className="pt-32 pb-16">
+          <div className="container mx-auto text-center">
+            <Heading titleLarge="Authentication Required" className="mb-8" />
+            <p className="text-n-3 mb-6">Please sign in to access this page.</p>
+            <Button href="/login">Sign In</Button>
+          </div>
+        </Section>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
