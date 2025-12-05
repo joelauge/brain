@@ -4,16 +4,6 @@ import ReactPDF from '@react-pdf/renderer';
 import React from 'react';
 import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 
-// Configure React PDF for serverless
-if (typeof window === 'undefined') {
-    ReactPDF.setFonts({
-        'Sora': {
-            normal: 'https://fonts.gstatic.com/s/sora/v11/xMQOuFFYT72X5wkB_18qmnndmSdSnn-Keg.ttf',
-            bold: 'https://fonts.gstatic.com/s/sora/v11/xMQOuFFYT72X5wkB_18qmnndmSdSnn-Keg.ttf',
-        },
-    });
-}
-
 // Create styles
 const styles = StyleSheet.create({
     page: {
