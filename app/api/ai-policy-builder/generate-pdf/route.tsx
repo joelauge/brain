@@ -125,7 +125,7 @@ function AIPolicyDocument({ assessment }: { assessment: PolicyAssessment }) {
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Executive Summary</Text>
                     <Text style={styles.text}>
-                        This draft AI policy has been prepared based on your organization's assessment 
+                        This draft AI policy has been prepared based on your organization&apos;s assessment 
                         of AI readiness, ethical boundaries, and governance needs. The recommendations 
                         below are tailored to your specific organizational stance and requirements.
                     </Text>
