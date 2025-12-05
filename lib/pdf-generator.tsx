@@ -89,7 +89,7 @@ export function createAIPolicyDocument(
             <Page size="A4" style={styles.page}>
                 <View style={styles.header}>
                     {logoPath ? (
-                        <Image src={logoPath} style={styles.logoImage} alt="" />
+                        <Image src={logoPath} style={styles.logoImage} />
                     ) : (
                         <Text style={styles.logo}>BRAIN</Text>
                     )}
@@ -112,7 +112,7 @@ export function createAIPolicyDocument(
                 </View>
 
                 <View style={styles.footer}>
-                    {logoPath && <Image src={logoPath} style={styles.footerLogo} alt="" />}
+                    {logoPath && <Image src={logoPath} style={styles.footerLogo} />}
                     <Text style={{ fontSize: 10, color: '#757185' }}>
                         This is a draft policy document prepared by Brain Media Consulting.{'\n'}
                         For questions or to schedule a consultation, visit brainmediaconsulting.com
@@ -124,7 +124,7 @@ export function createAIPolicyDocument(
             <Page size="A4" style={styles.page}>
                 <View style={styles.header}>
                     {logoPath ? (
-                        <Image src={logoPath} style={styles.logoImage} alt="" />
+                        <Image src={logoPath} style={styles.logoImage} />
                     ) : (
                         <Text style={styles.logo}>BRAIN</Text>
                     )}
@@ -142,7 +142,7 @@ export function createAIPolicyDocument(
                 </View>
 
                 <View style={styles.footer}>
-                    {logoPath && <Image src={logoPath} style={styles.footerLogo} alt="" />}
+                    {logoPath && <Image src={logoPath} style={styles.footerLogo} />}
                     <Text style={{ fontSize: 10, color: '#757185' }}>
                         Page 2 of 5 - Brain Media Consulting
                     </Text>
@@ -152,7 +152,7 @@ export function createAIPolicyDocument(
             <Page size="A4" style={styles.page}>
                 <View style={styles.header}>
                     {logoPath ? (
-                        <Image src={logoPath} style={styles.logoImage} alt="" />
+                        <Image src={logoPath} style={styles.logoImage} />
                     ) : (
                         <Text style={styles.logo}>BRAIN</Text>
                     )}
@@ -175,7 +175,7 @@ export function createAIPolicyDocument(
                 </View>
 
                 <View style={styles.footer}>
-                    {logoPath && <Image src={logoPath} style={styles.footerLogo} alt="" />}
+                    {logoPath && <Image src={logoPath} style={styles.footerLogo} />}
                     <Text style={{ fontSize: 10, color: '#757185' }}>
                         Page 3 of 5 - Brain Media Consulting
                     </Text>
@@ -185,7 +185,7 @@ export function createAIPolicyDocument(
             <Page size="A4" style={styles.page}>
                 <View style={styles.header}>
                     {logoPath ? (
-                        <Image src={logoPath} style={styles.logoImage} alt="" />
+                        <Image src={logoPath} style={styles.logoImage} />
                     ) : (
                         <Text style={styles.logo}>BRAIN</Text>
                     )}
@@ -208,7 +208,7 @@ export function createAIPolicyDocument(
                 </View>
 
                 <View style={styles.footer}>
-                    {logoPath && <Image src={logoPath} style={styles.footerLogo} alt="" />}
+                    {logoPath && <Image src={logoPath} style={styles.footerLogo} />}
                     <Text style={{ fontSize: 10, color: '#757185' }}>
                         Page 4 of 5 - Brain Media Consulting
                     </Text>
@@ -218,7 +218,7 @@ export function createAIPolicyDocument(
             <Page size="A4" style={styles.page}>
                 <View style={styles.header}>
                     {logoPath ? (
-                        <Image src={logoPath} style={styles.logoImage} alt="" />
+                        <Image src={logoPath} style={styles.logoImage} />
                     ) : (
                         <Text style={styles.logo}>BRAIN</Text>
                     )}
@@ -252,7 +252,7 @@ export function createAIPolicyDocument(
                 </View>
 
                 <View style={styles.footer}>
-                    {logoPath && <Image src={logoPath} style={styles.footerLogo} alt="" />}
+                    {logoPath && <Image src={logoPath} style={styles.footerLogo} />}
                     <Text style={{ fontSize: 10, color: '#757185' }}>
                         Page 5 of 5 - This is a draft policy document prepared by Brain Media Consulting.{'\n'}
                         For questions or to schedule a consultation, visit brainmediaconsulting.com
