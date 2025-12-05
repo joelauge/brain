@@ -213,8 +213,13 @@ export async function POST(request: NextRequest) {
     try {
         const assessment: PolicyAssessment = await request.json();
 
+        console.log('Generating PDF for assessment:', { email: assessment.email, company: assessment.company });
+
         const pdfDoc = <AIPolicyDocument assessment={assessment} />;
+        
+        console.log('Rendering PDF to buffer...');
         const pdfBuffer = await ReactPDF.renderToBuffer(pdfDoc);
+        console.log('PDF buffer generated, size:', pdfBuffer.length);
 
         // Convert Buffer to Uint8Array for NextResponse
         const pdfArray = new Uint8Array(pdfBuffer);
@@ -225,10 +230,17 @@ export async function POST(request: NextRequest) {
                 'Content-Disposition': `attachment; filename="draft-ai-policy-${Date.now()}.pdf"`,
             },
         });
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error generating PDF:', error);
+        console.error('Error stack:', error?.stack);
+        console.error('Error message:', error?.message);
+        
         return NextResponse.json(
-            { error: 'Failed to generate PDF' },
+            { 
+                error: 'Failed to generate PDF',
+                details: error?.message || 'Unknown error',
+                stack: process.env.NODE_ENV === 'development' ? error?.stack : undefined
+            },
             { status: 500 }
         );
     }
