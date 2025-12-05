@@ -216,7 +216,10 @@ export async function POST(request: NextRequest) {
         const pdfDoc = <AIPolicyDocument assessment={assessment} />;
         const pdfBuffer = await ReactPDF.renderToBuffer(pdfDoc);
 
-        return new NextResponse(pdfBuffer, {
+        // Convert Buffer to Uint8Array for NextResponse
+        const pdfArray = new Uint8Array(pdfBuffer);
+
+        return new NextResponse(pdfArray, {
             headers: {
                 'Content-Type': 'application/pdf',
                 'Content-Disposition': `attachment; filename="draft-ai-policy-${Date.now()}.pdf"`,
