@@ -4,6 +4,16 @@ import ReactPDF from '@react-pdf/renderer';
 import React from 'react';
 import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 
+// Configure React PDF for serverless
+if (typeof window === 'undefined') {
+    ReactPDF.setFonts({
+        'Sora': {
+            normal: 'https://fonts.gstatic.com/s/sora/v11/xMQOuFFYT72X5wkB_18qmnndmSdSnn-Keg.ttf',
+            bold: 'https://fonts.gstatic.com/s/sora/v11/xMQOuFFYT72X5wkB_18qmnndmSdSnn-Keg.ttf',
+        },
+    });
+}
+
 // Create styles
 const styles = StyleSheet.create({
     page: {
@@ -209,11 +219,22 @@ function AIPolicyDocument({ assessment }: { assessment: PolicyAssessment }) {
     );
 }
 
+// Increase function timeout for PDF generation
+export const maxDuration = 30;
+
 export async function POST(request: NextRequest) {
     try {
         const assessment: PolicyAssessment = await request.json();
 
         console.log('Generating PDF for assessment:', { email: assessment.email, company: assessment.company });
+
+        // Validate assessment data
+        if (!assessment || !assessment.email) {
+            return NextResponse.json(
+                { error: 'Invalid assessment data' },
+                { status: 400 }
+            );
+        }
 
         const pdfDoc = <AIPolicyDocument assessment={assessment} />;
         
@@ -221,24 +242,33 @@ export async function POST(request: NextRequest) {
         const pdfBuffer = await ReactPDF.renderToBuffer(pdfDoc);
         console.log('PDF buffer generated, size:', pdfBuffer.length);
 
+        if (!pdfBuffer || pdfBuffer.length === 0) {
+            throw new Error('PDF buffer is empty');
+        }
+
         // Convert Buffer to Uint8Array for NextResponse
-        const pdfArray = new Uint8Array(pdfBuffer);
+        const pdfArray = Buffer.isBuffer(pdfBuffer) 
+            ? new Uint8Array(pdfBuffer) 
+            : new Uint8Array(Buffer.from(pdfBuffer));
 
         return new NextResponse(pdfArray, {
             headers: {
                 'Content-Type': 'application/pdf',
                 'Content-Disposition': `attachment; filename="draft-ai-policy-${Date.now()}.pdf"`,
+                'Content-Length': pdfArray.length.toString(),
             },
         });
     } catch (error: any) {
         console.error('Error generating PDF:', error);
         console.error('Error stack:', error?.stack);
         console.error('Error message:', error?.message);
+        console.error('Error name:', error?.name);
         
         return NextResponse.json(
             { 
                 error: 'Failed to generate PDF',
                 details: error?.message || 'Unknown error',
+                name: error?.name,
                 stack: process.env.NODE_ENV === 'development' ? error?.stack : undefined
             },
             { status: 500 }

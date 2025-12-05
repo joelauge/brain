@@ -27,7 +27,9 @@ const Results = ({ assessment, onRestart }: ResultsProps) => {
             });
 
             if (!response.ok) {
-                throw new Error('Failed to generate PDF');
+                const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+                console.error('PDF generation error:', errorData);
+                throw new Error(errorData.error || errorData.details || 'Failed to generate PDF');
             }
 
             const blob = await response.blob();
@@ -39,9 +41,9 @@ const Results = ({ assessment, onRestart }: ResultsProps) => {
             a.click();
             window.URL.revokeObjectURL(url);
             document.body.removeChild(a);
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error downloading PDF:', error);
-            alert('Failed to generate PDF. Please try again.');
+            alert(`Failed to generate PDF: ${error.message || 'Unknown error'}. Please try again or contact support.`);
         } finally {
             setIsGeneratingPDF(false);
         }
