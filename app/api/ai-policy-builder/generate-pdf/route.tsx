@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { PolicyAssessment } from '@/mocks/ai-policy-questions';
-import ReactPDF from '@react-pdf/renderer';
+import { renderToBuffer } from '@react-pdf/renderer';
 import React from 'react';
 import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
 
@@ -229,7 +229,7 @@ export async function POST(request: NextRequest) {
         const pdfDoc = <AIPolicyDocument assessment={assessment} />;
         
         console.log('Rendering PDF to buffer...');
-        const pdfBuffer = await ReactPDF.renderToBuffer(pdfDoc);
+        const pdfBuffer = await renderToBuffer(pdfDoc);
         console.log('PDF buffer generated, size:', pdfBuffer.length);
 
         if (!pdfBuffer || pdfBuffer.length === 0) {
