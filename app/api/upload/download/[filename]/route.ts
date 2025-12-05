@@ -1,0 +1,49 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { readFile } from 'fs/promises';
+import { existsSync } from 'fs';
+import path from 'path';
+
+const UPLOAD_DIR = path.join('/tmp', 'uploads', 'xml');
+
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { filename: string } }
+) {
+  try {
+    const filename = params.filename;
+    
+    // Security: Only allow XML files and prevent directory traversal
+    if (!filename.toLowerCase().endsWith('.xml') || filename.includes('..') || filename.includes('/')) {
+      return NextResponse.json(
+        { error: 'Invalid filename' },
+        { status: 400 }
+      );
+    }
+
+    const filePath = path.join(UPLOAD_DIR, filename);
+
+    if (!existsSync(filePath)) {
+      return NextResponse.json(
+        { error: 'File not found' },
+        { status: 404 }
+      );
+    }
+
+    const fileContent = await readFile(filePath);
+    
+    return new NextResponse(fileContent, {
+      headers: {
+        'Content-Type': 'application/xml',
+        'Content-Disposition': `inline; filename="${filename}"`,
+        'Cache-Control': 'public, max-age=3600',
+      },
+    });
+  } catch (error) {
+    console.error('Error serving file:', error);
+    return NextResponse.json(
+      { error: 'Failed to serve file' },
+      { status: 500 }
+    );
+  }
+}
+

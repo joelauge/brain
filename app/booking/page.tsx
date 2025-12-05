@@ -7,7 +7,6 @@ import Heading from "@/components/Heading";
 import Button from "@/components/Button";
 import Image from "@/components/Image";
 import { getAvailableTimeSlots, createBookingEvent, TimeSlot, Consultant } from "@/lib/google-calendar";
-import { createCheckoutSession } from "@/lib/stripe";
 
 type BookingData = {
     selectedDate: string | null;
@@ -189,15 +188,27 @@ const Booking = () => {
             const totalPrice = bookingData.selectedConsultants.reduce((sum, consultant) => sum + consultant.price, 0);
             const consultantsString = bookingData.selectedConsultants.map(c => c.name).join(' & ');
             
-            // Create Stripe checkout session
-            const checkoutUrl = await createCheckoutSession({
-                selectedDate,
-                selectedTime: bookingData.selectedTime,
-                selectedPrice: totalPrice,
-                selectedConsultants: consultantsString,
-                customerName: bookingData.customerName,
-                customerEmail: bookingData.customerEmail
+            // Call API route to create Stripe checkout session
+            const response = await fetch('/api/stripe/checkout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    selectedDate,
+                    selectedTime: bookingData.selectedTime,
+                    selectedPrice: totalPrice,
+                    selectedConsultants: consultantsString,
+                    customerName: bookingData.customerName,
+                    customerEmail: bookingData.customerEmail
+                })
             });
+
+            if (!response.ok) {
+                throw new Error('Failed to create checkout session');
+            }
+
+            const { checkoutUrl } = await response.json();
             
             // Redirect to Stripe checkout
             window.location.href = checkoutUrl;

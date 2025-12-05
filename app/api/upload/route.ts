@@ -3,7 +3,13 @@ import { writeFile, mkdir } from 'fs/promises';
 import { existsSync } from 'fs';
 import path from 'path';
 
-const UPLOAD_DIR = path.join(process.cwd(), 'public', 'uploads', 'xml');
+// On Vercel, use /tmp for writable storage, otherwise use public/uploads/xml
+// Note: Files in /tmp won't be publicly accessible, but will work for API
+// For production, consider using Vercel Blob Storage or S3
+const isVercel = process.env.VERCEL === '1';
+const UPLOAD_DIR = isVercel 
+  ? path.join('/tmp', 'uploads', 'xml')
+  : path.join(process.cwd(), 'public', 'uploads', 'xml');
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
 export async function POST(request: NextRequest) {
@@ -57,7 +63,7 @@ export async function POST(request: NextRequest) {
       fileName: fileName,
       originalName: file.name,
       size: file.size,
-      url: `/uploads/xml/${fileName}`,
+      url: isVercel ? `/api/upload/download/${fileName}` : `/uploads/xml/${fileName}`,
       uploadedAt: new Date().toISOString()
     });
   } catch (error) {

@@ -1,5 +1,6 @@
 // Google Calendar integration for booking system
-// This is a mock implementation - replace with actual Google Calendar API calls
+// Note: This file only contains types and mock functions
+// Real Google Calendar API calls are handled in API routes
 
 export type Consultant = {
     id: string;
@@ -19,8 +20,8 @@ export type BookingEvent = {
     time: string;
     customerName: string;
     customerEmail: string;
-    consultants: string;
-    price: number;
+    consultants: string[];
+    sessionId: string;
 };
 
 // Mock function to get available time slots for a given date
@@ -116,19 +117,37 @@ export async function getAvailableTimeSlots(date: string): Promise<TimeSlot[]> {
 
 // Mock function to create a booking event in Google Calendar
 export async function createBookingEvent(bookingData: BookingEvent): Promise<boolean> {
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    // This is now handled by the API route /api/calendar/create-event
+    console.log('📅 [CLIENT] Calendar Event Request:', {
+        customer: bookingData.customerName,
+        date: bookingData.date,
+        time: bookingData.time,
+        consultants: bookingData.consultants,
+        sessionId: bookingData.sessionId
+    });
     
-    // Mock successful booking creation
-    console.log('Creating booking event:', bookingData);
-    
-    // In a real implementation, this would:
-    // 1. Authenticate with Google Calendar API
-    // 2. Create an event in the consultant's calendar
-    // 3. Send confirmation emails
-    // 4. Return success/failure status
-    
-    return true;
+    // Call the API route to create the calendar event
+    try {
+        const response = await fetch('/api/calendar/create-event', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(bookingData)
+        });
+        
+        if (response.ok) {
+            const result = await response.json();
+            console.log('📅 Calendar Event Created:', result);
+            return true;
+        } else {
+            console.error('Failed to create calendar event');
+            return false;
+        }
+    } catch (error) {
+        console.error('Error creating calendar event:', error);
+        return false;
+    }
 }
 
 // Helper function to check if a date is available for booking

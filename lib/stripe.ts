@@ -1,5 +1,9 @@
-// Stripe integration for Brain Media Consulting
-// This would need to be implemented with actual Stripe API keys
+import Stripe from 'stripe';
+
+// Initialize Stripe with secret key
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
+    apiVersion: '2025-09-30.clover',
+});
 
 export interface PaymentIntent {
     id: string;
@@ -17,88 +21,77 @@ export interface BookingData {
     customerEmail: string;
 }
 
-// Mock implementation - replace with actual Stripe API calls
 export const createPaymentIntent = async (bookingData: BookingData): Promise<PaymentIntent> => {
-    // In production, this would:
-    // 1. Create a Stripe PaymentIntent
-    // 2. Set the amount in cents
-    // 3. Add metadata about the booking
-    // 4. Return the client secret for frontend confirmation
-    
-    const amount = bookingData.selectedPrice * 100; // Convert to cents
-    
-    console.log('Creating Stripe PaymentIntent:', {
-        amount,
-        currency: 'usd',
-        metadata: {
-            date: bookingData.selectedDate,
-            time: bookingData.selectedTime,
-            consultants: bookingData.selectedConsultants,
-            customerName: bookingData.customerName,
-            customerEmail: bookingData.customerEmail
-        }
-    });
-    
-    // Mock response
-    return {
-        id: 'pi_mock_' + Date.now(),
-        client_secret: 'pi_mock_client_secret_' + Date.now(),
-        amount,
-        currency: 'usd'
-    };
+    try {
+        const amount = bookingData.selectedPrice * 100; // Convert to cents
+        
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount,
+            currency: 'usd',
+            metadata: {
+                date: bookingData.selectedDate,
+                time: bookingData.selectedTime,
+                consultants: bookingData.selectedConsultants,
+                customerName: bookingData.customerName,
+                customerEmail: bookingData.customerEmail
+            }
+        });
+        
+        return {
+            id: paymentIntent.id,
+            client_secret: paymentIntent.client_secret!,
+            amount,
+            currency: 'usd'
+        };
+    } catch (error) {
+        console.error('Error creating payment intent:', error);
+        throw new Error('Failed to create payment intent');
+    }
 };
 
 export const confirmPayment = async (paymentIntentId: string): Promise<boolean> => {
-    // In production, this would:
-    // 1. Confirm the PaymentIntent with Stripe
-    // 2. Handle any payment failures
-    // 3. Return success/failure status
-    
-    console.log('Confirming payment for:', paymentIntentId);
-    
-    // Mock success
-    return true;
+    try {
+        const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+        return paymentIntent.status === 'succeeded';
+    } catch (error) {
+        console.error('Error confirming payment:', error);
+        return false;
+    }
 };
 
 export const createCheckoutSession = async (bookingData: BookingData): Promise<string> => {
-    // In production, this would:
-    // 1. Create a Stripe Checkout Session
-    // 2. Set up line items for the consultation
-    // 3. Configure success/cancel URLs
-    // 4. Return the session URL
-    
-    const amount = bookingData.selectedPrice * 100;
-    
-    console.log('Creating Stripe Checkout Session:', {
-        amount,
-        currency: 'usd',
-        line_items: [{
-            price_data: {
-                currency: 'usd',
-                product_data: {
-                    name: `AI Consulting Session - ${bookingData.selectedConsultants}`,
-                    description: `Consultation on ${bookingData.selectedDate} at ${bookingData.selectedTime}`
+    try {
+        const amount = bookingData.selectedPrice * 100;
+        
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ['card'],
+            line_items: [{
+                price_data: {
+                    currency: 'usd',
+                    product_data: {
+                        name: `AI Consulting Session - ${bookingData.selectedConsultants}`,
+                        description: `Consultation on ${bookingData.selectedDate} at ${bookingData.selectedTime}`
+                    },
+                    unit_amount: amount
                 },
-                unit_amount: amount
+                quantity: 1
+            }],
+            mode: 'payment',
+            success_url: `${process.env.NEXT_PUBLIC_APP_URL}/booking/success?session_id={CHECKOUT_SESSION_ID}&customer_name=${encodeURIComponent(bookingData.customerName)}&customer_email=${encodeURIComponent(bookingData.customerEmail)}&selected_date=${encodeURIComponent(bookingData.selectedDate)}&selected_time=${encodeURIComponent(bookingData.selectedTime)}&selected_consultants=${encodeURIComponent(bookingData.selectedConsultants)}&total_amount=${bookingData.selectedPrice}`,
+            cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/booking`,
+            metadata: {
+                date: bookingData.selectedDate,
+                time: bookingData.selectedTime,
+                consultants: bookingData.selectedConsultants,
+                customerName: bookingData.customerName,
+                customerEmail: bookingData.customerEmail
             },
-            quantity: 1
-        }],
-        metadata: {
-            date: bookingData.selectedDate,
-            time: bookingData.selectedTime,
-            consultants: bookingData.selectedConsultants,
-            customerName: bookingData.customerName,
-            customerEmail: bookingData.customerEmail
-        }
-    });
-    
-    // Mock session URL
-    return `https://checkout.stripe.com/mock_session_${Date.now()}`;
+            customer_email: bookingData.customerEmail
+        });
+        
+        return session.url!;
+    } catch (error) {
+        console.error('Error creating checkout session:', error);
+        throw new Error('Failed to create checkout session');
+    }
 };
-
-
-
-
-
-
-
