@@ -3,6 +3,7 @@ import { PolicyAssessment } from '@/mocks/ai-policy-questions';
 import { renderToBuffer } from '@react-pdf/renderer';
 import React from 'react';
 import { Document, Page, Text, View, StyleSheet } from '@react-pdf/renderer';
+import { generateAIPolicyContent } from '@/lib/ai-policy-generator';
 
 // Create styles
 const styles = StyleSheet.create({
@@ -97,15 +98,19 @@ function getStanceLabel(stance: string): string {
     return labels[stance] || stance;
 }
 
-function AIPolicyDocument({ assessment }: { assessment: PolicyAssessment }) {
+function AIPolicyDocument({ 
+    assessment, 
+    aiContent 
+}: { 
+    assessment: PolicyAssessment;
+    aiContent: Awaited<ReturnType<typeof generateAIPolicyContent>>;
+}) {
     const fullName = [assessment.firstName, assessment.lastName].filter(Boolean).join(' ') || 'Executive';
     const company = assessment.company || 'Your Organization';
-    const concerns = Array.isArray(assessment.concerns) ? assessment.concerns : [];
-    const useCases = Array.isArray(assessment.useCases) ? assessment.useCases : [];
-    const compliance = Array.isArray(assessment.compliance) ? assessment.compliance : [];
 
     return (
         <Document>
+            {/* Cover Page */}
             <Page size="A4" style={styles.page}>
                 <View style={styles.header}>
                     <Text style={styles.logo}>BRAIN</Text>
@@ -124,79 +129,118 @@ function AIPolicyDocument({ assessment }: { assessment: PolicyAssessment }) {
 
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Executive Summary</Text>
-                    <Text style={styles.text}>
-                        This draft AI policy has been prepared based on your organization&apos;s assessment 
-                        of AI readiness, ethical boundaries, and governance needs. The recommendations 
-                        below are tailored to your specific organizational stance and requirements.
-                    </Text>
+                    <Text style={styles.text}>{aiContent.executiveSummary}</Text>
+                </View>
+
+                <Text style={styles.footer}>
+                    This is a draft policy document prepared by Brain Media Consulting.{'\n'}
+                    For questions or to schedule a consultation, visit brainmediaconsulting.com
+                </Text>
+            </Page>
+
+            {/* Policy Content Pages */}
+            <Page size="A4" style={styles.page}>
+                <View style={styles.header}>
+                    <Text style={styles.logo}>BRAIN</Text>
+                    <Text style={styles.title}>AI Policy Document</Text>
                 </View>
 
                 <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Organizational Assessment</Text>
-                    <Text style={styles.label}>Current Stance:</Text>
-                    <Text style={styles.value}>{getStanceLabel(assessment.stance)}</Text>
-                    
-                    <Text style={styles.label}>AI Acumen Level:</Text>
-                    <Text style={styles.value}>{assessment.acumen}/5</Text>
-                    
-                    <Text style={styles.label}>Risk Tolerance:</Text>
-                    <Text style={styles.value}>{assessment.riskTolerance.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}</Text>
-                </View>
-
-                {concerns.length > 0 && (
-                    <View style={styles.section}>
-                        <Text style={styles.sectionTitle}>Primary Concerns</Text>
-                        {concerns.map((concern, index) => (
-                            <Text key={index} style={styles.listItem}>• {concern.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}</Text>
-                        ))}
-                    </View>
-                )}
-
-                {useCases.length > 0 && (
-                    <View style={styles.section}>
-                        <Text style={styles.sectionTitle}>Identified Use Cases</Text>
-                        {useCases.map((useCase, index) => (
-                            <Text key={index} style={styles.listItem}>• {useCase.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}</Text>
-                        ))}
-                    </View>
-                )}
-
-                {compliance.length > 0 && (
-                    <View style={styles.section}>
-                        <Text style={styles.sectionTitle}>Compliance Requirements</Text>
-                        {compliance.map((req, index) => (
-                            <Text key={index} style={styles.listItem}>• {req.toUpperCase()}</Text>
-                        ))}
-                    </View>
-                )}
-
-                <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Training & Support Needs</Text>
-                    <Text style={styles.value}>{assessment.training.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}</Text>
+                    <Text style={styles.sectionTitle}>1. Policy Statement</Text>
+                    <Text style={styles.text}>{aiContent.policyStatement}</Text>
                 </View>
 
                 <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>Recommended Governance Structure</Text>
-                    <Text style={styles.value}>{assessment.governance.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}</Text>
+                    <Text style={styles.sectionTitle}>2. Scope and Definitions</Text>
+                    <Text style={styles.text}>{aiContent.scopeAndDefinitions}</Text>
                 </View>
 
-                {assessment.additionalContext && (
-                    <View style={styles.section}>
-                        <Text style={styles.sectionTitle}>Additional Context</Text>
-                        <Text style={styles.text}>{assessment.additionalContext}</Text>
-                    </View>
-                )}
+                <Text style={styles.footer}>
+                    Page 2 of 4 - Brain Media Consulting
+                </Text>
+            </Page>
+
+            <Page size="A4" style={styles.page}>
+                <View style={styles.header}>
+                    <Text style={styles.logo}>BRAIN</Text>
+                    <Text style={styles.title}>AI Policy Document</Text>
+                </View>
+
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>3. Permitted Uses</Text>
+                    <Text style={styles.text}>{aiContent.permittedUses}</Text>
+                </View>
+
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>4. Prohibited Uses</Text>
+                    <Text style={styles.text}>{aiContent.prohibitedUses}</Text>
+                </View>
+
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>5. Data Privacy and Security</Text>
+                    <Text style={styles.text}>{aiContent.dataPrivacyAndSecurity}</Text>
+                </View>
+
+                <Text style={styles.footer}>
+                    Page 3 of 4 - Brain Media Consulting
+                </Text>
+            </Page>
+
+            <Page size="A4" style={styles.page}>
+                <View style={styles.header}>
+                    <Text style={styles.logo}>BRAIN</Text>
+                    <Text style={styles.title}>AI Policy Document</Text>
+                </View>
+
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>6. Ethical Guidelines</Text>
+                    <Text style={styles.text}>{aiContent.ethicalGuidelines}</Text>
+                </View>
+
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>7. Compliance and Governance</Text>
+                    <Text style={styles.text}>{aiContent.complianceAndGovernance}</Text>
+                </View>
+
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>8. Training and Support</Text>
+                    <Text style={styles.text}>{aiContent.trainingAndSupport}</Text>
+                </View>
+
+                <Text style={styles.footer}>
+                    Page 4 of 4 - Brain Media Consulting
+                </Text>
+            </Page>
+
+            <Page size="A4" style={styles.page}>
+                <View style={styles.header}>
+                    <Text style={styles.logo}>BRAIN</Text>
+                    <Text style={styles.title}>AI Policy Document</Text>
+                </View>
+
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>9. Enforcement and Consequences</Text>
+                    <Text style={styles.text}>{aiContent.enforcementAndConsequences}</Text>
+                </View>
+
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>10. Review and Updates</Text>
+                    <Text style={styles.text}>{aiContent.reviewAndUpdates}</Text>
+                </View>
 
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Next Steps</Text>
                     <Text style={styles.text}>
-                        1. Review this draft policy with your leadership team
+                        1. Review this draft policy with your leadership team and legal counsel
                     </Text>
                     <Text style={styles.text}>
-                        2. Schedule a consultation with Brain Media Consulting to customize and implement
+                        2. Schedule a consultation with Brain Media Consulting to customize and implement this policy
                     </Text>
                     <Text style={styles.text}>
                         3. Establish your AI governance committee and training program
+                    </Text>
+                    <Text style={styles.text}>
+                        4. Begin phased rollout of AI tools and processes according to this policy
                     </Text>
                 </View>
 
@@ -226,7 +270,31 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        const pdfDoc = <AIPolicyDocument assessment={assessment} />;
+        // Generate AI policy content
+        console.log('Generating AI policy content...');
+        let aiContent;
+        try {
+            aiContent = await generateAIPolicyContent(assessment);
+            console.log('✅ AI policy content generated successfully');
+        } catch (aiError: any) {
+            console.error('Error generating AI content, using fallback:', aiError);
+            // Fallback to basic content if AI generation fails
+            aiContent = {
+                executiveSummary: 'This draft AI policy has been prepared based on your organization\'s assessment of AI readiness, ethical boundaries, and governance needs. The recommendations below are tailored to your specific organizational stance and requirements.',
+                policyStatement: 'This organization recognizes the transformative potential of artificial intelligence and is committed to its responsible use. This policy establishes guidelines for AI adoption, use, and governance.',
+                scopeAndDefinitions: 'This policy applies to all employees, contractors, and third parties using AI tools or systems on behalf of the organization. AI is defined as any system capable of performing tasks that typically require human intelligence.',
+                permittedUses: 'AI may be used in approved scenarios that align with organizational goals, comply with all applicable regulations, and maintain ethical standards.',
+                prohibitedUses: 'AI use is prohibited in scenarios that violate privacy, security, compliance requirements, or ethical guidelines.',
+                dataPrivacyAndSecurity: 'All AI use must comply with data privacy regulations, maintain appropriate security measures, and protect sensitive information.',
+                ethicalGuidelines: 'AI use must be transparent, fair, accountable, and free from bias. All AI decisions must be explainable and subject to human oversight.',
+                complianceAndGovernance: 'AI use must comply with all applicable regulations and be subject to appropriate governance and oversight.',
+                trainingAndSupport: 'Training and support will be provided to ensure all users understand and comply with this policy.',
+                enforcementAndConsequences: 'Violations of this policy will be subject to disciplinary action, up to and including termination.',
+                reviewAndUpdates: 'This policy will be reviewed and updated regularly to reflect changes in technology, regulations, and organizational needs.',
+            };
+        }
+
+        const pdfDoc = <AIPolicyDocument assessment={assessment} aiContent={aiContent} />;
         
         console.log('Rendering PDF to buffer...');
         const pdfBuffer = await renderToBuffer(pdfDoc);
