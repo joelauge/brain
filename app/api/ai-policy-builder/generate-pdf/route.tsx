@@ -213,7 +213,7 @@ export async function POST(request: NextRequest) {
     try {
         const assessment: PolicyAssessment = await request.json();
 
-        const pdfDoc = React.createElement(AIPolicyDocument, { assessment });
+        const pdfDoc = <AIPolicyDocument assessment={assessment} />;
         const pdfBuffer = await ReactPDF.renderToBuffer(pdfDoc);
 
         return new NextResponse(pdfBuffer, {
