@@ -148,7 +148,7 @@ Each section should be comprehensive (3-5 paragraphs for major sections, 1-2 for
 
     try {
         const completion = await openai.chat.completions.create({
-            model: process.env.OPENAI_MODEL || 'gpt-4o', // Use gpt-4o for best results, or gpt-4-turbo as fallback
+            model: process.env.OPENAI_MODEL || 'gpt-4o-mini', // Use gpt-4o-mini for faster, cheaper generation
             messages: [
                 {
                     role: 'system',
@@ -160,7 +160,7 @@ Each section should be comprehensive (3-5 paragraphs for major sections, 1-2 for
                 },
             ],
             temperature: 0.3, // Lower temperature for more consistent, professional output
-            max_tokens: 4000,
+            max_tokens: 3000, // Reduced from 4000 to speed up generation
             response_format: { type: 'json_object' },
         });
 

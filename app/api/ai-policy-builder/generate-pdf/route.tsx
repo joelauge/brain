@@ -307,7 +307,8 @@ function AIPolicyDocument({
 }
 
 // Increase function timeout for PDF generation
-export const maxDuration = 30;
+// Vercel Hobby: 10s max, Pro: 60s max, Enterprise: 300s max
+export const maxDuration = 60;
 
 export async function POST(request: NextRequest) {
     try {
@@ -324,28 +325,38 @@ export async function POST(request: NextRequest) {
         }
 
         // Get logo path - convert to base64 data URI for React PDF
-        let logoPath: string;
+        // Use try-catch with timeout to avoid blocking
+        let logoPath: string = '';
         try {
             const logoFilePath = path.join(process.cwd(), 'public', 'images', 'brain__white_official_logo.png');
-            const logoBuffer = fs.readFileSync(logoFilePath);
-            const logoBase64 = logoBuffer.toString('base64');
-            logoPath = `data:image/png;base64,${logoBase64}`;
-            console.log('✅ Logo loaded successfully');
+            if (fs.existsSync(logoFilePath)) {
+                const logoBuffer = fs.readFileSync(logoFilePath);
+                const logoBase64 = logoBuffer.toString('base64');
+                logoPath = `data:image/png;base64,${logoBase64}`;
+                console.log('✅ Logo loaded successfully');
+            } else {
+                console.warn('Logo file not found, using text fallback');
+            }
         } catch (logoError) {
             console.error('Error loading logo, using text fallback:', logoError);
-            // Fallback to text if logo can't be loaded
-            logoPath = '';
+            // Fallback to text if logo can't be loaded - don't fail the whole request
         }
 
-        // Generate AI policy content
+        // Generate AI policy content with timeout
         console.log('Generating AI policy content...');
         let aiContent;
         try {
-            aiContent = await generateAIPolicyContent(assessment);
+            // Add timeout wrapper for AI generation (max 25 seconds)
+            const aiGenerationPromise = generateAIPolicyContent(assessment);
+            const timeoutPromise = new Promise((_, reject) => 
+                setTimeout(() => reject(new Error('AI generation timeout')), 25000)
+            );
+            
+            aiContent = await Promise.race([aiGenerationPromise, timeoutPromise]) as Awaited<ReturnType<typeof generateAIPolicyContent>>;
             console.log('✅ AI policy content generated successfully');
         } catch (aiError: any) {
             console.error('Error generating AI content, using fallback:', aiError);
-            // Fallback to basic content if AI generation fails
+            // Fallback to basic content if AI generation fails or times out
             aiContent = {
                 executiveSummary: 'This draft AI policy has been prepared based on your organization\'s assessment of AI readiness, ethical boundaries, and governance needs. The recommendations below are tailored to your specific organizational stance and requirements.',
                 policyStatement: 'This organization recognizes the transformative potential of artificial intelligence and is committed to its responsible use. This policy establishes guidelines for AI adoption, use, and governance.',
@@ -364,7 +375,13 @@ export async function POST(request: NextRequest) {
         const pdfDoc = <AIPolicyDocument assessment={assessment} aiContent={aiContent} logoPath={logoPath} />;
         
         console.log('Rendering PDF to buffer...');
-        const pdfBuffer = await renderToBuffer(pdfDoc);
+        // Add timeout for PDF rendering (max 20 seconds)
+        const renderPromise = renderToBuffer(pdfDoc);
+        const renderTimeoutPromise = new Promise<never>((_, reject) => 
+            setTimeout(() => reject(new Error('PDF rendering timeout')), 20000)
+        );
+        
+        const pdfBuffer = await Promise.race([renderPromise, renderTimeoutPromise]);
         console.log('PDF buffer generated, size:', pdfBuffer.length);
 
         if (!pdfBuffer || pdfBuffer.length === 0) {
@@ -389,14 +406,20 @@ export async function POST(request: NextRequest) {
         console.error('Error message:', error?.message);
         console.error('Error name:', error?.name);
         
+        // Check if it's a timeout error
+        const isTimeout = error?.message?.includes('timeout') || 
+                         error?.message?.includes('504') ||
+                         error?.name === 'AbortError';
+        
         return NextResponse.json(
             { 
-                error: 'Failed to generate PDF',
+                error: isTimeout ? 'PDF generation timed out. Please try again or contact support.' : 'Failed to generate PDF',
                 details: error?.message || 'Unknown error',
                 name: error?.name,
+                isTimeout,
                 stack: process.env.NODE_ENV === 'development' ? error?.stack : undefined
             },
-            { status: 500 }
+            { status: isTimeout ? 504 : 500 }
         );
     }
 }
