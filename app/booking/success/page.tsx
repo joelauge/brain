@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Layout from '@/components/Layout';
 import Section from '@/components/Section';
 import Heading from '@/components/Heading';
 import Button from '@/components/Button';
 
-export default function BookingSuccess() {
+function BookingSuccessContent() {
     const searchParams = useSearchParams();
     const sessionId = searchParams.get('session_id');
     const customerName = searchParams.get('customer_name');
@@ -132,5 +132,21 @@ export default function BookingSuccess() {
                 </div>
             </Section>
         </Layout>
+    );
+}
+
+export default function BookingSuccess() {
+    return (
+        <Suspense fallback={
+            <Layout>
+                <Section className="pt-32 pb-16">
+                    <div className="container mx-auto text-center">
+                        <Heading titleLarge="Loading..." className="mb-8" />
+                    </div>
+                </Section>
+            </Layout>
+        }>
+            <BookingSuccessContent />
+        </Suspense>
     );
 }

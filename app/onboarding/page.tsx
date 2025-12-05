@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Layout from "@/components/Layout";
 import Section from "@/components/Section";
 import Heading from "@/components/Heading";
 import Button from "@/components/Button";
 
-const ClientOnboarding = () => {
+const ClientOnboardingContent = () => {
     const searchParams = useSearchParams();
     const router = useRouter();
     const [currentStep, setCurrentStep] = useState(0);
@@ -306,6 +306,22 @@ const ClientOnboarding = () => {
                 </div>
             </Section>
         </Layout>
+    );
+};
+
+const ClientOnboarding = () => {
+    return (
+        <Suspense fallback={
+            <Layout>
+                <Section className="pt-32 pb-16">
+                    <div className="container mx-auto text-center">
+                        <Heading titleLarge="Loading..." className="mb-8" />
+                    </div>
+                </Section>
+            </Layout>
+        }>
+            <ClientOnboardingContent />
+        </Suspense>
     );
 };
 
