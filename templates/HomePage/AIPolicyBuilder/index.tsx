@@ -11,7 +11,7 @@ const AIPolicyBuilder = ({}: AIPolicyBuilderProps) => (
             <div className="relative max-w-[43.125rem] mx-auto py-8 md:py-14 xl:py-0">
                 <div className="relative z-1 text-center">
                     <Heading
-                        className="mb-8"
+                        className="mb-8 [&>p]:text-n-1"
                         textAlignClassName="text-center"
                         titleLarge="Use our AI Policy Builder"
                         textLarge="Assess your organization's AI readiness, ethical boundaries, and governance needs. Build a comprehensive AI policy tailored to your executive leadership and teams."
