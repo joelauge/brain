@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { Splide, SplideTrack, SplideSlide } from "@splidejs/react-splide";
 import Section from "@/components/Section";
-import Tagline from "@/components/Tagline";
+import Heading from "@/components/Heading";
 import Image from "@/components/Image";
 
 interface YouTubeVideo {
@@ -70,28 +70,25 @@ const YouTubeCarousel = ({}: YouTubeCarouselProps) => {
         return `${minutes}:${seconds.toString().padStart(2, '0')}`;
     };
 
-    if (loading) {
-        return (
-            <Section>
-                <div className="container">
-                    <div className="text-center">
-                        <p className="body-1 text-n-3">Loading latest shows...</p>
-                    </div>
-                </div>
-            </Section>
-        );
-    }
-
-    if (videos.length === 0) {
-        return null; // Don't show carousel if no videos
-    }
-
     return (
         <Section>
             <div className="container">
-                <Tagline className="mb-6 text-center">Latest Shows</Tagline>
-                <h2 className="h2 mb-12 text-center">Watch Our Latest Long-Form Content</h2>
+                <Heading
+                    className="md:mb-15"
+                    textAlignClassName="text-center"
+                    titleLarge="Latest Shows"
+                    textLarge={loading ? "Loading latest shows..." : videos.length === 0 ? "Check back soon for our latest long-form content!" : "Watch Our Latest Long-Form Content"}
+                />
                 
+                {loading ? (
+                    <div className="text-center py-12">
+                        <p className="body-1 text-n-3">Loading videos...</p>
+                    </div>
+                ) : videos.length === 0 ? (
+                    <div className="text-center py-12">
+                        <p className="body-1 text-n-3">No long-form videos available at this time.</p>
+                    </div>
+                ) : (
                 <Splide
                     className="splide-visible relative z-2"
                     options={{
@@ -184,6 +181,7 @@ const YouTubeCarousel = ({}: YouTubeCarouselProps) => {
                         </button>
                     ))}
                 </div>
+                )}
             </div>
         </Section>
     );

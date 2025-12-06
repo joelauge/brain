@@ -76,7 +76,7 @@ export async function GET(request: NextRequest) {
         }
         
         // Get video IDs to fetch duration
-        const videoIds = videosData.items.map((item: any) => item.id.videoId).join(',');
+        const videoIds = videosData.items.map((item: any) => item.contentDetails.videoId).join(',');
         
         // Fetch video details including duration
         const videoDetailsResponse = await fetch(
