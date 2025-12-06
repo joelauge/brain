@@ -133,16 +133,14 @@ const YouTubeCarousel = ({}: YouTubeCarouselProps) => {
                                                     />
                                                     <div className="absolute inset-0 bg-gradient-to-t from-n-8/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
                                                         <div className="absolute bottom-4 left-4 right-4">
-                                                            <div className="flex items-center justify-between">
-                                                                <span className="px-2 py-1 bg-n-1/90 backdrop-blur-sm rounded text-xs font-bold text-n-8">
-                                                                    {parseDuration(video.duration)}
-                                                                </span>
-                                                                <div className="w-12 h-12 bg-color-1/90 backdrop-blur-sm rounded-full flex items-center justify-center">
-                                                                    <svg className="w-6 h-6 text-n-8 ml-1" fill="currentColor" viewBox="0 0 24 24">
-                                                                        <path d="M8 5v14l11-7z" />
-                                                                    </svg>
-                                                                </div>
-                                                            </div>
+                                                            <span className="px-2 py-1 bg-n-1/90 backdrop-blur-sm rounded text-xs font-bold text-n-8">
+                                                                {parseDuration(video.duration)}
+                                                            </span>
+                                                        </div>
+                                                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 bg-color-1/90 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                            <svg className="w-8 h-8 text-n-8 ml-1" fill="currentColor" viewBox="0 0 24 24">
+                                                                <path d="M8 5v14l11-7z" />
+                                                            </svg>
                                                         </div>
                                                     </div>
                                                 </div>
