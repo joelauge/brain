@@ -132,11 +132,11 @@ export async function GET(request: NextRequest) {
     });
 
     // Get unique categories and tags for filter options
-    const categories = [...new Set(articles.map(a => a.category).filter(Boolean))].sort();
+    const categories = Array.from(new Set(articles.map(a => a.category).filter(Boolean))).sort();
     const allTags = articles.flatMap(a => 
       a.tags.split(',').map(t => t.trim()).filter(Boolean)
     );
-    const uniqueTags = [...new Set(allTags)].sort();
+    const uniqueTags = Array.from(new Set(allTags)).sort();
 
     return NextResponse.json({
       articles,
