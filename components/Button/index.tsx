@@ -9,6 +9,7 @@ type ButtonProps = {
     px?: string;
     white?: boolean;
     disabled?: boolean;
+    type?: "button" | "submit" | "reset";
 };
 
 const Button = ({
@@ -19,6 +20,7 @@ const Button = ({
     px,
     white,
     disabled,
+    type,
 }: ButtonProps) => {
     const classes = `button relative inline-flex items-center justify-center h-11 ${
         px || "px-7"
@@ -41,7 +43,7 @@ const Button = ({
             </Link>
         )
     ) : (
-        <button className={classes} onClick={onClick} disabled={disabled}>
+        <button type={type || "button"} className={classes} onClick={onClick} disabled={disabled}>
             <span className={spanClasses}>{children}</span>
             {svgs(white)}
         </button>
