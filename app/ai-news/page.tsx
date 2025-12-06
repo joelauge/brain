@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Layout from "@/components/Layout";
@@ -32,7 +32,7 @@ interface ApiResponse {
   tags: string[];
 }
 
-export default function AINewsPage() {
+function AINewsContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [articles, setArticles] = useState<Article[]>([]);
@@ -327,6 +327,25 @@ export default function AINewsPage() {
         </div>
       </Section>
     </Layout>
+  );
+}
+
+export default function AINewsPage() {
+  return (
+    <Suspense fallback={
+      <Layout>
+        <Section className="pt-12 pb-12">
+          <div className="container">
+            <div className="text-center py-12">
+              <div className="w-8 h-8 border-2 border-color-1 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+              <p className="body-2 text-n-3">Loading...</p>
+            </div>
+          </div>
+        </Section>
+      </Layout>
+    }>
+      <AINewsContent />
+    </Suspense>
   );
 }
 
