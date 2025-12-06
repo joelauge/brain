@@ -6,7 +6,7 @@ import Image from "@/components/Image";
 type AIPolicyBuilderProps = {};
 
 const AIPolicyBuilder = ({}: AIPolicyBuilderProps) => (
-    <Section crosses>
+    <Section crosses className="bg-n-6">
         <div className="container">
             <div className="relative max-w-[43.125rem] mx-auto py-8 md:py-14 xl:py-0">
                 <div className="relative z-1 text-center">
