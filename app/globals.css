@@ -23,6 +23,22 @@ body {
         @apply overflow-visible;
     }
 
+    .splide-visible .splide__arrow {
+        @apply bg-n-1/20 backdrop-blur-sm border-0;
+    }
+
+    .splide-visible .splide__arrow svg {
+        @apply fill-color-1;
+    }
+
+    .splide-visible .splide__arrow:hover {
+        @apply bg-n-1/30;
+    }
+
+    .splide-visible .splide__arrow:hover svg {
+        @apply fill-color-1;
+    }
+
     .splide-pricing .splide__list {
         @apply lg:grid !important;
         @apply lg:grid-cols-3 lg:gap-4;
