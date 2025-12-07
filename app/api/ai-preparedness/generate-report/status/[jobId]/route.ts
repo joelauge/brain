@@ -25,6 +25,7 @@ export async function GET(
             progress: job.progress,
             statusMessage: job.statusMessage,
             reportData: job.reportData ? JSON.parse(job.reportData) : null,
+            pdfUrl: job.pdfUrl,
             error: job.error,
         });
     } catch (error: any) {

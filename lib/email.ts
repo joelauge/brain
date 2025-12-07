@@ -857,3 +857,187 @@ export async function sendAIPolicyFollowUp(data: AIPolicyFollowUpData): Promise<
     return false;
   }
 }
+
+export interface AIPreparednessFollowUpData {
+  email: string;
+  firstName?: string;
+  lastName?: string;
+  company?: string;
+  currentRole?: string;
+  industry?: string;
+  aiKnowledge?: string;
+  learningGoals?: string[];
+  challenges?: string[];
+  supportNeeds?: string[];
+  urgency?: string;
+}
+
+export function generateAIPreparednessFollowUpEmail(data: AIPreparednessFollowUpData): string {
+  const firstName = data.firstName || 'there';
+  const bookingUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://brainmediaconsulting.com'}/booking`;
+  
+  // Personalize based on assessment
+  let personalizedMessage = '';
+  
+  if (data.urgency === 'immediate' || data.urgency === 'short-term') {
+    personalizedMessage = `I noticed you're looking to improve your AI preparedness ${data.urgency === 'immediate' ? 'right away' : 'soon'}. `;
+  }
+  
+  if (data.aiKnowledge && parseInt(data.aiKnowledge) <= 2) {
+    personalizedMessage += `Based on your assessment, you're just getting started with AI - that's perfect timing to build a strong foundation. `;
+  } else if (data.aiKnowledge && parseInt(data.aiKnowledge) >= 4) {
+    personalizedMessage += `You already have solid AI knowledge - let's help you take it to the next level with strategic implementation. `;
+  }
+  
+  if (data.challenges && data.challenges.length > 0) {
+    const topChallenge = data.challenges[0].replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+    personalizedMessage += `I see you're particularly focused on ${topChallenge} - our custom coaching packages are designed to address exactly these kinds of challenges. `;
+  }
+  
+  if (data.supportNeeds && data.supportNeeds.includes('coaching')) {
+    personalizedMessage += `Since you're interested in executive coaching, I'd love to discuss our personalized coaching programs that can accelerate your AI leadership journey. `;
+  }
+  
+  if (!personalizedMessage) {
+    personalizedMessage = `Based on your assessment, I believe we can help you achieve your AI preparedness goals. `;
+  }
+  
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Follow-up: AI Preparedness Assessment</title>
+      <style>
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          line-height: 1.6;
+          color: #333;
+          max-width: 600px;
+          margin: 0 auto;
+          padding: 20px;
+          background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+        }
+        .container {
+          background: #0a0a0a;
+          border-radius: 16px;
+          padding: 40px;
+          border: 1px solid #2a2a2a;
+        }
+        .header {
+          text-align: center;
+          margin-bottom: 30px;
+        }
+        .logo {
+          font-size: 32px;
+          font-weight: bold;
+          color: #AC6AFF;
+          margin-bottom: 20px;
+        }
+        .content {
+          color: #ffffff;
+        }
+        .greeting {
+          font-size: 18px;
+          margin-bottom: 20px;
+        }
+        .message {
+          font-size: 16px;
+          color: #a1a1aa;
+          margin-bottom: 20px;
+          line-height: 1.8;
+        }
+        .cta-button {
+          display: inline-block;
+          background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+          color: #ffffff;
+          padding: 16px 32px;
+          text-decoration: none;
+          border-radius: 12px;
+          font-weight: 600;
+          font-size: 16px;
+          margin: 20px 0;
+          text-align: center;
+        }
+        .footer {
+          margin-top: 40px;
+          padding-top: 20px;
+          border-top: 1px solid #2a2a2a;
+          color: #6b7280;
+          font-size: 14px;
+        }
+        .signature {
+          color: #ffffff;
+          margin-top: 20px;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <div class="logo">BRAIN</div>
+        </div>
+        <div class="content">
+          <div class="greeting">Hi ${firstName},</div>
+          <div class="message">
+            It's Joel from Brain Consulting. You completed our AI Preparedness Assessment, and I'd love to help you take the next steps.
+          </div>
+          <div class="message">
+            ${personalizedMessage}Our custom coaching packages are tailored to executives like you who want to build real AI capabilities and lead their organizations forward.
+          </div>
+          <div class="message">
+            The best way to find out how Brain can help is to book a consultation. We'll discuss your specific goals, challenges, and how our coaching and consulting services can accelerate your AI journey.
+          </div>
+          <div style="text-align: center;">
+            <a href="${bookingUrl}" class="cta-button">Book a Consultation</a>
+          </div>
+          <div class="message" style="font-size: 14px; color: #6b7280; margin-top: 30px;">
+            During our call, we'll explore:
+            <ul style="margin: 10px 0; padding-left: 20px;">
+              <li>Your personalized learning path and video curriculum</li>
+              <li>Executive coaching options tailored to your schedule</li>
+              <li>AI implementation consulting for your organization</li>
+              <li>How to address your specific challenges and goals</li>
+            </ul>
+          </div>
+          <div class="signature">
+            Best regards,<br>
+            Joel Auge<br>
+            Brain Media Consulting
+          </div>
+        </div>
+        <div class="footer">
+          <p>This email was sent by Brain Media Consulting</p>
+          <p>If you have any questions, please don't hesitate to reach out.</p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+}
+
+export async function sendAIPreparednessFollowUp(data: AIPreparednessFollowUpData): Promise<boolean> {
+  try {
+    if (!process.env.RESEND_API_KEY) {
+      console.log('📧 [DEV] AI Preparedness Follow-up Email (not sent):', {
+        to: data.email,
+        subject: 'Follow-up: AI Preparedness Assessment',
+      });
+      return true;
+    }
+
+    const result = await resend.emails.send({
+      from: 'Joel Auge <joel@brainmediaconsulting.com>',
+      to: [data.email],
+      subject: 'Follow-up: AI Preparedness Assessment',
+      html: generateAIPreparednessFollowUpEmail(data),
+    });
+
+    console.log('📧 AI Preparedness Follow-up Sent:', result);
+    return true;
+  } catch (error) {
+    console.error('Error sending AI Preparedness follow-up:', error);
+    return false;
+  }
+}

@@ -3,6 +3,36 @@ import { prisma } from '@/lib/prisma';
 import { generatePreparednessReport } from '@/lib/ai-preparedness-generator';
 import { PreparednessAssessment } from '@/mocks/ai-preparedness-questions';
 
+async function loadLogo(): Promise<string> {
+    try {
+        const path = await import('path');
+        const fs = await import('fs');
+        const logoFilePath = path.join(process.cwd(), 'public', 'images', 'brain__white_official_logo.png');
+        if (fs.existsSync(logoFilePath)) {
+            const logoBuffer = fs.readFileSync(logoFilePath);
+            const logoBase64 = logoBuffer.toString('base64');
+            return `data:image/png;base64,${logoBase64}`;
+        }
+    } catch (error) {
+        console.error('Error loading logo:', error);
+    }
+    return '';
+}
+
+async function generatePDF(
+    assessment: PreparednessAssessment,
+    report: any,
+    logoPath: string
+): Promise<Buffer> {
+    const { renderToBuffer } = await import('@react-pdf/renderer');
+    const { createPreparednessDocument } = await import('@/lib/preparedness-pdf-generator');
+    
+    const pdfDoc = createPreparednessDocument(assessment, report, logoPath);
+    const pdfBuffer = await renderToBuffer(pdfDoc);
+    
+    return Buffer.isBuffer(pdfBuffer) ? pdfBuffer : Buffer.from(pdfBuffer);
+}
+
 async function processReportJob(jobId: string) {
     try {
         // @ts-ignore
@@ -44,12 +74,28 @@ async function processReportJob(jobId: string) {
         await prisma.preparednessReportJob.update({
             where: { id: jobId },
             data: {
-                progress: 80,
+                progress: 50,
+                statusMessage: 'Generating PDF document...',
+            },
+        });
+
+        // Load logo and generate PDF
+        const logoPath = await loadLogo();
+        const pdfBuffer = await generatePDF(assessment, report, logoPath);
+        const pdfBase64 = pdfBuffer.toString('base64');
+        const pdfDataUri = `data:application/pdf;base64,${pdfBase64}`;
+
+        // Update progress
+        // @ts-ignore
+        await prisma.preparednessReportJob.update({
+            where: { id: jobId },
+            data: {
+                progress: 90,
                 statusMessage: 'Finalizing your report...',
             },
         });
 
-        // Save report
+        // Save report and PDF
         // @ts-ignore
         await prisma.preparednessReportJob.update({
             where: { id: jobId },
@@ -58,6 +104,7 @@ async function processReportJob(jobId: string) {
                 progress: 100,
                 statusMessage: 'Report ready!',
                 reportData: JSON.stringify(report),
+                pdfUrl: pdfDataUri,
                 completedAt: new Date(),
             },
         });

@@ -186,6 +186,7 @@ model PreparednessReportJob {
   statusMessage String   @default("")
   assessmentData String  // JSON string of PreparednessAssessment
   reportData    String?  // JSON string of generated report
+  pdfUrl        String?  // URL to download the PDF when complete
   error         String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt

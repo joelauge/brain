@@ -13,20 +13,24 @@ type ResultsProps = {
 };
 
 const Results = ({ assessment, onRestart }: ResultsProps) => {
-    const [isGeneratingReport, setIsGeneratingReport] = useState(true);
-    const [progressStatus, setProgressStatus] = useState<string>('Initializing report generation...');
+    const [isGeneratingReport, setIsGeneratingReport] = useState(false);
+    const [hasStartedGeneration, setHasStartedGeneration] = useState(false);
+    const [progressStatus, setProgressStatus] = useState<string>('');
     const [progress, setProgress] = useState<number>(0);
     const [jobId, setJobId] = useState<string | null>(null);
-    const [report, setReport] = useState<PreparednessReport | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [pdfDownloaded, setPdfDownloaded] = useState(false);
 
-    useEffect(() => {
-        const generateReport = async () => {
-            setIsGeneratingReport(true);
-            setProgress(0);
-            setProgressStatus('Creating report generation job...');
-            
-            try {
+    const handleGeneratePDF = async () => {
+        if (isGeneratingReport || pdfDownloaded) return;
+        
+        setIsGeneratingReport(true);
+        setHasStartedGeneration(true);
+        setProgress(0);
+        setProgressStatus('Creating report generation job...');
+        setError(null);
+        
+        try {
                 // Step 1: Create job
                 const createResponse = await fetch('/api/ai-preparedness/generate-report/queue', {
                     method: 'POST',
@@ -63,10 +67,57 @@ const Results = ({ assessment, onRestart }: ResultsProps) => {
                         if (jobStatus.status === 'completed') {
                             clearInterval(pollInterval);
                             setProgress(100);
-                            setProgressStatus('Report ready!');
+                            setProgressStatus('PDF ready! Downloading...');
                             
-                            if (jobStatus.reportData) {
-                                setReport(jobStatus.reportData);
+                            // Download PDF
+                            if (jobStatus.pdfUrl) {
+                                try {
+                                    // Handle data URI
+                                    if (jobStatus.pdfUrl.startsWith('data:')) {
+                                        // Convert data URI to blob
+                                        const base64Data = jobStatus.pdfUrl.split(',')[1];
+                                        const byteCharacters = atob(base64Data);
+                                        const byteNumbers = new Array(byteCharacters.length);
+                                        for (let i = 0; i < byteCharacters.length; i++) {
+                                            byteNumbers[i] = byteCharacters.charCodeAt(i);
+                                        }
+                                        const byteArray = new Uint8Array(byteNumbers);
+                                        const blob = new Blob([byteArray], { type: 'application/pdf' });
+                                        
+                                        const url = window.URL.createObjectURL(blob);
+                                        const a = document.createElement('a');
+                                        a.href = url;
+                                        a.download = `ai-preparedness-report-${assessment.company || 'report'}-${Date.now()}.pdf`;
+                                        document.body.appendChild(a);
+                                        a.click();
+                                        window.URL.revokeObjectURL(url);
+                                        document.body.removeChild(a);
+                                    } else {
+                                        // Regular URL
+                                        const response = await fetch(jobStatus.pdfUrl);
+                                        const blob = await response.blob();
+                                        
+                                        const url = window.URL.createObjectURL(blob);
+                                        const a = document.createElement('a');
+                                        a.href = url;
+                                        a.download = `ai-preparedness-report-${assessment.company || 'report'}-${Date.now()}.pdf`;
+                                        document.body.appendChild(a);
+                                        a.click();
+                                        window.URL.revokeObjectURL(url);
+                                        document.body.removeChild(a);
+                                    }
+                                    
+                                        setProgressStatus('Download complete!');
+                                        setPdfDownloaded(true);
+                                        setTimeout(() => {
+                                            setProgressStatus('');
+                                            setProgress(0);
+                                        }, 2000);
+                                } catch (downloadError) {
+                                    console.error('Error downloading PDF:', downloadError);
+                                    setProgressStatus('');
+                                    alert('PDF generated but download failed. Please contact support.');
+                                }
                             }
                             setIsGeneratingReport(false);
                         } else if (jobStatus.status === 'failed') {
@@ -90,15 +141,12 @@ const Results = ({ assessment, onRestart }: ResultsProps) => {
                     }
                 }, 120000);
 
-            } catch (error: any) {
-                console.error('Error generating report:', error);
-                setError(error.message || 'Unknown error');
-                setIsGeneratingReport(false);
-            }
-        };
-
-        generateReport();
-    }, [assessment]);
+        } catch (error: any) {
+            console.error('Error generating report:', error);
+            setError(error.message || 'Unknown error');
+            setIsGeneratingReport(false);
+        }
+    };
 
     if (isGeneratingReport) {
         return (
@@ -163,10 +211,6 @@ const Results = ({ assessment, onRestart }: ResultsProps) => {
         );
     }
 
-    if (!report) {
-        return null;
-    }
-
     return (
         <Section>
             <div className="container max-w-[70rem]">
@@ -176,81 +220,116 @@ const Results = ({ assessment, onRestart }: ResultsProps) => {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </div>
-                    <h1 className="h1 mb-4">Your AI Preparedness Report</h1>
+                    <h1 className="h1 mb-4">Assessment Complete</h1>
                     <p className="body-1 text-n-3 mb-8">
-                        Personalized recommendations for your AI learning journey
+                        Your personalized AI Preparedness Report has been generated and downloaded.
                     </p>
                 </div>
 
-                {/* Executive Summary */}
-                <div className="bg-n-8 rounded-2xl border border-n-6 p-8 md:p-12 mb-15">
-                    <Tagline className="mb-6">Executive Summary</Tagline>
-                    <div className="prose prose-invert max-w-none">
-                        <p className="body-1 text-n-2 whitespace-pre-line">{report.executiveSummary}</p>
+                {/* PDF Download Section */}
+                {!pdfDownloaded && (
+                    <div className="bg-n-8 rounded-2xl border border-n-6 p-8 md:p-12 mb-15">
+                        <Tagline className="mb-6">Your Personalized Report</Tagline>
+                        <div className="text-center">
+                            <p className="body-1 text-n-3 mb-6">
+                                Generate and download your comprehensive AI Preparedness Report. This personalized PDF includes:
+                            </p>
+                            <ul className="text-left max-w-md mx-auto space-y-3 mb-8">
+                                <li className="flex items-start">
+                                    <svg className="w-5 h-5 text-color-1 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                    </svg>
+                                    <span className="body-2 text-n-2">Executive summary and current state assessment</span>
+                                </li>
+                                <li className="flex items-start">
+                                    <svg className="w-5 h-5 text-color-1 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                    </svg>
+                                    <span className="body-2 text-n-2">Recommended learning path and video curriculum</span>
+                                </li>
+                                <li className="flex items-start">
+                                    <svg className="w-5 h-5 text-color-1 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                    </svg>
+                                    <span className="body-2 text-n-2">Coaching and consulting recommendations</span>
+                                </li>
+                                <li className="flex items-start">
+                                    <svg className="w-5 h-5 text-color-1 mr-3 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                                    </svg>
+                                    <span className="body-2 text-n-2">Implementation roadmap and next steps</span>
+                                </li>
+                            </ul>
+                            
+                            <Button 
+                                onClick={handleGeneratePDF}
+                                disabled={isGeneratingReport}
+                                white
+                                className="px-8"
+                            >
+                                {isGeneratingReport ? 'Generating Report...' : 'Generate & Download Report'}
+                            </Button>
+                        </div>
                     </div>
-                </div>
+                )}
 
-                {/* Current State */}
-                <div className="bg-n-8 rounded-2xl border border-n-6 p-8 md:p-12 mb-15">
-                    <Tagline className="mb-6">Current State Assessment</Tagline>
-                    <div className="prose prose-invert max-w-none">
-                        <p className="body-1 text-n-2 whitespace-pre-line">{report.currentState}</p>
+                {/* Success Message */}
+                {pdfDownloaded && (
+                    <div className="bg-n-8 rounded-2xl border border-n-6 p-8 md:p-12 mb-15">
+                        <Tagline className="mb-6">Report Downloaded Successfully</Tagline>
+                        <div className="text-center">
+                            <div className="w-16 h-16 bg-color-1/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <svg className="w-8 h-8 text-color-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <p className="body-1 text-n-2 mb-6">
+                                Your personalized AI Preparedness Report has been downloaded successfully!
+                            </p>
+                            {progressStatus && (
+                                <p className="body-2 text-color-1 mb-4">{progressStatus}</p>
+                            )}
+                        </div>
                     </div>
-                </div>
-
-                {/* Knowledge Gaps */}
-                <div className="bg-n-8 rounded-2xl border border-n-6 p-8 md:p-12 mb-15">
-                    <Tagline className="mb-6">Knowledge Gaps</Tagline>
-                    <div className="prose prose-invert max-w-none">
-                        <p className="body-1 text-n-2 whitespace-pre-line">{report.knowledgeGaps}</p>
-                    </div>
-                </div>
-
-                {/* Recommended Learning Path */}
-                <div className="bg-n-8 rounded-2xl border border-n-6 p-8 md:p-12 mb-15">
-                    <Tagline className="mb-6">Recommended Learning Path</Tagline>
-                    <div className="prose prose-invert max-w-none">
-                        <p className="body-1 text-n-2 whitespace-pre-line">{report.recommendedLearningPath}</p>
-                    </div>
-                </div>
-
-                {/* Video Curriculum */}
-                <div className="bg-n-8 rounded-2xl border border-n-6 p-8 md:p-12 mb-15">
-                    <Tagline className="mb-6">Video Curriculum</Tagline>
-                    <div className="prose prose-invert max-w-none">
-                        <p className="body-1 text-n-2 whitespace-pre-line">{report.videoCurriculum}</p>
-                    </div>
-                </div>
-
-                {/* Coaching Recommendations */}
-                <div className="bg-n-8 rounded-2xl border border-n-6 p-8 md:p-12 mb-15">
-                    <Tagline className="mb-6">Coaching Recommendations</Tagline>
-                    <div className="prose prose-invert max-w-none">
-                        <p className="body-1 text-n-2 whitespace-pre-line">{report.coachingRecommendations}</p>
-                    </div>
-                </div>
-
-                {/* Consulting Recommendations */}
-                <div className="bg-n-8 rounded-2xl border border-n-6 p-8 md:p-12 mb-15">
-                    <Tagline className="mb-6">Consulting Recommendations</Tagline>
-                    <div className="prose prose-invert max-w-none">
-                        <p className="body-1 text-n-2 whitespace-pre-line">{report.consultingRecommendations}</p>
-                    </div>
-                </div>
-
-                {/* Implementation Roadmap */}
-                <div className="bg-n-8 rounded-2xl border border-n-6 p-8 md:p-12 mb-15">
-                    <Tagline className="mb-6">Implementation Roadmap</Tagline>
-                    <div className="prose prose-invert max-w-none">
-                        <p className="body-1 text-n-2 whitespace-pre-line">{report.implementationRoadmap}</p>
-                    </div>
-                </div>
+                )}
 
                 {/* Next Steps */}
                 <div className="bg-n-8 rounded-2xl border border-n-6 p-8 md:p-12 mb-15">
                     <Tagline className="mb-6">Next Steps</Tagline>
-                    <div className="prose prose-invert max-w-none">
-                        <p className="body-1 text-n-2 whitespace-pre-line">{report.nextSteps}</p>
+                    <div className="space-y-4">
+                        <div className="flex items-start">
+                            <div className="flex-shrink-0 w-6 h-6 bg-color-1/20 rounded-full flex items-center justify-center mr-4 mt-1">
+                                <span className="text-color-1 text-sm font-bold">1</span>
+                            </div>
+                            <div>
+                                <h4 className="h6 text-n-1 mb-2">Review Your Report</h4>
+                                <p className="body-2 text-n-3">
+                                    Take time to review your personalized recommendations and learning path.
+                                </p>
+                            </div>
+                        </div>
+                        <div className="flex items-start">
+                            <div className="flex-shrink-0 w-6 h-6 bg-color-1/20 rounded-full flex items-center justify-center mr-4 mt-1">
+                                <span className="text-color-1 text-sm font-bold">2</span>
+                            </div>
+                            <div>
+                                <h4 className="h6 text-n-1 mb-2">Book a Consultation</h4>
+                                <p className="body-2 text-n-3">
+                                    Schedule a consultation to discuss your specific goals and how Brain's custom coaching packages can help you achieve them.
+                                </p>
+                            </div>
+                        </div>
+                        <div className="flex items-start">
+                            <div className="flex-shrink-0 w-6 h-6 bg-color-1/20 rounded-full flex items-center justify-center mr-4 mt-1">
+                                <span className="text-color-1 text-sm font-bold">3</span>
+                            </div>
+                            <div>
+                                <h4 className="h6 text-n-1 mb-2">Begin Your AI Journey</h4>
+                                <p className="body-2 text-n-3">
+                                    Start implementing your personalized learning path and take advantage of our coaching and consulting services.
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
