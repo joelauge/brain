@@ -4,6 +4,7 @@ import "./globals.css";
 import { Sora, Source_Code_Pro, Space_Grotesk } from "next/font/google";
 import ClerkWrapper from "@/components/ClerkWrapper";
 import { ReactNode } from "react";
+import Script from "next/script";
 
 const sora = Sora({
     weight: ["300", "400", "600"],
@@ -91,6 +92,19 @@ export default function RootLayout({
                 />
                 <meta name="msapplication-TileColor" content="#da532c" />
                 <meta name="theme-color" content="#ffffff" />
+                {/* Google tag (gtag.js) */}
+                <Script
+                    src="https://www.googletagmanager.com/gtag/js?id=G-X65K98S312"
+                    strategy="afterInteractive"
+                />
+                <Script id="google-analytics" strategy="afterInteractive">
+                    {`
+                        window.dataLayer = window.dataLayer || [];
+                        function gtag(){dataLayer.push(arguments);}
+                        gtag('js', new Date());
+                        gtag('config', 'G-X65K98S312');
+                    `}
+                </Script>
             </head>
             <body
                 className={`${sora.variable} ${code.variable} ${grotesk.variable} font-sans bg-n-8 text-n-1 text-base`}
