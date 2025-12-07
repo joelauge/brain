@@ -167,11 +167,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Generate unique filename (timestamp + original name)
-    const timestamp = Date.now();
+    // Sanitize filename for security (preserve original name, just clean it)
     const sanitizedFileName = fileName.replace(/[^a-zA-Z0-9.-]/g, '_');
-    const finalFileName = `${timestamp}_${sanitizedFileName}`;
+    // Remove any path components for security
+    const finalFileName = path.basename(sanitizedFileName);
     const filePath = path.join(UPLOAD_DIR, finalFileName);
+    
+    // Check if file already exists (will be overwritten)
+    const fileExists = existsSync(filePath);
 
     // Convert file to buffer and save
     const bytes = await file.arrayBuffer();
@@ -180,6 +183,7 @@ export async function POST(request: NextRequest) {
     await writeFile(filePath, new Uint8Array(buffer));
 
     // Return success with file info
+    // Always use the download API endpoint for consistency (works in both local and production)
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 
                     request.headers.get('origin') || 
                     `http://${request.headers.get('host') || 'localhost:3000'}`;
@@ -189,9 +193,10 @@ export async function POST(request: NextRequest) {
       fileName: finalFileName,
       originalName: fileName,
       size: file.size,
-      url: isVercel ? `/api/upload/download/${finalFileName}` : `/uploads/xml/${finalFileName}`,
-      fullUrl: isVercel ? `${baseUrl}/api/upload/download/${finalFileName}` : `${baseUrl}/uploads/xml/${finalFileName}`,
-      uploadedAt: new Date().toISOString()
+      url: `/api/upload/download/${finalFileName}`,
+      fullUrl: `${baseUrl}/api/upload/download/${finalFileName}`,
+      uploadedAt: new Date().toISOString(),
+      overwritten: fileExists
     }, { status: 200 });
   } catch (error) {
     console.error('Error uploading file via automation API:', error);
