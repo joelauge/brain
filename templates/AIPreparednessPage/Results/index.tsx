@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useRef } from "react";
 import Section from "@/components/Section";
 import Tagline from "@/components/Tagline";
 import Button from "@/components/Button";
@@ -20,6 +20,8 @@ const Results = ({ assessment, onRestart }: ResultsProps) => {
     const [jobId, setJobId] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [pdfDownloaded, setPdfDownloaded] = useState(false);
+    const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
+    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const handleGeneratePDF = async () => {
         if (isGeneratingReport || pdfDownloaded) return;
@@ -49,7 +51,7 @@ const Results = ({ assessment, onRestart }: ResultsProps) => {
                 setJobId(newJobId);
 
                 // Step 2: Poll for status
-                const pollInterval = setInterval(async () => {
+                pollIntervalRef.current = setInterval(async () => {
                     try {
                         const statusResponse = await fetch(`/api/ai-preparedness/generate-report/status/${newJobId}`);
                         
@@ -65,7 +67,15 @@ const Results = ({ assessment, onRestart }: ResultsProps) => {
 
                         // Check if completed
                         if (jobStatus.status === 'completed') {
-                            clearInterval(pollInterval);
+                            if (pollIntervalRef.current) {
+                                clearInterval(pollIntervalRef.current);
+                                pollIntervalRef.current = null;
+                            }
+                            if (timeoutRef.current) {
+                                clearTimeout(timeoutRef.current);
+                                timeoutRef.current = null;
+                            }
+                            
                             setProgress(100);
                             setProgressStatus('PDF ready! Downloading...');
                             
@@ -107,39 +117,60 @@ const Results = ({ assessment, onRestart }: ResultsProps) => {
                                         document.body.removeChild(a);
                                     }
                                     
-                                        setProgressStatus('Download complete!');
-                                        setPdfDownloaded(true);
-                                        setTimeout(() => {
-                                            setProgressStatus('');
-                                            setProgress(0);
-                                        }, 2000);
+                                    setProgressStatus('Download complete!');
+                                    setPdfDownloaded(true);
+                                    setIsGeneratingReport(false);
+                                    setTimeout(() => {
+                                        setProgressStatus('');
+                                        setProgress(0);
+                                    }, 2000);
                                 } catch (downloadError) {
                                     console.error('Error downloading PDF:', downloadError);
                                     setProgressStatus('');
-                                    alert('PDF generated but download failed. Please contact support.');
+                                    setIsGeneratingReport(false);
+                                    setError('PDF generated but download failed. Please contact support.');
                                 }
+                            } else {
+                                setIsGeneratingReport(false);
+                                setError('PDF was generated but URL is missing. Please contact support.');
                             }
-                            setIsGeneratingReport(false);
                         } else if (jobStatus.status === 'failed') {
-                            clearInterval(pollInterval);
+                            if (pollIntervalRef.current) {
+                                clearInterval(pollIntervalRef.current);
+                                pollIntervalRef.current = null;
+                            }
+                            if (timeoutRef.current) {
+                                clearTimeout(timeoutRef.current);
+                                timeoutRef.current = null;
+                            }
                             setIsGeneratingReport(false);
                             setError(jobStatus.error || 'Report generation failed');
                         }
                     } catch (error: any) {
-                        clearInterval(pollInterval);
+                        if (pollIntervalRef.current) {
+                            clearInterval(pollIntervalRef.current);
+                            pollIntervalRef.current = null;
+                        }
+                        if (timeoutRef.current) {
+                            clearTimeout(timeoutRef.current);
+                            timeoutRef.current = null;
+                        }
                         setIsGeneratingReport(false);
                         setError(error.message || 'Failed to generate report');
                     }
-                }, 1000); // Poll every second
+                }, 2000); // Poll every 2 seconds
 
-                // Timeout after 2 minutes
-                setTimeout(() => {
-                    clearInterval(pollInterval);
+                // Timeout after 5 minutes (increased from 2 minutes)
+                timeoutRef.current = setTimeout(() => {
+                    if (pollIntervalRef.current) {
+                        clearInterval(pollIntervalRef.current);
+                        pollIntervalRef.current = null;
+                    }
                     if (isGeneratingReport) {
                         setIsGeneratingReport(false);
                         setError('Report generation is taking longer than expected. Please try again or contact support.');
                     }
-                }, 120000);
+                }, 300000); // 5 minutes
 
         } catch (error: any) {
             console.error('Error generating report:', error);
@@ -222,7 +253,7 @@ const Results = ({ assessment, onRestart }: ResultsProps) => {
                     </div>
                     <h1 className="h1 mb-4">Assessment Complete</h1>
                     <p className="body-1 text-n-3 mb-8">
-                        Your personalized AI Preparedness Report has been generated and downloaded.
+                        Thank you for completing the assessment! Generate your personalized AI Preparedness Report below.
                     </p>
                 </div>
 
