@@ -66,6 +66,11 @@ export async function POST(request: NextRequest) {
     const contentType = request.headers.get('content-type') || '';
     let file: File | null = null;
     let fileName = 'uploaded.xml';
+    let requestedFileName: string | null = null;
+
+    // Check for filename parameter in query params (works for all request types)
+    const url = new URL(request.url);
+    requestedFileName = url.searchParams.get('filename');
 
     // Handle multipart/form-data (standard file upload)
     if (contentType.includes('multipart/form-data')) {
@@ -75,6 +80,11 @@ export async function POST(request: NextRequest) {
       // Also check for 'data' field (common in automation tools)
       if (!file) {
         file = formData.get('data') as File;
+      }
+      
+      // Check for filename in form data if not in query params
+      if (!requestedFileName) {
+        requestedFileName = formData.get('filename') as string | null;
       }
       
       if (file) {
@@ -98,6 +108,11 @@ export async function POST(request: NextRequest) {
     // Handle JSON with base64 encoded file
     else if (contentType.includes('application/json')) {
       const body = await request.json();
+      
+      // Check for filename in JSON body if not in query params
+      if (!requestedFileName && body.filename) {
+        requestedFileName = body.filename;
+      }
       
       if (body.file || body.data) {
         const fileData = body.file || body.data;
@@ -167,10 +182,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Generate unique filename (timestamp + original name)
-    const timestamp = Date.now();
-    const sanitizedFileName = fileName.replace(/[^a-zA-Z0-9.-]/g, '_');
-    const finalFileName = `${timestamp}_${sanitizedFileName}`;
+    // Determine final filename
+    let finalFileName: string;
+    if (requestedFileName) {
+      // Sanitize the requested filename
+      const sanitized = requestedFileName.replace(/[^a-zA-Z0-9.-]/g, '_');
+      // Ensure it ends with .xml
+      finalFileName = sanitized.endsWith('.xml') ? sanitized : `${sanitized}.xml`;
+    } else {
+      // Generate unique filename (timestamp + original name) if no filename provided
+      const timestamp = Date.now();
+      const sanitizedFileName = fileName.replace(/[^a-zA-Z0-9.-]/g, '_');
+      finalFileName = `${timestamp}_${sanitizedFileName}`;
+    }
+    
     const filePath = path.join(UPLOAD_DIR, finalFileName);
 
     // Convert file to buffer and save
@@ -215,6 +240,9 @@ export async function GET(request: NextRequest) {
     endpoints: {
       upload: 'POST /api/upload/automation',
       authentication: 'API key required (X-API-Key header, Authorization header, or apiKey query param)'
+    },
+    parameters: {
+      filename: 'Optional. Specify custom filename via query parameter (?filename=myfile.xml) or in request body/form data. If not provided, uses timestamp + original name.'
     },
     supportedFormats: [
       'multipart/form-data',
