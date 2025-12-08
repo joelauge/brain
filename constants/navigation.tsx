@@ -11,23 +11,33 @@ export const navigation = [
     },
     {
         id: "2",
+        title: "Blog",
+        url: "/blog",
+    },
+    {
+        id: "3",
+        title: "AI Policy Builder",
+        url: "/ai-policy-builder",
+    },
+    {
+        id: "4",
         title: "Book Consultation",
         url: "/booking",
     },
     {
-        id: "3",
+        id: "5",
         title: "Dashboard",
         url: "/dashboard",
         authRequired: true,
     },
     {
-        id: "4",
+        id: "6",
         title: "New account",
         url: "/login?new=true",
         onlyMobile: true,
     },
     {
-        id: "5",
+        id: "7",
         title: "Sign in",
         url: "/login",
         onlyMobile: true,

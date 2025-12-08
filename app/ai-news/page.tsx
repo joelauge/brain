@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect, Suspense, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import Layout from "@/components/Layout";
@@ -51,8 +51,36 @@ function AINewsContent() {
   const [searchQuery, setSearchQuery] = useState<string>(
     searchParams.get('search') || ''
   );
+  const [showSignupModal, setShowSignupModal] = useState(false);
+  const [signupForm, setSignupForm] = useState({ firstName: '', email: '' });
+  const [signupSubmitting, setSignupSubmitting] = useState(false);
+  const [signupMessage, setSignupMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const bellRef = useRef<SVGSVGElement>(null);
 
   const itemsPerPage = 12;
+
+  // Bell ringing animation every 5 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (bellRef.current) {
+        // Force animation restart by removing and re-adding the class
+        bellRef.current.classList.remove('bell-ringing');
+        // Use requestAnimationFrame to ensure the class removal is processed
+        requestAnimationFrame(() => {
+          if (bellRef.current) {
+            bellRef.current.classList.add('bell-ringing');
+            setTimeout(() => {
+              if (bellRef.current) {
+                bellRef.current.classList.remove('bell-ringing');
+              }
+            }, 500);
+          }
+        });
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     fetchArticles();
@@ -145,7 +173,41 @@ function AINewsContent() {
         <div className="container">
           {/* Header */}
           <div className="text-center mb-12">
-            <h1 className="h1 text-n-1 mb-4">AI News</h1>
+            <h1 className="h1 text-n-1 mb-4">
+              AI News
+            </h1>
+            <button
+              onClick={() => setShowSignupModal(true)}
+              onMouseEnter={() => {
+                if (bellRef.current) {
+                  bellRef.current.classList.remove('bell-ringing');
+                  requestAnimationFrame(() => {
+                    if (bellRef.current) {
+                      bellRef.current.classList.add('bell-ringing');
+                      setTimeout(() => {
+                        if (bellRef.current) {
+                          bellRef.current.classList.remove('bell-ringing');
+                        }
+                      }, 500);
+                    }
+                  });
+                }
+              }}
+              className="inline-flex items-center gap-2 mb-4 hover:opacity-80 transition-opacity"
+            >
+              <span className="relative inline-block">
+                <svg
+                  ref={bellRef}
+                  className="w-8 h-8 text-color-1"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
+                </svg>
+              </span>
+              <span className="text-n-1 text-sm font-medium">Get Notified</span>
+            </button>
             <p className="body-2 text-n-3 max-w-2xl mx-auto">
               Stay updated with the latest developments in artificial intelligence, 
               machine learning, and technology innovation.
@@ -323,6 +385,126 @@ function AINewsContent() {
                 </>
               )}
             </>
+          )}
+
+          {/* Email Signup Modal */}
+          {showSignupModal && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+              <div className="bg-n-8 rounded-2xl border border-n-6 p-8 max-w-md w-full">
+                 <div className="mb-6">
+                   <div className="flex items-center justify-between mb-3">
+                     <h3 className="h4 text-n-1">Get Notified</h3>
+                     <button
+                       onClick={() => {
+                         setShowSignupModal(false);
+                         setSignupMessage(null);
+                         setSignupForm({ firstName: '', email: '' });
+                       }}
+                       className="text-n-3 hover:text-n-1 transition-colors"
+                     >
+                       <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                       </svg>
+                     </button>
+                   </div>
+                   <p className="body-2 text-n-3 mb-4">Sign up to receive a weekly newsletter with the latest AI news and updates.</p>
+                 </div>
+              
+
+                <form
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+                    setSignupSubmitting(true);
+                    setSignupMessage(null);
+
+                    try {
+                      // TODO: Replace with actual API endpoint
+                      const response = await fetch('/api/newsletter/signup', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                          firstName: signupForm.firstName,
+                          email: signupForm.email,
+                        }),
+                      });
+
+                      if (response.ok) {
+                        setSignupMessage({ type: 'success', text: 'Successfully signed up for notifications!' });
+                        setSignupForm({ firstName: '', email: '' });
+                        setTimeout(() => {
+                          setShowSignupModal(false);
+                          setSignupMessage(null);
+                        }, 2000);
+                      } else {
+                        setSignupMessage({ type: 'error', text: 'Failed to sign up. Please try again.' });
+                      }
+                    } catch (error) {
+                      setSignupMessage({ type: 'error', text: 'An error occurred. Please try again.' });
+                    } finally {
+                      setSignupSubmitting(false);
+                    }
+                  }}
+                  className="space-y-4"
+                >
+                  <div>
+                    <label className="block text-sm font-medium text-n-2 mb-2">First Name</label>
+                    <input
+                      type="text"
+                      value={signupForm.firstName}
+                      onChange={(e) => setSignupForm(prev => ({ ...prev, firstName: e.target.value }))}
+                      required
+                      placeholder="Enter your first name"
+                      className="w-full bg-n-7 border border-n-5 text-n-1 px-3 py-2 rounded-lg focus:border-color-1 focus:outline-none placeholder:text-n-4"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-n-2 mb-2">Email Address</label>
+                    <input
+                      type="email"
+                      value={signupForm.email}
+                      onChange={(e) => setSignupForm(prev => ({ ...prev, email: e.target.value }))}
+                      required
+                      placeholder="Enter your email"
+                      className="w-full bg-n-7 border border-n-5 text-n-1 px-3 py-2 rounded-lg focus:border-color-1 focus:outline-none placeholder:text-n-4"
+                    />
+                  </div>
+
+                  {signupMessage && (
+                    <div
+                      className={`p-4 rounded-lg ${
+                        signupMessage.type === 'success'
+                          ? 'bg-green-500/20 border border-green-500/50 text-green-400'
+                          : 'bg-red-500/20 border border-red-500/50 text-red-400'
+                      }`}
+                    >
+                      {signupMessage.text}
+                    </div>
+                  )}
+
+                  <div className="flex gap-3">
+                    <Button
+                      type="submit"
+                      disabled={signupSubmitting}
+                      className="flex-1"
+                    >
+                      {signupSubmitting ? 'Submitting...' : 'Subscribe'}
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={() => {
+                        setShowSignupModal(false);
+                        setSignupMessage(null);
+                        setSignupForm({ firstName: '', email: '' });
+                      }}
+                      className="bg-n-7 hover:bg-n-6"
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </form>
+              </div>
+            </div>
           )}
         </div>
       </Section>

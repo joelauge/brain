@@ -24,7 +24,7 @@ const Benefits = ({}: BenefitsProps) => {
             <div className="container relative z-2">
                 <Heading
                     className="md:max-w-md lg:max-w-2xl"
-                    title="Work Smarter, Not Harder with Braincast"
+                    title="Work Smarter, Not Harder with BRAIN"
                 />
                 <Splide
                     className="splide-visible max-w-[24rem] md:max-w-none"
@@ -48,7 +48,7 @@ const Benefits = ({}: BenefitsProps) => {
                             <SplideSlide key={item.id}>
                                 <Link
                                     className="block relative p-0.5 bg-no-repeat bg-[length:100%_100%] md:max-w-[24rem]"
-                                    href="/features"
+                                    href={item.id === "0" ? "/ai-news" : "/features"}
                                     style={{
                                         backgroundImage: `url(${item.backgroundUrl})`,
                                     }}

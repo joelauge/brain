@@ -69,6 +69,21 @@ const Header = ({}: HeaderProps) => {
                                 return null;
                             }
                             
+                            // Special styling for Book Consultation button
+                            if (item.url === "/booking") {
+                                return (
+                                    <Button
+                                        key={item.id}
+                                        href={item.url}
+                                        white
+                                        className={`${item.onlyMobile ? "lg:hidden" : ""} opacity-90 shadow-2xl`}
+                                        onClick={handleClick}
+                                    >
+                                        {item.title}
+                                    </Button>
+                                );
+                            }
+                            
                             return (
                                 <Link
                                     className={`block relative font-code text-2xl uppercase text-n-1 transition-colors hover:text-color-1 ${
@@ -76,7 +91,7 @@ const Header = ({}: HeaderProps) => {
                                     } px-6 py-6 md:py-8 lg:-mr-0.25 lg:text-xs lg:font-semibold ${
                                         item.url === pathname
                                             ? "z-2 lg:text-n-1"
-                                            : "lg:text-n-1/50"
+                                            : "lg:text-n-1"
                                     } lg:leading-5 lg:hover:text-n-1 xl:px-12`}
                                     href={item.url}
                                     onClick={() =>

@@ -77,7 +77,7 @@ const YouTubeCarousel = ({}: YouTubeCarouselProps) => {
                     className="md:mb-15"
                     textAlignClassName="text-center"
                     titleLarge="Latest Shows"
-                    textLarge={loading ? "Loading latest shows..." : videos.length === 0 ? "Check back soon for our latest long-form content!" : "Watch Our Latest Long-Form Content"}
+                    textLarge={loading ? "Loading latest shows..." : videos.length === 0 ? "" : ""}
                 />
                 
                 {loading ? (

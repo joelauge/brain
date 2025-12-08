@@ -43,11 +43,13 @@ const Hero = ({}: HeroProps) => {
                     <p className="body-1 max-w-3xl mx-auto mb-6 text-n-2 lg:mb-8">
                         It seems that every day there's a new AI tool or service that claims to do it all. Let Joel and Dave help you navigate the world of AI and find the best tools for your business.  
                     </p>
-                    <Button href="https://www.youtube.com/@brainmediaconsulting" white>
-                        Watch Now
-                    </Button>
                 </div>
                 <div className="relative max-w-[23.25rem] mx-auto md:max-w-5xl xl:mb-24">
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+                        <Button href="https://www.youtube.com/@brainmediaconsulting" white className="scale-150 opacity-90 shadow-2xl">
+                            Watch Now
+                        </Button>
+                    </div>
                     <div className="relative z-1 p-0.5 rounded-2xl bg-conic-gradient">
                         <div className="relative bg-n-8 rounded-[0.875rem]">
                             <div className="h-[1.375rem] bg-[#43435C] rounded-t-[0.875rem]"></div>
@@ -81,10 +83,12 @@ const Hero = ({}: HeroProps) => {
                                 </ul>
                             </ScrollParallax>
                             <ScrollParallax isAbsolutelyPositioned>
-                                <Notification
-                                    className="hidden absolute -right-[5.5rem] bottom-[11.25rem] w-[18.375rem] xl:flex"
-                                    title="AI Consulting"
-                                />
+                                <a href="/booking" className="hidden xl:block">
+                                    <Notification
+                                        className="absolute -right-[5.5rem] bottom-[11.25rem] w-[18.375rem] cursor-pointer hover:opacity-90 transition-opacity"
+                                        title="Book A Consultation"
+                                    />
+                                </a>
                             </ScrollParallax>
                         </div>
                     </div>
