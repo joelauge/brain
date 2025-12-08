@@ -173,41 +173,41 @@ function AINewsContent() {
         <div className="container">
           {/* Header */}
           <div className="text-center mb-12">
-            <h1 className="h1 text-n-1 mb-4 inline-flex items-start gap-2">
+            <h1 className="h1 text-n-1 mb-4">
               AI News
-              <button
-                onClick={() => setShowSignupModal(true)}
-                onMouseEnter={() => {
-                  if (bellRef.current) {
-                    bellRef.current.classList.remove('bell-ringing');
-                    requestAnimationFrame(() => {
-                      if (bellRef.current) {
-                        bellRef.current.classList.add('bell-ringing');
-                        setTimeout(() => {
-                          if (bellRef.current) {
-                            bellRef.current.classList.remove('bell-ringing');
-                          }
-                        }, 500);
-                      }
-                    });
-                  }
-                }}
-                className="inline-flex items-center gap-2 -mt-1 hover:opacity-80 transition-opacity"
-              >
-                <span className="relative inline-block">
-                  <svg
-                    ref={bellRef}
-                    className="w-8 h-8 text-color-1"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
-                  </svg>
-                </span>
-                <span className="text-n-1 text-sm font-medium">Get Notified</span>
-              </button>
             </h1>
+            <button
+              onClick={() => setShowSignupModal(true)}
+              onMouseEnter={() => {
+                if (bellRef.current) {
+                  bellRef.current.classList.remove('bell-ringing');
+                  requestAnimationFrame(() => {
+                    if (bellRef.current) {
+                      bellRef.current.classList.add('bell-ringing');
+                      setTimeout(() => {
+                        if (bellRef.current) {
+                          bellRef.current.classList.remove('bell-ringing');
+                        }
+                      }, 500);
+                    }
+                  });
+                }
+              }}
+              className="inline-flex items-center gap-2 mb-4 hover:opacity-80 transition-opacity"
+            >
+              <span className="relative inline-block">
+                <svg
+                  ref={bellRef}
+                  className="w-8 h-8 text-color-1"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
+                </svg>
+              </span>
+              <span className="text-n-1 text-sm font-medium">Get Notified</span>
+            </button>
             <p className="body-2 text-n-3 max-w-2xl mx-auto">
               Stay updated with the latest developments in artificial intelligence, 
               machine learning, and technology innovation.

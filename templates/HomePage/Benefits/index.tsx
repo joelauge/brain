@@ -48,7 +48,7 @@ const Benefits = ({}: BenefitsProps) => {
                             <SplideSlide key={item.id}>
                                 <Link
                                     className="block relative p-0.5 bg-no-repeat bg-[length:100%_100%] md:max-w-[24rem]"
-                                    href="/features"
+                                    href={item.id === "0" ? "/ai-news" : "/features"}
                                     style={{
                                         backgroundImage: `url(${item.backgroundUrl})`,
                                     }}
