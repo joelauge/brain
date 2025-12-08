@@ -123,14 +123,20 @@ const YouTubeCarousel = ({}: YouTubeCarouselProps) => {
                                         >
                                             <div className="bg-n-8 rounded-2xl border border-n-6 overflow-hidden hover:border-color-1 transition-colors">
                                                 <div className="relative aspect-video overflow-hidden bg-n-7">
-                                                    <Image
-                                                        src={video.thumbnail}
-                                                        width={640}
-                                                        height={360}
-                                                        alt={video.title}
-                                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                                                        unoptimized={false}
-                                                    />
+                                                    {video.thumbnail ? (
+                                                        <Image
+                                                            src={video.thumbnail}
+                                                            width={640}
+                                                            height={360}
+                                                            alt={video.title}
+                                                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                                            unoptimized={true}
+                                                        />
+                                                    ) : (
+                                                        <div className="w-full h-full flex items-center justify-center bg-n-7">
+                                                            <span className="text-n-4 body-2">No thumbnail available</span>
+                                                        </div>
+                                                    )}
                                                     <div className="absolute inset-0 bg-gradient-to-t from-n-8/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
                                                         <div className="absolute bottom-4 left-4 right-4">
                                                             <span className="px-2 py-1 bg-n-1/90 backdrop-blur-sm rounded text-xs font-bold text-n-8">
