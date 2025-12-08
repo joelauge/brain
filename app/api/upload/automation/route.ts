@@ -77,9 +77,27 @@ export async function POST(request: NextRequest) {
         file = formData.get('data') as File;
       }
       
+      // Also check for 'filename' field in form data (some tools send it separately)
+      const filenameFromForm = formData.get('filename') as string | null;
+      
       if (file) {
-        fileName = file.name;
+        // Prioritize file.name, but fall back to form field if file.name is missing
+        fileName = file.name || filenameFromForm || 'uploaded.xml';
+        
+        // If file.name is empty or generic, try to get from form field
+        if ((!file.name || file.name === 'blob' || file.name === 'file') && filenameFromForm) {
+          fileName = filenameFromForm;
+        }
+      } else if (filenameFromForm) {
+        // File might be in a different field, try to get it
+        const fileData = formData.get('fileData') as File || formData.get('content') as File;
+        if (fileData) {
+          file = fileData;
+          fileName = filenameFromForm;
+        }
       }
+      
+      console.log('Multipart upload - file.name:', file?.name, 'filenameFromForm:', filenameFromForm, 'final fileName:', fileName);
     } 
     // Handle raw file data (binary/octet-stream)
     else if (contentType.includes('application/octet-stream') || 
@@ -92,6 +110,14 @@ export async function POST(request: NextRequest) {
       const contentDisposition = request.headers.get('content-disposition');
       fileName = extractFilename(contentDisposition);
       
+      // Also check for filename in custom headers (some automation tools use this)
+      const filenameHeader = request.headers.get('x-filename') || request.headers.get('x-original-filename');
+      if (filenameHeader && fileName === 'uploaded.xml') {
+        fileName = filenameHeader;
+      }
+      
+      console.log('Raw upload - contentDisposition:', contentDisposition, 'filenameHeader:', filenameHeader, 'final fileName:', fileName);
+      
       // Create a File-like object for validation (convert Buffer to Uint8Array)
       file = new File([new Uint8Array(buffer)], fileName, { type: contentType });
     }
@@ -99,16 +125,23 @@ export async function POST(request: NextRequest) {
     else if (contentType.includes('application/json')) {
       const body = await request.json();
       
+      // Check for filename at top level first
+      const topLevelFilename = body.filename || body.name || body.fileName;
+      
       if (body.file || body.data) {
         const fileData = body.file || body.data;
         const fileContent = fileData.content || fileData.base64 || fileData.data;
-        const fileType = fileData.filename || fileData.name || 'uploaded.xml';
+        // Prioritize: fileData.filename > fileData.name > topLevelFilename > default
+        const fileType = fileData.filename || fileData.name || topLevelFilename || 'uploaded.xml';
         
         if (typeof fileContent === 'string') {
           // Handle base64 encoded content
           const base64Data = fileContent.replace(/^data:.*,/, ''); // Remove data URL prefix if present
           const buffer = Buffer.from(base64Data, 'base64');
           fileName = fileType.endsWith('.xml') ? fileType : `${fileType}.xml`;
+          
+          console.log('JSON upload - fileData.filename:', fileData.filename, 'fileData.name:', fileData.name, 'topLevelFilename:', topLevelFilename, 'final fileName:', fileName);
+          
           // Convert Buffer to Uint8Array for File constructor
           file = new File([new Uint8Array(buffer)], fileName, { type: 'application/xml' });
         } else {
@@ -119,6 +152,15 @@ export async function POST(request: NextRequest) {
             },
             { status: 400 }
           );
+        }
+      } else if (topLevelFilename && body.content) {
+        // Handle case where filename and content are at top level
+        const fileContent = body.content || body.base64 || body.data;
+        if (typeof fileContent === 'string') {
+          const base64Data = fileContent.replace(/^data:.*,/, '');
+          const buffer = Buffer.from(base64Data, 'base64');
+          fileName = topLevelFilename.endsWith('.xml') ? topLevelFilename : `${topLevelFilename}.xml`;
+          file = new File([new Uint8Array(buffer)], fileName, { type: 'application/xml' });
         }
       } else {
         return NextResponse.json(
@@ -167,11 +209,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Log original filename for debugging
+    console.log('Original fileName before sanitization:', fileName);
+    
     // Sanitize filename for security (preserve original name, just clean it)
-    const sanitizedFileName = fileName.replace(/[^a-zA-Z0-9.-]/g, '_');
+    // Allow letters, numbers, dots, hyphens, and underscores
+    const sanitizedFileName = fileName.replace(/[^a-zA-Z0-9._-]/g, '_');
     // Remove any path components for security
     const finalFileName = path.basename(sanitizedFileName);
-    const filePath = path.join(UPLOAD_DIR, finalFileName);
+    
+    // Ensure it ends with .xml
+    const finalFileNameWithExt = finalFileName.toLowerCase().endsWith('.xml') 
+      ? finalFileName 
+      : `${finalFileName}.xml`;
+    
+    const filePath = path.join(UPLOAD_DIR, finalFileNameWithExt);
+    
+    console.log('Final filename after sanitization:', finalFileNameWithExt);
     
     // Check if file already exists (will be overwritten)
     const fileExists = existsSync(filePath);
@@ -190,11 +244,11 @@ export async function POST(request: NextRequest) {
     
     return NextResponse.json({
       success: true,
-      fileName: finalFileName,
+      fileName: finalFileNameWithExt,
       originalName: fileName,
       size: file.size,
-      url: `/api/upload/download/${finalFileName}`,
-      fullUrl: `${baseUrl}/api/upload/download/${finalFileName}`,
+      url: `/api/upload/download/${finalFileNameWithExt}`,
+      fullUrl: `${baseUrl}/api/upload/download/${finalFileNameWithExt}`,
       uploadedAt: new Date().toISOString(),
       overwritten: fileExists
     }, { status: 200 });
