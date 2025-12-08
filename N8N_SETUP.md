@@ -25,6 +25,10 @@
      - Name: `file`
      - Value: `={{ $binary.data }}` (if using binary data from previous node)
      - OR: `={{ $json.file }}` (if file is in JSON data)
+   - **IMPORTANT - Preserve Filename:** Add a second parameter:
+     - Name: `filename`
+     - Value: `={{ $binary.fileName }}` or `={{ $json.fileName }}` or the actual filename like `newsfeed.xml`
+     - This ensures files keep their original names (newsfeed.xml, blog.xml, sitemap.xml) instead of being renamed to uploaded.xml
 
 3. **Test the Node:**
    - Connect a node that outputs a file (e.g., Read Binary File, or a node that creates XML)
@@ -56,6 +60,7 @@ Copy the JSON from `n8n-upload-node-complete.json` and paste it into N8N's impor
      - `X-API-Key`: `d3ec3b034d1151aea7fb3a43241cb0311c458e1f0309e93e6dd5b0e888465cb5`
    - Body: Multipart-Form-Data
      - `file`: `={{ $binary.data }}`
+     - `filename`: `={{ $binary.fileName }}` (to preserve original filename)
 
 ### Scenario: Upload XML from JSON data
 
@@ -142,8 +147,12 @@ curl -X POST https://www.brainmediaconsulting.com/api/upload/automation \
 - Check file size is under 10MB
 - Verify file has `.xml` extension
 
-**Issue: Wrong filename**
-- The API preserves original filenames
-- If you need a specific name, ensure the source node provides it correctly
+**Issue: Files being renamed to "uploaded.xml"**
+- **Solution:** Add a `filename` parameter in the multipart form data
+- Set the `filename` parameter to the actual filename (e.g., `newsfeed.xml`, `blog.xml`, `sitemap.xml`)
+- The API will use this filename instead of defaulting to `uploaded.xml`
+- Example: In N8N, add a second body parameter:
+  - Name: `filename`
+  - Value: `={{ $binary.fileName }}` or hardcode it like `newsfeed.xml`
 
 
