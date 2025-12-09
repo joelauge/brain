@@ -3,32 +3,14 @@ import { writeFile, mkdir } from 'fs/promises';
 import { existsSync } from 'fs';
 import path from 'path';
 
-// On Vercel, use /tmp for writable storage, otherwise use public/uploads/xml
-// Note: Files in /tmp won't be publicly accessible, but will work for API
-// For production, consider using Vercel Blob Storage or S3
+// Always use public/uploads/xml for publicly accessible files
+// Note: On Vercel, files in /tmp are not publicly accessible via static URLs
+// We'll use the download API endpoint for Vercel, but still save to public folder structure
 const isVercel = process.env.VERCEL === '1';
 const UPLOAD_DIR = isVercel 
-  ? path.join('/tmp', 'uploads', 'xml')
-  : path.join(process.cwd(), 'public', 'uploads', 'xml');
+  ? path.join('/tmp', 'uploads', 'xml')  // Vercel: use /tmp but serve via API
+  : path.join(process.cwd(), 'public', 'uploads', 'xml');  // Local: use public folder
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
-
-/**
- * Verify API key from request headers or query params
- */
-function verifyApiKey(request: NextRequest): boolean {
-  const apiKey = request.headers.get('x-api-key') || 
-                 request.headers.get('authorization')?.replace('Bearer ', '') ||
-                 new URL(request.url).searchParams.get('apiKey');
-  
-  const expectedApiKey = process.env.UPLOAD_API_KEY;
-  
-  if (!expectedApiKey) {
-    console.warn('UPLOAD_API_KEY not set in environment variables');
-    return false;
-  }
-  
-  return apiKey === expectedApiKey;
-}
 
 /**
  * Extract filename from Content-Disposition header or use default
@@ -46,18 +28,7 @@ function extractFilename(contentDisposition: string | null, defaultName: string 
 
 export async function POST(request: NextRequest) {
   try {
-    // Verify API key
-    if (!verifyApiKey(request)) {
-      return NextResponse.json(
-        { 
-          success: false,
-          error: 'Unauthorized. Invalid or missing API key.',
-          hint: 'Include API key in X-API-Key header, Authorization header, or apiKey query parameter'
-        },
-        { status: 401 }
-      );
-    }
-
+    // No authentication required - public upload endpoint
     // Ensure upload directory exists
     if (!existsSync(UPLOAD_DIR)) {
       await mkdir(UPLOAD_DIR, { recursive: true });
@@ -182,7 +153,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Determine final filename
+    // Determine final filename - use requested filename or original filename
+    // If same filename is uploaded, it will overwrite the existing file
     let finalFileName: string;
     if (requestedFileName) {
       // Sanitize the requested filename
@@ -190,13 +162,15 @@ export async function POST(request: NextRequest) {
       // Ensure it ends with .xml
       finalFileName = sanitized.endsWith('.xml') ? sanitized : `${sanitized}.xml`;
     } else {
-      // Generate unique filename (timestamp + original name) if no filename provided
-      const timestamp = Date.now();
+      // Use original filename (sanitized) - will overwrite if same name exists
       const sanitizedFileName = fileName.replace(/[^a-zA-Z0-9.-]/g, '_');
-      finalFileName = `${timestamp}_${sanitizedFileName}`;
+      finalFileName = sanitizedFileName.endsWith('.xml') ? sanitizedFileName : `${sanitizedFileName}.xml`;
     }
     
     const filePath = path.join(UPLOAD_DIR, finalFileName);
+    
+    // Check if file already exists (will be overwritten)
+    const fileExists = existsSync(filePath);
 
     // Convert file to buffer and save
     const bytes = await file.arrayBuffer();
@@ -205,7 +179,9 @@ export async function POST(request: NextRequest) {
     await writeFile(filePath, new Uint8Array(buffer));
 
     // Return success with file info
-    // Always use the download API endpoint for consistency (works in both local and production)
+    // Files are publicly accessible:
+    // - Local: via /uploads/xml/filename.xml (static file)
+    // - Vercel: via /api/upload/download/filename.xml (API endpoint, no auth required)
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 
                     request.headers.get('origin') || 
                     `http://${request.headers.get('host') || 'localhost:3000'}`;
@@ -217,7 +193,8 @@ export async function POST(request: NextRequest) {
       size: file.size,
       url: isVercel ? `/api/upload/download/${finalFileName}` : `/uploads/xml/${finalFileName}`,
       fullUrl: isVercel ? `${baseUrl}/api/upload/download/${finalFileName}` : `${baseUrl}/uploads/xml/${finalFileName}`,
-      uploadedAt: new Date().toISOString()
+      uploadedAt: new Date().toISOString(),
+      overwritten: fileExists
     }, { status: 200 });
   } catch (error) {
     console.error('Error uploading file via automation API:', error);
@@ -236,14 +213,20 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   return NextResponse.json({
     service: 'File Upload Automation API',
-    version: '1.0.0',
+    version: '2.0.0',
     status: 'operational',
     endpoints: {
       upload: 'POST /api/upload/automation',
-      authentication: 'API key required (X-API-Key header, Authorization header, or apiKey query param)'
+      download: 'GET /api/upload/download/[filename]',
+      authentication: 'No authentication required - public endpoint'
     },
     parameters: {
-      filename: 'Optional. Specify custom filename via query parameter (?filename=myfile.xml) or in request body/form data. If not provided, uses timestamp + original name.'
+      filename: 'Optional. Specify custom filename via query parameter (?filename=myfile.xml) or in request body/form data. If not provided, uses original filename. Uploading the same filename will overwrite the existing file.'
+    },
+    behavior: {
+      overwrite: 'Files with the same filename will be overwritten',
+      publicAccess: 'All uploaded files are publicly accessible',
+      storage: 'Files are stored in /uploads/xml/ and accessible via /uploads/xml/[filename].xml or /api/upload/download/[filename].xml'
     },
     supportedFormats: [
       'multipart/form-data',
