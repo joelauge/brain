@@ -1,15 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { put } from '@vercel/blob';
 import { writeFile, mkdir } from 'fs/promises';
 import { existsSync } from 'fs';
 import path from 'path';
 
-// Always use public/uploads/xml for publicly accessible files
-// Note: On Vercel, files in /tmp are not publicly accessible via static URLs
-// We'll use the download API endpoint for Vercel, but still save to public folder structure
-const isVercel = process.env.VERCEL === '1';
-const UPLOAD_DIR = isVercel 
-  ? path.join('/tmp', 'uploads', 'xml')  // Vercel: use /tmp but serve via API
-  : path.join(process.cwd(), 'public', 'uploads', 'xml');  // Local: use public folder
+// Use Vercel Blob Storage for persistent file storage
+// Fallback to local filesystem for local development
+const useBlobStorage = process.env.VERCEL === '1' || process.env.BLOB_READ_WRITE_TOKEN;
+const UPLOAD_DIR = path.join(process.cwd(), 'public', 'uploads', 'xml');  // Local fallback
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
 /**
@@ -29,8 +27,8 @@ function extractFilename(contentDisposition: string | null, defaultName: string 
 export async function POST(request: NextRequest) {
   try {
     // No authentication required - public upload endpoint
-    // Ensure upload directory exists
-    if (!existsSync(UPLOAD_DIR)) {
+    // Ensure upload directory exists for local development
+    if (!useBlobStorage && !existsSync(UPLOAD_DIR)) {
       await mkdir(UPLOAD_DIR, { recursive: true });
     }
 
@@ -166,22 +164,39 @@ export async function POST(request: NextRequest) {
       const sanitizedFileName = fileName.replace(/[^a-zA-Z0-9.-]/g, '_');
       finalFileName = sanitizedFileName.endsWith('.xml') ? sanitizedFileName : `${sanitizedFileName}.xml`;
     }
-    
-    const filePath = path.join(UPLOAD_DIR, finalFileName);
-    
-    // Check if file already exists (will be overwritten)
-    const fileExists = existsSync(filePath);
 
-    // Convert file to buffer and save
+    // Convert file to buffer
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-    // Convert Buffer to Uint8Array for writeFile compatibility
-    await writeFile(filePath, new Uint8Array(buffer));
+
+    let blobUrl: string;
+    let fileExists = false;
+
+    if (useBlobStorage) {
+      // Use Vercel Blob Storage for persistent storage
+      const blobPath = `uploads/xml/${finalFileName}`;
+      
+      // Check if blob exists (Vercel Blob doesn't have a direct exists check, so we'll try to upload)
+      // If the same path is used, it will overwrite automatically
+      const blob = await put(blobPath, buffer, {
+        access: 'public',
+        contentType: 'application/xml',
+      });
+      
+      blobUrl = blob.url;
+    } else {
+      // Local development: use filesystem
+      const filePath = path.join(UPLOAD_DIR, finalFileName);
+      fileExists = existsSync(filePath);
+      await writeFile(filePath, new Uint8Array(buffer));
+      
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 
+                      request.headers.get('origin') || 
+                      `http://${request.headers.get('host') || 'localhost:3000'}`;
+      blobUrl = `${baseUrl}/uploads/xml/${finalFileName}`;
+    }
 
     // Return success with file info
-    // Files are publicly accessible:
-    // - Local: via /uploads/xml/filename.xml (static file)
-    // - Vercel: via /api/upload/download/filename.xml (API endpoint, no auth required)
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 
                     request.headers.get('origin') || 
                     `http://${request.headers.get('host') || 'localhost:3000'}`;
@@ -191,10 +206,11 @@ export async function POST(request: NextRequest) {
       fileName: finalFileName,
       originalName: fileName,
       size: file.size,
-      url: isVercel ? `/api/upload/download/${finalFileName}` : `/uploads/xml/${finalFileName}`,
-      fullUrl: isVercel ? `${baseUrl}/api/upload/download/${finalFileName}` : `${baseUrl}/uploads/xml/${finalFileName}`,
+      url: useBlobStorage ? blobUrl : `/uploads/xml/${finalFileName}`,
+      fullUrl: blobUrl,
       uploadedAt: new Date().toISOString(),
-      overwritten: fileExists
+      overwritten: fileExists,
+      storage: useBlobStorage ? 'vercel-blob' : 'filesystem'
     }, { status: 200 });
   } catch (error) {
     console.error('Error uploading file via automation API:', error);
@@ -226,7 +242,7 @@ export async function GET(request: NextRequest) {
     behavior: {
       overwrite: 'Files with the same filename will be overwritten',
       publicAccess: 'All uploaded files are publicly accessible',
-      storage: 'Files are stored in /uploads/xml/ and accessible via /uploads/xml/[filename].xml or /api/upload/download/[filename].xml'
+      storage: useBlobStorage ? 'Vercel Blob Storage (persistent)' : 'Local filesystem (/uploads/xml/)'
     },
     supportedFormats: [
       'multipart/form-data',
