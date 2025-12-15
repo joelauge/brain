@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
     const articleId = searchParams.get('id');
 
     // Fetch XML from the external source
-    const xmlResponse = await fetch('https://givecupid.com/blog.xml', {
+    const xmlResponse = await fetch('https://www.brainmediaconsulting.com/api/upload/download/blog.xml', {
       next: { revalidate: 300 } // Cache for 5 minutes
     });
 
