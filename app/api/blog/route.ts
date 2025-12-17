@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
     const articleId = searchParams.get('id');
 
     // Fetch XML from the external source
-    const xmlResponse = await fetch('https://www.brainmediaconsulting.com/api/upload/download/blog.xml', {
+    const xmlResponse = await fetch('https://3s8bomyydqcsvtib.public.blob.vercel-storage.com/uploads/xml/blog.xml', {
       next: { revalidate: 300 } // Cache for 5 minutes
     });
 
