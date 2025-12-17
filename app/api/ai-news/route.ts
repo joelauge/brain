@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
     const articleId = searchParams.get('id');
 
     // Fetch XML from the external source
-    const xmlResponse = await fetch('http://www.givecupid.com/latest.xml', {
+    const xmlResponse = await fetch('https://3s8bomyydqcsvtib.public.blob.vercel-storage.com/uploads/xml/news.xml', {
       next: { revalidate: 300 } // Cache for 5 minutes
     });
 

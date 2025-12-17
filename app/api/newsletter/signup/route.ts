@@ -53,6 +53,28 @@ export async function POST(request: NextRequest) {
         }
       );
 
+      // Generate MD5 hash of lowercase email for MailChimp subscriber hash
+      const crypto = await import('crypto');
+      const subscriberHash = crypto
+        .createHash('md5')
+        .update(email.toLowerCase())
+        .digest('hex');
+
+      // Add the "news" tag to the member
+      try {
+        await mailchimp.lists.updateListMemberTags(
+          process.env.MAILCHIMP_AUDIENCE_ID,
+          subscriberHash,
+          {
+            tags: [{ name: 'news', status: 'active' }],
+          }
+        );
+        console.log('Successfully added "news" tag to member');
+      } catch (tagError) {
+        console.error('Error adding tag to member:', tagError);
+        // Continue anyway, tag update is not critical
+      }
+
       console.log('Successfully subscribed to Mailchimp:', response.id);
 
       return NextResponse.json({
@@ -64,7 +86,30 @@ export async function POST(request: NextRequest) {
       if (mailchimpError.status === 400) {
         const errorBody = mailchimpError.response?.body;
         if (errorBody?.title === 'Member Exists') {
-          // Email already exists in the list
+          // Email already exists in the list, update tags
+          try {
+            // Generate MD5 hash of lowercase email for MailChimp subscriber hash
+            const crypto = await import('crypto');
+            const subscriberHash = crypto
+              .createHash('md5')
+              .update(email.toLowerCase())
+              .digest('hex');
+            
+            // Add the "news" tag to existing member
+            await mailchimp.lists.updateListMemberTags(
+              process.env.MAILCHIMP_AUDIENCE_ID,
+              subscriberHash,
+              {
+                tags: [{ name: 'news', status: 'active' }],
+              }
+            );
+            
+            console.log('Successfully added "news" tag to existing member');
+          } catch (tagError) {
+            console.error('Error adding tag to existing member:', tagError);
+            // Continue anyway, tag update is not critical
+          }
+          
           return NextResponse.json({
             success: true,
             message: 'You are already subscribed to our newsletter',
