@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
       
       if (file) {
         fileName = file.name;
-      }
+        }
     } 
     // Handle raw file data (binary/octet-stream)
     else if (contentType.includes('application/octet-stream') || 
@@ -164,7 +164,7 @@ export async function POST(request: NextRequest) {
       const sanitizedFileName = fileName.replace(/[^a-zA-Z0-9.-]/g, '_');
       finalFileName = sanitizedFileName.endsWith('.xml') ? sanitizedFileName : `${sanitizedFileName}.xml`;
     }
-
+    
     // Convert file to buffer
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
@@ -176,11 +176,12 @@ export async function POST(request: NextRequest) {
       // Use Vercel Blob Storage for persistent storage
       const blobPath = `uploads/xml/${finalFileName}`;
       
-      // Check if blob exists (Vercel Blob doesn't have a direct exists check, so we'll try to upload)
-      // If the same path is used, it will overwrite automatically
+      // Upload to Vercel Blob Storage with overwrite enabled
+      // This allows uploading the same filename to overwrite existing files
       const blob = await put(blobPath, buffer, {
         access: 'public',
         contentType: 'application/xml',
+        allowOverwrite: true, // Allow overwriting existing files with same filename
       });
       
       blobUrl = blob.url;
@@ -188,7 +189,7 @@ export async function POST(request: NextRequest) {
       // Local development: use filesystem
       const filePath = path.join(UPLOAD_DIR, finalFileName);
       fileExists = existsSync(filePath);
-      await writeFile(filePath, new Uint8Array(buffer));
+    await writeFile(filePath, new Uint8Array(buffer));
       
       const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 
                       request.headers.get('origin') || 
