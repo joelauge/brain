@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import mailchimp from '@mailchimp/mailchimp_marketing';
-import { ReadinessAssessment } from '@/mocks/ai-readiness-questions';
+import { ReadinessAssessment, aiReadinessQuestions } from '@/mocks/ai-readiness-questions';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -597,8 +597,28 @@ function generateAssessmentEmail(assessment: ReadinessAssessment): string {
           <div class="info-row">
             <div class="info-label" style="width: 100%; margin-bottom: 8px;">About Your Organization & Goals:</div>
           </div>
-          <div class="info-value" style="padding: 15px; background: #f9f9f9; border-radius: 4px; white-space: pre-wrap; color: #333;">
+          <div class="info-value" style="padding: 15px; background: #f9f9f9; border-radius: 4px; white-space: pre-wrap; color: #333; margin-bottom: 16px;">
             ${organizationInfo}
+          </div>
+          <div class="info-row">
+            <div class="info-label">Primary Sector:</div>
+            <div class="info-value">${(() => {
+              const sectorAnswer = assessment.answers?.['primary-sector'];
+              if (!sectorAnswer) return 'Not provided';
+              const sectorQuestion = aiReadinessQuestions.find(q => q.id === 'primary-sector');
+              const option = sectorQuestion?.options?.find(opt => opt.value === sectorAnswer);
+              return option?.label || sectorAnswer;
+            })()}</div>
+          </div>
+          <div class="info-row">
+            <div class="info-label">Annual Operating Budget:</div>
+            <div class="info-value">${(() => {
+              const budgetAnswer = assessment.answers?.['annual-budget'];
+              if (!budgetAnswer) return 'Not provided';
+              const budgetQuestion = aiReadinessQuestions.find(q => q.id === 'annual-budget');
+              const option = budgetQuestion?.options?.find(opt => opt.value === budgetAnswer);
+              return option?.label || budgetAnswer;
+            })()}</div>
           </div>
         </div>
         
@@ -630,9 +650,9 @@ function generateAssessmentEmail(assessment: ReadinessAssessment): string {
         
         ${Object.keys(assessment.categoryScores || {}).length > 0 ? `
         <div class="section">
-          <div class="section-title">Pillar Scores (0-5 Scale)</div>
+          <div class="section-title">Pillar Responses & Scores (0-5 Scale)</div>
           ${Object.entries(assessment.categoryScores || {}).map(([category, score]: [string, any]) => {
-            // Get the pillar name from the questions array
+            // Get the pillar name and answer text from the questions array
             const pillarNames: Record<string, string> = {
               'mission-alignment': 'Mission Alignment',
               'culture-change': 'Culture & Change Readiness',
@@ -646,10 +666,36 @@ function generateAssessmentEmail(assessment: ReadinessAssessment): string {
               'vendor-readiness': 'Vendor & Tool Readiness'
             };
             const pillarName = pillarNames[category] || category.replace(/-/g, ' ');
+            
+            // Get the actual answer text
+            const question = aiReadinessQuestions.find(q => q.id === category);
+            const answerValue = assessment.answers?.[category];
+            let answerText = 'Not answered';
+            if (answerValue !== undefined && answerValue !== null && answerValue !== '') {
+              if (question?.type === 'text') {
+                answerText = answerValue;
+              } else if (question?.options) {
+                const selectedOption = question.options.find(opt => opt.value === answerValue);
+                answerText = selectedOption?.label || answerValue;
+              }
+            }
+            
             return `
-            <div class="info-row">
-              <div class="info-label">${pillarName}:</div>
-              <div class="info-value">${score}/5</div>
+            <div style="margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #e0e0e0;">
+              <div class="info-row" style="margin-bottom: 6px;">
+                <div class="info-label" style="font-weight: 700; color: #6366f1;">${pillarName}:</div>
+                <div class="info-value" style="font-weight: 600; color: #333;">
+                  <span class="score-badge">${score}/5</span>
+                </div>
+              </div>
+              <div class="info-row">
+                <div class="info-label" style="font-size: 13px; color: #888;">Question:</div>
+                <div class="info-value" style="font-size: 13px; color: #555; font-style: italic;">${question?.question || 'N/A'}</div>
+              </div>
+              <div class="info-row" style="margin-top: 8px;">
+                <div class="info-label" style="font-size: 13px; color: #888;">Answer:</div>
+                <div class="info-value" style="font-size: 13px; color: #333; font-weight: 500;">${answerText}</div>
+              </div>
             </div>
           `;
           }).join('')}
@@ -794,18 +840,36 @@ export async function POST(request: NextRequest) {
         ];
 
         if (process.env.RESEND_API_KEY) {
+            // Generate email HTML first to catch any template generation errors
+            let assessmentEmailHTML: string;
+            try {
+                assessmentEmailHTML = generateAssessmentEmail(assessment);
+                console.log('✅ Assessment email HTML generated successfully');
+            } catch (templateError) {
+                console.error('❌ Error generating assessment email HTML:', templateError);
+                assessmentEmailHTML = '<html><body><p>Error generating email template</p></body></html>';
+            }
+
             // Send notification emails to David and Joel (don't block on failures)
             const notificationPromises = notificationEmails.map(async (email) => {
                 try {
-                    await resend.emails.send({
+                    console.log(`📧 Attempting to send notification email to: ${email}`);
+                    const result = await resend.emails.send({
                         from: 'Brain Media Consulting <noreply@brainmediaconsulting.com>',
                         to: [email],
                         subject: `New AI Readiness Assessment - ${assessment.company || 'New Lead'}`,
-                        html: generateAssessmentEmail(assessment),
+                        html: assessmentEmailHTML,
                     });
-                    console.log(`✅ Notification email sent to ${email}`);
-                } catch (error) {
+                    console.log(`✅ Notification email sent successfully to ${email}`, result);
+                    return { email, success: true, result };
+                } catch (error: any) {
                     console.error(`❌ Error sending notification email to ${email}:`, error);
+                    console.error(`Error details:`, {
+                        message: error?.message,
+                        statusCode: error?.statusCode,
+                        response: error?.response
+                    });
+                    return { email, success: false, error };
                 }
             });
 
@@ -821,13 +885,19 @@ export async function POST(request: NextRequest) {
                 });
                 console.log('✅ Confirmation email sent successfully to user:', assessment.email);
                 console.log('📧 Email send result:', userConfirmationResult);
-            } catch (emailError) {
+            } catch (emailError: any) {
                 console.error('❌ Error sending confirmation email to user:', assessment.email, emailError);
+                console.error('Error details:', {
+                    message: emailError?.message,
+                    statusCode: emailError?.statusCode,
+                    response: emailError?.response
+                });
                 // Log the error but don't fail the request - we still want to return success
             }
 
             // Wait for notification emails (but don't fail if they error)
-            await Promise.allSettled(notificationPromises);
+            const notificationResults = await Promise.allSettled(notificationPromises);
+            console.log('📧 Notification email results:', notificationResults);
         } else {
             console.log('📧 [DEV] Notification emails (not sent - no API key):', {
                 to: notificationEmails,

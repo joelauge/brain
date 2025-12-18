@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Layout from "@/components/Layout";
-import Join from "@/components/Join";
 import Hero from "./Hero";
 import Questionnaire from "./Questionnaire";
 import Results from "./Results";
@@ -31,7 +30,6 @@ const AIReadinessAssessmentPage = () => {
             ) : (
                 assessment && <Results assessment={assessment} onRestart={handleRestart} />
             )}
-            {!showResults && <Join />}
         </Layout>
     );
 };
