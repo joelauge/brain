@@ -187,7 +187,7 @@ Contact Information:
 
 Assessment Results:
 - Overall Score: ${assessment.overallScore || 0}/100
-- Readiness Level: ${assessment.readinessLevel || 'beginner'}
+- Readiness Stage: ${assessment.roadmapStageName || 'Awareness & Literacy'} (Stage ${assessment.roadmapStage || 1})
 
 Category Scores:
 ${Object.entries(assessment.categoryScores || {}).map(([category, score]: [string, any]) => 
