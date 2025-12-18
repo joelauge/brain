@@ -46,36 +46,36 @@ export default function RootLayout({
             <html lang="en">
                 <head>
                 <meta
-                    content="AI Consulting with BRAIN Media Consulting"
-                    name="Professional AI consulting services with Joel and Dave. Get personalized guidance on AI tools, strategies, and implementation for your business."
+                    name="description"
+                    content="Professional AI consulting services with Joel and Dave. Get personalized guidance on AI tools, strategies, and implementation for your business."
                 />
                 <meta
-                    content="Professional AI consulting services with Joel and Dave. Get personalized guidance on AI tools, strategies, and implementation for your business."
                     property="og:title"
+                    content="AI Consulting with BRAIN Media Consulting"
                 />
                 <meta
-                    content="Professional AI consulting services with Joel and Dave. Get personalized guidance on AI tools, strategies, and implementation for your business."
                     property="og:description"
+                    content="Professional AI consulting services with Joel and Dave. Get personalized guidance on AI tools, strategies, and implementation for your business."
                 />
                 <meta
-                    content="%PUBLIC_URL%/fb-og-image.png"
                     property="og:image"
+                    content="%PUBLIC_URL%/fb-og-image.png"
                 />
                 <meta
                     property="og:url"
-                    content="https://ui8.net/ui8/products/brainwave-ai-landing-page-kit"
+                    content="https://www.brainmediaconsulting.com"
                 />
                 <meta
                     property="og:site_name"
-                    content="Professional AI consulting services with Joel and Dave. Get personalized guidance on AI tools, strategies, and implementation for your business."
+                    content="BRAIN Media Consulting"
                 />
                 <meta
-                    content="Professional AI consulting services with Joel and Dave. Get personalized guidance on AI tools, strategies, and implementation for your business."
                     property="twitter:title"
+                    content="AI Consulting with BRAIN Media Consulting"
                 />
                 <meta
-                    content="Professional AI consulting services with Joel and Dave. Get personalized guidance on AI tools, strategies, and implementation for your business."
                     property="twitter:description"
+                    content="Professional AI consulting services with Joel and Dave. Get personalized guidance on AI tools, strategies, and implementation for your business."
                 />
                 <meta
                     content="%PUBLIC_URL%/twitter-card.png"
