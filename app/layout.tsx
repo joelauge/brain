@@ -46,15 +46,15 @@ export default function RootLayout({
             <html lang="en">
                 <head>
                 <meta
-                    content="Beautiful AI Landing Page UI Kit for your next website projects"
-                    name="Brainwave - AI Landing Page Kit"
+                    content="AI Consulting with BRAIN Media Consulting"
+                    name="Professional AI consulting services with Joel and Dave. Get personalized guidance on AI tools, strategies, and implementation for your business."
                 />
                 <meta
-                    content="Brainwave - AI Landing Page Kit"
+                    content="Professional AI consulting services with Joel and Dave. Get personalized guidance on AI tools, strategies, and implementation for your business."
                     property="og:title"
                 />
                 <meta
-                    content="Beautiful AI Landing Page UI Kit for your next website projects"
+                    content="Professional AI consulting services with Joel and Dave. Get personalized guidance on AI tools, strategies, and implementation for your business."
                     property="og:description"
                 />
                 <meta
@@ -67,14 +67,14 @@ export default function RootLayout({
                 />
                 <meta
                     property="og:site_name"
-                    content="Brainwave - AI Landing Page Kit"
+                    content="Professional AI consulting services with Joel and Dave. Get personalized guidance on AI tools, strategies, and implementation for your business."
                 />
                 <meta
-                    content="Brainwave - AI Landing Page Kit"
+                    content="Professional AI consulting services with Joel and Dave. Get personalized guidance on AI tools, strategies, and implementation for your business."
                     property="twitter:title"
                 />
                 <meta
-                    content="Beautiful AI Landing Page UI Kit for your next website projects"
+                    content="Professional AI consulting services with Joel and Dave. Get personalized guidance on AI tools, strategies, and implementation for your business."
                     property="twitter:description"
                 />
                 <meta
