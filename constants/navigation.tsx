@@ -21,23 +21,28 @@ export const navigation = [
     },
     {
         id: "4",
+        title: "AI Readiness Assessment",
+        url: "/ai-readiness-assessment",
+    },
+    {
+        id: "5",
         title: "Book Consultation",
         url: "/booking",
     },
     {
-        id: "5",
+        id: "6",
         title: "Dashboard",
         url: "/dashboard",
         authRequired: true,
     },
     {
-        id: "6",
+        id: "7",
         title: "New account",
         url: "/login?new=true",
         onlyMobile: true,
     },
     {
-        id: "7",
+        id: "8",
         title: "Sign in",
         url: "/login",
         onlyMobile: true,
