@@ -4,6 +4,7 @@ import "./globals.css";
 import { Sora, Source_Code_Pro, Space_Grotesk } from "next/font/google";
 import ClerkWrapper from "@/components/ClerkWrapper";
 import { ReactNode } from "react";
+import Script from "next/script";
 
 const sora = Sora({
     weight: ["300", "400", "600"],
@@ -45,36 +46,36 @@ export default function RootLayout({
             <html lang="en">
                 <head>
                 <meta
-                    content="Beautiful AI Landing Page UI Kit for your next website projects"
-                    name="Brainwave - AI Landing Page Kit"
+                    name="description"
+                    content="Professional AI consulting services with Joel and Dave. Get personalized guidance on AI tools, strategies, and implementation for your business."
                 />
                 <meta
-                    content="Brainwave - AI Landing Page Kit"
                     property="og:title"
+                    content="AI Consulting with BRAIN Media Consulting"
                 />
                 <meta
-                    content="Beautiful AI Landing Page UI Kit for your next website projects"
                     property="og:description"
+                    content="Professional AI consulting services with Joel and Dave. Get personalized guidance on AI tools, strategies, and implementation for your business."
                 />
                 <meta
-                    content="%PUBLIC_URL%/fb-og-image.png"
                     property="og:image"
+                    content="%PUBLIC_URL%/fb-og-image.png"
                 />
                 <meta
                     property="og:url"
-                    content="https://ui8.net/ui8/products/brainwave-ai-landing-page-kit"
+                    content="https://www.brainmediaconsulting.com"
                 />
                 <meta
                     property="og:site_name"
-                    content="Brainwave - AI Landing Page Kit"
+                    content="BRAIN Media Consulting"
                 />
                 <meta
-                    content="Brainwave - AI Landing Page Kit"
                     property="twitter:title"
+                    content="AI Consulting with BRAIN Media Consulting"
                 />
                 <meta
-                    content="Beautiful AI Landing Page UI Kit for your next website projects"
                     property="twitter:description"
+                    content="Professional AI consulting services with Joel and Dave. Get personalized guidance on AI tools, strategies, and implementation for your business."
                 />
                 <meta
                     content="%PUBLIC_URL%/twitter-card.png"
@@ -91,6 +92,19 @@ export default function RootLayout({
                 />
                 <meta name="msapplication-TileColor" content="#da532c" />
                 <meta name="theme-color" content="#ffffff" />
+                {/* Google tag (gtag.js) */}
+                <Script
+                    src="https://www.googletagmanager.com/gtag/js?id=G-X65K98S312"
+                    strategy="afterInteractive"
+                />
+                <Script id="google-analytics" strategy="afterInteractive">
+                    {`
+                        window.dataLayer = window.dataLayer || [];
+                        function gtag(){dataLayer.push(arguments);}
+                        gtag('js', new Date());
+                        gtag('config', 'G-X65K98S312');
+                    `}
+                </Script>
             </head>
             <body
                 className={`${sora.variable} ${code.variable} ${grotesk.variable} font-sans bg-n-8 text-n-1 text-base`}

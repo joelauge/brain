@@ -36,8 +36,7 @@ export async function GET(request: NextRequest) {
         explicitArray: false, 
         mergeAttrs: true,
         explicitCharkey: false,
-        trim: true,
-        cdata: true
+        trim: true
       }, (err, result) => {
         if (err) reject(err);
         else resolve(result);

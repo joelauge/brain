@@ -1,34 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { put } from '@vercel/blob';
 import { writeFile, mkdir } from 'fs/promises';
 import { existsSync } from 'fs';
 import path from 'path';
 
-// On Vercel, use /tmp for writable storage, otherwise use public/uploads/xml
-// Note: Files in /tmp won't be publicly accessible, but will work for API
-// For production, consider using Vercel Blob Storage or S3
-const isVercel = process.env.VERCEL === '1';
-const UPLOAD_DIR = isVercel 
-  ? path.join('/tmp', 'uploads', 'xml')
-  : path.join(process.cwd(), 'public', 'uploads', 'xml');
+// Use Vercel Blob Storage for persistent file storage
+// Fallback to local filesystem for local development
+const useBlobStorage = process.env.VERCEL === '1' || process.env.BLOB_READ_WRITE_TOKEN;
+const UPLOAD_DIR = path.join(process.cwd(), 'public', 'uploads', 'xml');  // Local fallback
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
-
-/**
- * Verify API key from request headers or query params
- */
-function verifyApiKey(request: NextRequest): boolean {
-  const apiKey = request.headers.get('x-api-key') || 
-                 request.headers.get('authorization')?.replace('Bearer ', '') ||
-                 new URL(request.url).searchParams.get('apiKey');
-  
-  const expectedApiKey = process.env.UPLOAD_API_KEY;
-  
-  if (!expectedApiKey) {
-    console.warn('UPLOAD_API_KEY not set in environment variables');
-    return false;
-  }
-  
-  return apiKey === expectedApiKey;
-}
 
 /**
  * Extract filename from Content-Disposition header or use default
@@ -46,20 +26,9 @@ function extractFilename(contentDisposition: string | null, defaultName: string 
 
 export async function POST(request: NextRequest) {
   try {
-    // Verify API key
-    if (!verifyApiKey(request)) {
-      return NextResponse.json(
-        { 
-          success: false,
-          error: 'Unauthorized. Invalid or missing API key.',
-          hint: 'Include API key in X-API-Key header, Authorization header, or apiKey query parameter'
-        },
-        { status: 401 }
-      );
-    }
-
-    // Ensure upload directory exists
-    if (!existsSync(UPLOAD_DIR)) {
+    // No authentication required - public upload endpoint
+    // Ensure upload directory exists for local development
+    if (!useBlobStorage && !existsSync(UPLOAD_DIR)) {
       await mkdir(UPLOAD_DIR, { recursive: true });
     }
 
@@ -89,7 +58,7 @@ export async function POST(request: NextRequest) {
       
       if (file) {
         fileName = file.name;
-      }
+        }
     } 
     // Handle raw file data (binary/octet-stream)
     else if (contentType.includes('application/octet-stream') || 
@@ -182,7 +151,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Determine final filename
+    // Determine final filename - use requested filename or original filename
+    // If same filename is uploaded, it will overwrite the existing file
     let finalFileName: string;
     if (requestedFileName) {
       // Sanitize the requested filename
@@ -190,19 +160,42 @@ export async function POST(request: NextRequest) {
       // Ensure it ends with .xml
       finalFileName = sanitized.endsWith('.xml') ? sanitized : `${sanitized}.xml`;
     } else {
-      // Generate unique filename (timestamp + original name) if no filename provided
-      const timestamp = Date.now();
+      // Use original filename (sanitized) - will overwrite if same name exists
       const sanitizedFileName = fileName.replace(/[^a-zA-Z0-9.-]/g, '_');
-      finalFileName = `${timestamp}_${sanitizedFileName}`;
+      finalFileName = sanitizedFileName.endsWith('.xml') ? sanitizedFileName : `${sanitizedFileName}.xml`;
     }
     
-    const filePath = path.join(UPLOAD_DIR, finalFileName);
-
-    // Convert file to buffer and save
+    // Convert file to buffer
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-    // Convert Buffer to Uint8Array for writeFile compatibility
+
+    let blobUrl: string;
+    let fileExists = false;
+
+    if (useBlobStorage) {
+      // Use Vercel Blob Storage for persistent storage
+      const blobPath = `uploads/xml/${finalFileName}`;
+      
+      // Upload to Vercel Blob Storage with overwrite enabled
+      // This allows uploading the same filename to overwrite existing files
+      const blob = await put(blobPath, buffer, {
+        access: 'public',
+        contentType: 'application/xml',
+        allowOverwrite: true, // Allow overwriting existing files with same filename
+      });
+      
+      blobUrl = blob.url;
+    } else {
+      // Local development: use filesystem
+      const filePath = path.join(UPLOAD_DIR, finalFileName);
+      fileExists = existsSync(filePath);
     await writeFile(filePath, new Uint8Array(buffer));
+      
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 
+                      request.headers.get('origin') || 
+                      `http://${request.headers.get('host') || 'localhost:3000'}`;
+      blobUrl = `${baseUrl}/uploads/xml/${finalFileName}`;
+    }
 
     // Return success with file info
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 
@@ -214,9 +207,11 @@ export async function POST(request: NextRequest) {
       fileName: finalFileName,
       originalName: fileName,
       size: file.size,
-      url: isVercel ? `/api/upload/download/${finalFileName}` : `/uploads/xml/${finalFileName}`,
-      fullUrl: isVercel ? `${baseUrl}/api/upload/download/${finalFileName}` : `${baseUrl}/uploads/xml/${finalFileName}`,
-      uploadedAt: new Date().toISOString()
+      url: useBlobStorage ? blobUrl : `/uploads/xml/${finalFileName}`,
+      fullUrl: blobUrl,
+      uploadedAt: new Date().toISOString(),
+      overwritten: fileExists,
+      storage: useBlobStorage ? 'vercel-blob' : 'filesystem'
     }, { status: 200 });
   } catch (error) {
     console.error('Error uploading file via automation API:', error);
@@ -235,14 +230,20 @@ export async function POST(request: NextRequest) {
 export async function GET(request: NextRequest) {
   return NextResponse.json({
     service: 'File Upload Automation API',
-    version: '1.0.0',
+    version: '2.0.0',
     status: 'operational',
     endpoints: {
       upload: 'POST /api/upload/automation',
-      authentication: 'API key required (X-API-Key header, Authorization header, or apiKey query param)'
+      download: 'GET /api/upload/download/[filename]',
+      authentication: 'No authentication required - public endpoint'
     },
     parameters: {
-      filename: 'Optional. Specify custom filename via query parameter (?filename=myfile.xml) or in request body/form data. If not provided, uses timestamp + original name.'
+      filename: 'Optional. Specify custom filename via query parameter (?filename=myfile.xml) or in request body/form data. If not provided, uses original filename. Uploading the same filename will overwrite the existing file.'
+    },
+    behavior: {
+      overwrite: 'Files with the same filename will be overwritten',
+      publicAccess: 'All uploaded files are publicly accessible',
+      storage: useBlobStorage ? 'Vercel Blob Storage (persistent)' : 'Local filesystem (/uploads/xml/)'
     },
     supportedFormats: [
       'multipart/form-data',

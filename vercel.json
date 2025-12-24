@@ -8,6 +8,10 @@
     {
       "path": "/api/cron/ai-policy-followup",
       "schedule": "0 10 * * *"
+    },
+    {
+      "path": "/api/cron/ai-preparedness-followup",
+      "schedule": "0 10 * * *"
     }
   ]
 }

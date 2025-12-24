@@ -110,7 +110,11 @@ export async function GET(request: NextRequest) {
                 videoId: video.id,
                 title: video.snippet.title,
                 description: video.snippet.description,
-                thumbnail: video.snippet.thumbnails.high?.url || video.snippet.thumbnails.default.url,
+                thumbnail: video.snippet.thumbnails.maxres?.url || 
+                           video.snippet.thumbnails.high?.url || 
+                           video.snippet.thumbnails.medium?.url || 
+                           video.snippet.thumbnails.default?.url || 
+                           '',
                 publishedAt: video.snippet.publishedAt,
                 duration: video.contentDetails.duration,
             }))

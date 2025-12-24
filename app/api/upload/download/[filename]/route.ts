@@ -1,14 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { head } from '@vercel/blob';
 import { readFile } from 'fs/promises';
 import { existsSync } from 'fs';
 import path from 'path';
 
-// Use the same conditional logic as upload endpoints
-// On Vercel, use /tmp for writable storage, otherwise use public/uploads/xml
-const isVercel = process.env.VERCEL === '1';
-const UPLOAD_DIR = isVercel 
-  ? path.join('/tmp', 'uploads', 'xml')
-  : path.join(process.cwd(), 'public', 'uploads', 'xml');
+// Use Vercel Blob Storage for persistent file storage
+// Fallback to local filesystem for local development
+const useBlobStorage = process.env.VERCEL === '1' || process.env.BLOB_READ_WRITE_TOKEN;
+const UPLOAD_DIR = path.join(process.cwd(), 'public', 'uploads', 'xml');  // Local fallback
 
 export async function GET(
   request: NextRequest,
@@ -25,16 +24,54 @@ export async function GET(
       );
     }
 
-    const filePath = path.join(UPLOAD_DIR, filename);
+    let fileContent: Buffer;
 
-    if (!existsSync(filePath)) {
-      return NextResponse.json(
-        { error: 'File not found' },
-        { status: 404 }
-      );
+    if (useBlobStorage) {
+      // Fetch from Vercel Blob Storage
+      const blobPath = `uploads/xml/${filename}`;
+      
+      try {
+        // Check if blob exists
+        const blob = await head(blobPath);
+        
+        if (!blob) {
+          return NextResponse.json(
+            { error: 'File not found' },
+            { status: 404 }
+          );
+        }
+
+        // Fetch the blob content (blob URL is publicly accessible)
+        const response = await fetch(blob.url);
+        if (!response.ok) {
+          return NextResponse.json(
+            { error: 'File not found' },
+            { status: 404 }
+          );
+        }
+        
+        const arrayBuffer = await response.arrayBuffer();
+        fileContent = Buffer.from(arrayBuffer);
+      } catch (error) {
+        // If head fails, the blob doesn't exist
+        return NextResponse.json(
+          { error: 'File not found' },
+          { status: 404 }
+        );
+      }
+    } else {
+      // Local development: use filesystem
+      const filePath = path.join(UPLOAD_DIR, filename);
+
+      if (!existsSync(filePath)) {
+        return NextResponse.json(
+          { error: 'File not found' },
+          { status: 404 }
+        );
+      }
+
+      fileContent = await readFile(filePath);
     }
-
-    const fileContent = await readFile(filePath);
     
     // Convert Buffer to Uint8Array for NextResponse compatibility
     return new NextResponse(new Uint8Array(fileContent), {

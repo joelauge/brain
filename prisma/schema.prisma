@@ -153,3 +153,44 @@ model PDFGenerationJob {
 
   @@map("pdf_generation_jobs")
 }
+
+model AIPreparednessAssessment {
+  id                String   @id @default(cuid())
+  email             String
+  firstName         String?
+  lastName          String?
+  company           String?
+  currentRole       String
+  industry          String
+  aiKnowledge       String
+  aiExperience      String   // JSON array
+  learningGoals     String   // JSON array
+  timeCommitment    String
+  learningStyle     String   // JSON array
+  urgency           String
+  challenges        String   // JSON array
+  supportNeeds       String   // JSON array
+  additionalContext String?
+  followUpSent      Boolean  @default(false)
+  followUpSentAt    DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@map("ai_preparedness_assessments")
+}
+
+model PreparednessReportJob {
+  id            String   @id @default(cuid())
+  status        String   @default("pending") // pending, processing, completed, failed
+  progress      Int      @default(0) // 0-100
+  statusMessage String   @default("")
+  assessmentData String  // JSON string of PreparednessAssessment
+  reportData    String?  // JSON string of generated report
+  pdfUrl        String?  // URL to download the PDF when complete
+  error         String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  completedAt   DateTime?
+
+  @@map("preparedness_report_jobs")
+}

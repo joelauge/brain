@@ -1,0 +1,53 @@
+{
+  "name": "Upload XML to Brain Consulting",
+  "nodes": [
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://www.brainmediaconsulting.com/api/upload/automation",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "d3ec3b034d1151aea7fb3a43241cb0311c458e1f0309e93e6dd5b0e888465cb5"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "file",
+              "value": "={{ $binary.data }}"
+            }
+          ]
+        },
+        "options": {
+          "bodyContentType": "multipart-form-data"
+        }
+      },
+      "id": "upload-xml-node",
+      "name": "Upload XML File",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        250,
+        300
+      ],
+      "notes": "Uploads XML files to Brain Consulting automation API"
+    }
+  ],
+  "connections": {},
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2025-12-07T03:00:00.000Z",
+  "versionId": "1"
+}
+
+

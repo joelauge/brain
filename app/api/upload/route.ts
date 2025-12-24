@@ -45,11 +45,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Generate unique filename (timestamp + original name)
-    const timestamp = Date.now();
+    // Sanitize filename for security (preserve original name, just clean it)
     const sanitizedFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_');
-    const fileName = `${timestamp}_${sanitizedFileName}`;
+    // Remove any path components for security
+    const fileName = path.basename(sanitizedFileName);
     const filePath = path.join(UPLOAD_DIR, fileName);
+    
+    // Check if file already exists (will be overwritten)
+    const fileExists = existsSync(filePath);
 
     // Convert file to buffer and save
     const bytes = await file.arrayBuffer();
@@ -58,13 +61,19 @@ export async function POST(request: NextRequest) {
     await writeFile(filePath, new Uint8Array(buffer));
 
     // Return success with file info
+    // Always use the download API endpoint for consistency (works in both local and production)
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 
+                    `http://localhost:3000`;
+    
     return NextResponse.json({
       success: true,
       fileName: fileName,
       originalName: file.name,
       size: file.size,
-      url: isVercel ? `/api/upload/download/${fileName}` : `/uploads/xml/${fileName}`,
-      uploadedAt: new Date().toISOString()
+      url: `/api/upload/download/${fileName}`,
+      fullUrl: `${baseUrl}/api/upload/download/${fileName}`,
+      uploadedAt: new Date().toISOString(),
+      overwritten: fileExists
     });
   } catch (error) {
     console.error('Error uploading file:', error);
@@ -92,9 +101,9 @@ export async function GET(request: NextRequest) {
           const stats = await stat(filePath);
           return {
             fileName: file,
-            originalName: file.replace(/^\d+_/, ''), // Remove timestamp prefix
+            originalName: file, // Filename is preserved, no timestamp prefix
             size: stats.size,
-            url: `/uploads/xml/${file}`,
+            url: `/api/upload/download/${file}`,
             uploadedAt: stats.birthtime.toISOString()
           };
         })
