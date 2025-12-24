@@ -16,16 +16,14 @@ const Results = ({ assessment, onRestart }: ResultsProps) => {
     const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
     const [progressStatus, setProgressStatus] = useState<string>('');
     const [progress, setProgress] = useState<number>(0);
-    const [jobId, setJobId] = useState<string | null>(null);
 
     const handleDownloadPDF = async () => {
         setIsGeneratingPDF(true);
         setProgress(0);
-        setProgressStatus('Creating PDF generation job...');
+        setProgressStatus('Generating PDF...');
         
         try {
-            // Step 1: Create job
-            const createResponse = await fetch('/api/ai-readiness-assessment/generate-pdf/queue', {
+            const response = await fetch('/api/ai-readiness-assessment/generate-pdf', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -33,111 +31,42 @@ const Results = ({ assessment, onRestart }: ResultsProps) => {
                 body: JSON.stringify(assessment),
             });
 
-            if (!createResponse.ok) {
-                const errorData = await createResponse.json().catch(() => ({ error: 'Unknown error' }));
-                throw new Error(errorData.error || 'Failed to create PDF generation job');
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+                const errorMessage = errorData.details 
+                    ? `${errorData.error}: ${errorData.details}`
+                    : errorData.error || 'Failed to generate PDF';
+                throw new Error(errorMessage);
             }
 
-            const { jobId: newJobId } = await createResponse.json();
-            setJobId(newJobId);
+            setProgress(50);
+            setProgressStatus('Preparing download...');
 
-            // Step 2: Poll for status
-            const pollInterval = setInterval(async () => {
-                try {
-                    const statusResponse = await fetch(`/api/ai-readiness-assessment/generate-pdf/status/${newJobId}`);
-                    
-                    if (!statusResponse.ok) {
-                        throw new Error('Failed to fetch job status');
-                    }
+            // Get PDF blob from response
+            const blob = await response.blob();
+            
+            setProgress(100);
+            setProgressStatus('Downloading...');
 
-                    const jobStatus = await statusResponse.json();
-                    
-                    // Update progress
-                    setProgress(jobStatus.progress);
-                    setProgressStatus(jobStatus.statusMessage || 'Processing...');
-
-                    // Check if completed
-                    if (jobStatus.status === 'completed') {
-                        clearInterval(pollInterval);
-                        setProgress(100);
-                        setProgressStatus('PDF ready! Downloading...');
-                        
-                        // Download PDF
-                        if (jobStatus.pdfUrl) {
-                            try {
-                                // Handle data URI
-                                if (jobStatus.pdfUrl.startsWith('data:')) {
-                                    // Convert data URI to blob
-                                    const base64Data = jobStatus.pdfUrl.split(',')[1];
-                                    const byteCharacters = atob(base64Data);
-                                    const byteNumbers = new Array(byteCharacters.length);
-                                    for (let i = 0; i < byteCharacters.length; i++) {
-                                        byteNumbers[i] = byteCharacters.charCodeAt(i);
-                                    }
-                                    const byteArray = new Uint8Array(byteNumbers);
-                                    const blob = new Blob([byteArray], { type: 'application/pdf' });
-                                    
-                                    const url = window.URL.createObjectURL(blob);
-                                    const a = document.createElement('a');
-                                    a.href = url;
-                                    a.download = `ai-readiness-assessment-${assessment.company || 'report'}-${Date.now()}.pdf`;
-                                    document.body.appendChild(a);
-                                    a.click();
-                                    window.URL.revokeObjectURL(url);
-                                    document.body.removeChild(a);
-                                } else {
-                                    // Regular URL
-                                    const response = await fetch(jobStatus.pdfUrl);
-                                    const blob = await response.blob();
-                                    
-                                    const url = window.URL.createObjectURL(blob);
-                                    const a = document.createElement('a');
-                                    a.href = url;
-                                    a.download = `ai-readiness-assessment-${assessment.company || 'report'}-${Date.now()}.pdf`;
-                                    document.body.appendChild(a);
-                                    a.click();
-                                    window.URL.revokeObjectURL(url);
-                                    document.body.removeChild(a);
-                                }
-                                
-                                setProgressStatus('Download complete!');
-                                setTimeout(() => {
-                                    setProgressStatus('');
-                                    setProgress(0);
-                                }, 2000);
-                            } catch (downloadError) {
-                                console.error('Error downloading PDF:', downloadError);
-                                setProgressStatus('');
-                                alert('PDF generated but download failed. Please contact support.');
-                            }
-                        }
-                        setIsGeneratingPDF(false);
-                    } else if (jobStatus.status === 'failed') {
-                        clearInterval(pollInterval);
-                        setIsGeneratingPDF(false);
-                        setProgressStatus('');
-                        throw new Error(jobStatus.error || 'PDF generation failed');
-                    }
-                } catch (error: any) {
-                    clearInterval(pollInterval);
-                    setIsGeneratingPDF(false);
-                    setProgressStatus('');
-                    throw error;
-                }
-            }, 500); // Poll every 500ms
-
-            // Timeout after 2 minutes
+            // Create download link
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `ai-readiness-assessment-${assessment.company || 'report'}-${Date.now()}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+            
+            setProgressStatus('Download complete!');
             setTimeout(() => {
-                clearInterval(pollInterval);
-                if (isGeneratingPDF) {
-                    setIsGeneratingPDF(false);
-                    setProgressStatus('');
-                    alert('PDF generation is taking longer than expected. Please try again or contact support.');
-                }
-            }, 120000);
+                setProgressStatus('');
+                setProgress(0);
+            }, 2000);
+            setIsGeneratingPDF(false);
 
         } catch (error: any) {
-            console.error('Error downloading PDF:', error);
+            console.error('Error generating PDF:', error);
             setProgressStatus('');
             setProgress(0);
             alert(`Failed to generate PDF: ${error.message || 'Unknown error'}. Please try again or contact support.`);
@@ -280,7 +209,7 @@ const Results = ({ assessment, onRestart }: ResultsProps) => {
                         <h3 className={`h3 mb-2 ${getStageColor(assessment.roadmapStage || 1)}`}>
                             Stage {assessment.roadmapStage || 1}: {assessment.roadmapStageName || 'Awareness & Literacy'}
                         </h3>
-                        <p className="body-2 text-n-3">
+                        <p className="body-2 text-n-3 mb-8">
                             {assessment.roadmapStage === 1 && 'Focus on Awareness. Your goal is to explain AI basics and address top fears like cost and privacy.'}
                             {assessment.roadmapStage === 2 && 'Focus on Opportunities. Your goal is to map repetitive tasks and identify 1-3 "Quick-Win" use cases.'}
                             {assessment.roadmapStage === 3 && 'Focus on Pilots. Your goal is to run small experiments like automated meeting summaries or donor insight reports.'}
@@ -289,6 +218,51 @@ const Results = ({ assessment, onRestart }: ResultsProps) => {
                             {assessment.roadmapStage === 6 && 'Focus on Strategic AI Deployment. You\'re ready for organization-wide strategic AI initiatives.'}
                             {assessment.roadmapStage === 7 && 'Fully Integrated. You have achieved a fully integrated, AI-driven organization.'}
                         </p>
+                        
+                        {/* All Roadmap Stages */}
+                        <div className="mt-8">
+                            <h4 className="h6 text-n-1 mb-4">AI Readiness Roadmap</h4>
+                            <p className="body-2 text-n-3 mb-6">
+                                Your organization is currently at Stage {assessment.roadmapStage || 1}. Below is the complete roadmap showing all stages of AI readiness:
+                            </p>
+                            <div className="space-y-3">
+                                {[
+                                    { stage: 1, name: 'Awareness & Literacy', description: 'Focus on Awareness. Your goal is to explain AI basics and address top fears like cost and privacy.' },
+                                    { stage: 2, name: 'Opportunity Identification', description: 'Focus on Opportunities. Your goal is to map repetitive tasks and identify 1-3 "Quick-Win" use cases.' },
+                                    { stage: 3, name: 'Pilot Projects', description: 'Focus on Pilots. Your goal is to run small experiments like automated meeting summaries or donor insight reports.' },
+                                    { stage: 4, name: 'Workflow Integration', description: 'Focus on Workflow Integration. Begin integrating AI into your core operational processes.' },
+                                    { stage: 5, name: 'Systems Integration', description: 'Focus on Systems Integration. Integrate AI capabilities across your entire technology infrastructure.' },
+                                    { stage: 6, name: 'Strategic AI Deployment', description: 'Focus on Strategic AI Deployment. You\'re ready for organization-wide strategic AI initiatives.' },
+                                    { stage: 7, name: 'Fully Integrated, AI-Driven Organization', description: 'Fully Integrated. You have achieved a fully integrated, AI-driven organization.' },
+                                ].map((stageInfo) => {
+                                    const isCurrent = stageInfo.stage === (assessment.roadmapStage || 1);
+                                    return (
+                                        <div
+                                            key={stageInfo.stage}
+                                            className={`p-4 rounded-lg border-l-4 ${
+                                                isCurrent
+                                                    ? 'bg-color-1/10 border-color-1'
+                                                    : 'bg-n-7 border-n-5'
+                                            }`}
+                                        >
+                                            <div className="flex items-center justify-between mb-2">
+                                                <h5 className={`h6 ${isCurrent ? 'text-color-1' : 'text-n-2'}`}>
+                                                    Stage {stageInfo.stage}: {stageInfo.name}
+                                                </h5>
+                                                {isCurrent && (
+                                                    <span className="px-3 py-1 bg-color-1 text-n-8 rounded-full text-xs font-bold">
+                                                        You are here
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <p className={`body-2 ${isCurrent ? 'text-n-2' : 'text-n-3'}`}>
+                                                {stageInfo.description}
+                                            </p>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -450,3 +424,4 @@ const Results = ({ assessment, onRestart }: ResultsProps) => {
 };
 
 export default Results;
+

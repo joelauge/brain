@@ -52,6 +52,11 @@ export async function POST(request: NextRequest) {
         });
     } catch (error: any) {
         console.error('Error creating PDF generation job:', error);
+        console.error('Error details:', {
+            message: error?.message,
+            name: error?.name,
+            stack: error?.stack,
+        });
         return NextResponse.json(
             { 
                 error: 'Failed to create job',
@@ -94,21 +99,15 @@ async function processPDFJob(jobId: string) {
         await updateJobProgress(jobId, 10, 'Loading branding assets...');
         const logoPath = await loadLogo();
 
-        // Step 2: Generate PDF content (30%)
-        await updateJobProgress(jobId, 30, 'Generating assessment report...');
-        
-        // TODO: Implement actual PDF generation using @react-pdf/renderer
-        // For now, create a simple placeholder PDF
+        // Step 2: Generate PDF (60%)
         await updateJobProgress(jobId, 60, 'Rendering PDF document...');
-        
-        // Placeholder: Create a simple text-based PDF
-        // In production, use @react-pdf/renderer similar to AI Policy Builder
-        const pdfContent = generateSimplePDF(assessment);
+        const pdfBuffer = await generatePDF(assessment, logoPath);
         await updateJobProgress(jobId, 80, 'PDF generated successfully');
 
-        // Step 3: Save PDF (we'll store it temporarily as base64)
+        // Step 3: Save PDF (we'll store it temporarily or use a storage service)
+        // For now, we'll store it as base64 in the database (not ideal for large files, but works)
         // In production, use Vercel Blob Storage, S3, or similar
-        const pdfBase64 = Buffer.from(pdfContent).toString('base64');
+        const pdfBase64 = pdfBuffer.toString('base64');
         const pdfDataUri = `data:application/pdf;base64,${pdfBase64}`;
 
         // Step 4: Mark as complete
@@ -170,32 +169,17 @@ async function loadLogo(): Promise<string> {
     return '';
 }
 
-function generateSimplePDF(assessment: ReadinessAssessment): string {
-    // TODO: Replace with actual PDF generation using @react-pdf/renderer
-    // This is a placeholder that returns a simple text representation
-    // For now, return a minimal PDF structure
-    // In production, implement similar to AI Policy Builder's PDF generation
+async function generatePDF(
+    assessment: ReadinessAssessment,
+    logoPath: string
+): Promise<Buffer> {
+    const { renderToBuffer } = await import('@react-pdf/renderer');
+    const { createAIReadinessDocument } = await import('@/lib/pdf-generator');
     
-    const pdfText = `
-AI Readiness Assessment Report
-==============================
-
-Contact Information:
-- Name: ${assessment.firstName || ''} ${assessment.lastName || ''}
-- Email: ${assessment.email}
-- Company: ${assessment.company || 'N/A'}
-
-Assessment Results:
-- Overall Score: ${assessment.overallScore || 0}/100
-- Readiness Level: ${assessment.readinessLevel || 'beginner'}
-
-Category Scores:
-${Object.entries(assessment.categoryScores || {}).map(([category, score]: [string, any]) => 
-    `- ${category}: ${score}/100`
-).join('\n')}
-
-This is a placeholder PDF. Implement full PDF generation using @react-pdf/renderer.
-    `;
+    const pdfDoc = createAIReadinessDocument(assessment, logoPath);
+    const pdfBuffer = await renderToBuffer(pdfDoc);
     
-    return pdfText;
+    // renderToBuffer already returns a Buffer, just ensure it's a Buffer type
+    return Buffer.isBuffer(pdfBuffer) ? pdfBuffer : Buffer.from(pdfBuffer);
 }
+

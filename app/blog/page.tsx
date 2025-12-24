@@ -180,6 +180,17 @@ function BlogContent() {
                         href={`/blog/${article.id}`}
                         className="bg-n-8 rounded-2xl border border-n-6 p-6 hover:border-color-1/50 transition-all group"
                       >
+                        {/* Thumbnail Image */}
+                        {article.img && (
+                          <div className="mb-4 rounded-lg overflow-hidden">
+                            <img
+                              src={article.img}
+                              alt={article.title}
+                              className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+                            />
+                          </div>
+                        )}
+
                         {/* Title */}
                         <h2 className="h5 text-n-1 mb-3 group-hover:text-color-1 transition-colors line-clamp-2">
                           {article.title}

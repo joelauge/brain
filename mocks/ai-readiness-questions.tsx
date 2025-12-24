@@ -304,3 +304,4 @@ export function calculateReadinessScore(assessment: ReadinessAssessment): {
         roadmapStageName
     };
 }
+

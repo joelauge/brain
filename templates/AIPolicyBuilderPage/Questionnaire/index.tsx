@@ -25,12 +25,17 @@ const Questionnaire = ({ onComplete }: QuestionnaireProps) => {
     const question = aiPolicyQuestions[currentQuestion];
     const progress = ((currentQuestion + 1) / aiPolicyQuestions.length) * 100;
 
-    // Auto-scroll to top when question changes
+    // Auto-scroll to top when question changes, accounting for sticky nav
     useEffect(() => {
         if (questionRef.current) {
-            questionRef.current.scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'start' 
+            // Account for sticky header: 4.75rem (76px) on mobile, 5.25rem (84px) on desktop
+            const headerHeight = window.innerWidth >= 1024 ? 84 : 76;
+            const elementPosition = questionRef.current.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.pageYOffset - headerHeight - 20; // 20px extra padding
+            
+            window.scrollTo({
+                top: Math.max(0, offsetPosition),
+                behavior: 'smooth'
             });
         }
     }, [currentQuestion]);
@@ -40,6 +45,14 @@ const Questionnaire = ({ onComplete }: QuestionnaireProps) => {
             ...prev,
             [question.id]: value
         }));
+
+        // Auto-advance for single and scale questions (not for multiple or text)
+        if ((question.type === 'single' || question.type === 'scale') && currentQuestion < aiPolicyQuestions.length - 1) {
+            // Small delay to allow UI to update before advancing
+            setTimeout(() => {
+                setCurrentQuestion(currentQuestion + 1);
+            }, 300);
+        }
     };
 
     const handleNext = () => {

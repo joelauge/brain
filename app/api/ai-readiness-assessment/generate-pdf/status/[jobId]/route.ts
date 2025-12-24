@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 
+/**
+ * GET /api/ai-readiness-assessment/generate-pdf/status/[jobId]
+ * Returns the current status of a PDF generation job
+ */
 export async function GET(
     request: NextRequest,
-    { params }: { params: { jobId: string } }
+    { params }: { params: Promise<{ jobId: string }> }
 ) {
     try {
-        const { jobId } = params;
+        const { jobId } = await params;
 
         if (!jobId) {
             return NextResponse.json(
@@ -28,13 +32,13 @@ export async function GET(
         }
 
         return NextResponse.json({
-            id: job.id,
+            jobId: job.id,
             status: job.status,
             progress: job.progress,
             statusMessage: job.statusMessage,
-            pdfUrl: job.pdfUrl || null,
-            error: job.error || null,
-            completedAt: job.completedAt || null,
+            pdfUrl: job.pdfUrl,
+            error: job.error,
+            completedAt: job.completedAt,
         });
     } catch (error: any) {
         console.error('Error fetching job status:', error);
@@ -44,3 +48,4 @@ export async function GET(
         );
     }
 }
+

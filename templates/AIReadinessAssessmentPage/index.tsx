@@ -35,3 +35,4 @@ const AIReadinessAssessmentPage = () => {
 };
 
 export default AIReadinessAssessmentPage;
+

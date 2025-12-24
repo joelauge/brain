@@ -110,6 +110,30 @@ export default function BlogArticlePage() {
             </Button>
           </div>
 
+          {/* Thumbnail Image with Watch Now Button */}
+          {article.img && (
+            <div className="relative mb-8 rounded-lg overflow-hidden">
+              <img
+                src={article.img}
+                alt={article.title}
+                className="w-full h-96 object-cover"
+              />
+              {article.video && article.video.url && (
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+                  <a
+                    href={article.video.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <Button white className="scale-150 opacity-90 shadow-2xl">
+                      Watch Now
+                    </Button>
+                  </a>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Article Header */}
           <div className="mb-8">
             {/* Title */}

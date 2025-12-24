@@ -5,7 +5,7 @@ import Section from "@/components/Section";
 import Tagline from "@/components/Tagline";
 import Button from "@/components/Button";
 import Image from "@/components/Image";
-import { PolicyAssessment } from "@/mocks/ai-policy-questions";
+import { PolicyAssessment, aiPolicyQuestions } from "@/mocks/ai-policy-questions";
 
 type ResultsProps = {
     assessment: PolicyAssessment;
@@ -16,16 +16,14 @@ const Results = ({ assessment, onRestart }: ResultsProps) => {
     const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
     const [progressStatus, setProgressStatus] = useState<string>('');
     const [progress, setProgress] = useState<number>(0);
-    const [jobId, setJobId] = useState<string | null>(null);
 
     const handleDownloadPDF = async () => {
         setIsGeneratingPDF(true);
         setProgress(0);
-        setProgressStatus('Creating PDF generation job...');
+        setProgressStatus('Generating PDF...');
         
         try {
-            // Step 1: Create job
-            const createResponse = await fetch('/api/ai-policy-builder/generate-pdf/queue', {
+            const response = await fetch('/api/ai-policy-builder/generate-pdf', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -33,109 +31,31 @@ const Results = ({ assessment, onRestart }: ResultsProps) => {
                 body: JSON.stringify(assessment),
             });
 
-            if (!createResponse.ok) {
-                const errorData = await createResponse.json().catch(() => ({ error: 'Unknown error' }));
-                throw new Error(errorData.error || 'Failed to create PDF generation job');
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+                throw new Error(errorData.error || 'Failed to generate PDF');
             }
 
-            const { jobId: newJobId } = await createResponse.json();
-            setJobId(newJobId);
-
-            // Step 2: Poll for status
-            const pollInterval = setInterval(async () => {
-                try {
-                    const statusResponse = await fetch(`/api/ai-policy-builder/generate-pdf/status/${newJobId}`);
-                    
-                    if (!statusResponse.ok) {
-                        throw new Error('Failed to fetch job status');
-                    }
-
-                    const jobStatus = await statusResponse.json();
-                    
-                    // Update progress
-                    setProgress(jobStatus.progress);
-                    setProgressStatus(jobStatus.statusMessage || 'Processing...');
-
-                    // Check if completed
-                    if (jobStatus.status === 'completed') {
-                        clearInterval(pollInterval);
-                        setProgress(100);
-                        setProgressStatus('PDF ready! Downloading...');
-                        
-                        // Download PDF
-                        if (jobStatus.pdfUrl) {
-                            try {
-                                // Handle data URI
-                                if (jobStatus.pdfUrl.startsWith('data:')) {
-                                    // Convert data URI to blob
-                                    const base64Data = jobStatus.pdfUrl.split(',')[1];
-                                    const byteCharacters = atob(base64Data);
-                                    const byteNumbers = new Array(byteCharacters.length);
-                                    for (let i = 0; i < byteCharacters.length; i++) {
-                                        byteNumbers[i] = byteCharacters.charCodeAt(i);
-                                    }
-                                    const byteArray = new Uint8Array(byteNumbers);
-                                    const blob = new Blob([byteArray], { type: 'application/pdf' });
-                                    
-                                    const url = window.URL.createObjectURL(blob);
-                                    const a = document.createElement('a');
-                                    a.href = url;
-                                    a.download = `draft-ai-policy-${assessment.company || 'policy'}-${Date.now()}.pdf`;
-                                    document.body.appendChild(a);
-                                    a.click();
-                                    window.URL.revokeObjectURL(url);
-                                    document.body.removeChild(a);
-                                } else {
-                                    // Regular URL
-                                    const response = await fetch(jobStatus.pdfUrl);
-                                    const blob = await response.blob();
-                                    
-                                    const url = window.URL.createObjectURL(blob);
-                                    const a = document.createElement('a');
-                                    a.href = url;
-                                    a.download = `draft-ai-policy-${assessment.company || 'policy'}-${Date.now()}.pdf`;
-                                    document.body.appendChild(a);
-                                    a.click();
-                                    window.URL.revokeObjectURL(url);
-                                    document.body.removeChild(a);
-                                }
-                                
-                                setProgressStatus('Download complete!');
-                                setTimeout(() => {
-                                    setProgressStatus('');
-                                    setProgress(0);
-                                }, 2000);
-                            } catch (downloadError) {
-                                console.error('Error downloading PDF:', downloadError);
-                                setProgressStatus('');
-                                alert('PDF generated but download failed. Please contact support.');
-                            }
-                        }
-                        setIsGeneratingPDF(false);
-                    } else if (jobStatus.status === 'failed') {
-                        clearInterval(pollInterval);
-                        setIsGeneratingPDF(false);
-                        setProgressStatus('');
-                        throw new Error(jobStatus.error || 'PDF generation failed');
-                    }
-                } catch (error: any) {
-                    clearInterval(pollInterval);
-                    setIsGeneratingPDF(false);
-                    setProgressStatus('');
-                    throw error;
-                }
-            }, 500); // Poll every 500ms
-
-            // Timeout after 2 minutes
+            // Get PDF blob
+            const blob = await response.blob();
+            
+            // Create download link
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `draft-ai-policy-${assessment.company || 'policy'}-${Date.now()}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+            
+            setProgress(100);
+            setProgressStatus('Download complete!');
             setTimeout(() => {
-                clearInterval(pollInterval);
-                if (isGeneratingPDF) {
-                    setIsGeneratingPDF(false);
-                    setProgressStatus('');
-                    alert('PDF generation is taking longer than expected. Please try again or contact support.');
-                }
-            }, 120000);
-
+                setProgressStatus('');
+                setProgress(0);
+            }, 2000);
+            setIsGeneratingPDF(false);
         } catch (error: any) {
             console.error('Error downloading PDF:', error);
             setProgressStatus('');
@@ -155,6 +75,31 @@ const Results = ({ assessment, onRestart }: ResultsProps) => {
             'full-embrace': 'Full Embrace'
         };
         return labels[stance] || stance;
+    };
+
+    const getLabelForValue = (questionId: string, value: string): string => {
+        const question = aiPolicyQuestions.find(q => q.id === questionId);
+        if (!question || !question.options) return value;
+        const option = question.options.find(opt => opt.value === value);
+        return option?.label || value;
+    };
+
+    const getConcernLabels = (): string[] => {
+        return assessment.concerns
+            .filter(c => c !== 'none')
+            .map(concern => getLabelForValue('primary-concerns', concern));
+    };
+
+    const getUseCaseLabels = (): string[] => {
+        return assessment.useCases
+            .filter(uc => uc !== 'none')
+            .map(useCase => getLabelForValue('use-cases', useCase));
+    };
+
+    const getComplianceLabels = (): string[] => {
+        return assessment.compliance
+            .filter(c => c !== 'none')
+            .map(compliance => getLabelForValue('compliance-requirements', compliance));
     };
 
     const getRecommendations = () => {
@@ -231,7 +176,7 @@ const Results = ({ assessment, onRestart }: ResultsProps) => {
                 {/* Assessment Summary */}
                 <div className="bg-n-8 rounded-2xl border border-n-6 p-8 md:p-12 mb-15">
                     <Tagline className="mb-6">Assessment Summary</Tagline>
-                    <div className="grid md:grid-cols-2 gap-6">
+                    <div className="grid md:grid-cols-2 gap-6 mb-8">
                         <div>
                             <h3 className="h6 text-n-2 mb-2">Organizational Stance</h3>
                             <p className="body-1 text-n-1">{getStanceLabel(assessment.stance)}</p>
@@ -242,11 +187,83 @@ const Results = ({ assessment, onRestart }: ResultsProps) => {
                         </div>
                         <div>
                             <h3 className="h6 text-n-2 mb-2">Risk Tolerance</h3>
-                            <p className="body-1 text-n-1 capitalize">{assessment.riskTolerance.replace('-', ' ')}</p>
+                            <p className="body-1 text-n-1 capitalize">{assessment.riskTolerance.replace(/-/g, ' ')}</p>
                         </div>
                         <div>
-                            <h3 className="h6 text-n-2 mb-2">Primary Concerns</h3>
-                            <p className="body-1 text-n-1">{assessment.concerns.length} identified</p>
+                            <h3 className="h6 text-n-2 mb-2">Governance Structure</h3>
+                            <p className="body-1 text-n-1 capitalize">{getLabelForValue('governance-structure', assessment.governance)}</p>
+                        </div>
+                    </div>
+
+                    {/* Primary Concerns */}
+                    {getConcernLabels().length > 0 && (
+                        <div className="mb-8 pt-8 border-t border-n-6">
+                            <h3 className="h6 text-n-1 mb-4">
+                                Primary Concerns ({getConcernLabels().length})
+                            </h3>
+                            <div className="flex flex-wrap gap-2">
+                                {getConcernLabels().map((concern, index) => (
+                                    <span
+                                        key={index}
+                                        className="px-4 py-2 bg-color-3/20 text-color-3 rounded-lg text-sm font-medium"
+                                    >
+                                        {concern}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Areas of Opportunity */}
+                    {getUseCaseLabels().length > 0 && (
+                        <div className="mb-8 pt-8 border-t border-n-6">
+                            <h3 className="h6 text-n-1 mb-4">
+                                Areas of Opportunity ({getUseCaseLabels().length})
+                            </h3>
+                            <div className="flex flex-wrap gap-2">
+                                {getUseCaseLabels().map((useCase, index) => (
+                                    <span
+                                        key={index}
+                                        className="px-4 py-2 bg-color-1/20 text-color-1 rounded-lg text-sm font-medium"
+                                    >
+                                        {useCase}
+                                    </span>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Guardrails Requested */}
+                    <div className="pt-8 border-t border-n-6">
+                        <h3 className="h6 text-n-1 mb-4">Guardrails & Requirements</h3>
+                        <div className="space-y-4">
+                            {getComplianceLabels().length > 0 && (
+                                <div>
+                                    <h4 className="body-1 text-n-2 mb-2">Compliance Requirements:</h4>
+                                    <div className="flex flex-wrap gap-2">
+                                        {getComplianceLabels().map((compliance, index) => (
+                                            <span
+                                                key={index}
+                                                className="px-3 py-1 bg-n-7 text-n-2 rounded-lg text-sm"
+                                            >
+                                                {compliance}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                            <div>
+                                <h4 className="body-1 text-n-2 mb-2">Risk Management:</h4>
+                                <p className="body-2 text-n-3">
+                                    {getLabelForValue('risk-tolerance', assessment.riskTolerance)} risk tolerance with appropriate safeguards
+                                </p>
+                            </div>
+                            {assessment.additionalContext && (
+                                <div>
+                                    <h4 className="body-1 text-n-2 mb-2">Additional Context:</h4>
+                                    <p className="body-2 text-n-3">{assessment.additionalContext}</p>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

@@ -34,3 +34,4 @@ const Hero = ({}: HeroProps) => (
 );
 
 export default Hero;
+

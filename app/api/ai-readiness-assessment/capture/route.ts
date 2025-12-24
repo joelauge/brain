@@ -96,22 +96,35 @@ function generateUserConfirmationEmail(assessment: ReadinessAssessment): string 
           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Space Grotesk', sans-serif;
           line-height: 1.6;
           color: #ffffff;
-          max-width: 600px;
-          margin: 0 auto;
+          margin: 0;
           padding: 20px;
           background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
           min-height: 100vh;
         }
         .container {
+          max-width: 700px;
+          width: 100%;
+          margin: 0 auto;
           background: #0a0a0a;
           border-radius: 16px;
           padding: 40px;
           border: 1px solid #2a2a2a;
           box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+          box-sizing: border-box;
         }
         .header {
           text-align: center;
           margin-bottom: 40px;
+        }
+        .logo {
+          margin-bottom: 24px;
+        }
+        .logo img {
+          height: 60px;
+          width: auto;
+          max-width: 100%;
+          display: block;
+          margin: 0 auto;
         }
         .title {
           font-size: 32px;
@@ -154,6 +167,47 @@ function generateUserConfirmationEmail(assessment: ReadinessAssessment): string 
           color: #a1a1aa;
           font-size: 14px;
           margin-top: 12px;
+        }
+        .roadmap-section {
+          margin: 32px 0;
+        }
+        .roadmap-stage {
+          margin-bottom: 16px;
+          padding: 16px;
+          border-left: 3px solid #2a2a2a;
+          background: #1a1a1a;
+          border-radius: 4px;
+        }
+        .roadmap-stage.current {
+          border-left-color: #6366f1;
+          background: #1e1b2e;
+          border-left-width: 4px;
+        }
+        .roadmap-stage-title {
+          font-size: 16px;
+          font-weight: 600;
+          color: #ffffff;
+          margin-bottom: 6px;
+        }
+        .roadmap-stage.current .roadmap-stage-title {
+          color: #6366f1;
+        }
+        .roadmap-stage-description {
+          color: #a1a1aa;
+          font-size: 14px;
+        }
+        .roadmap-stage.current .roadmap-stage-description {
+          color: #cac6dd;
+        }
+        .roadmap-current-badge {
+          display: inline-block;
+          background: #6366f1;
+          color: #ffffff;
+          padding: 2px 8px;
+          border-radius: 12px;
+          font-size: 11px;
+          font-weight: 600;
+          margin-left: 8px;
         }
         .cta-section {
           text-align: center;
@@ -222,15 +276,19 @@ function generateUserConfirmationEmail(assessment: ReadinessAssessment): string 
           color: #ffffff;
           margin-bottom: 16px;
         }
-        .pillar-score-row {
+        .pillar-scores-grid {
+          width: 100%;
+          border-collapse: separate;
+          border-spacing: 0 12px;
+        }
+        .pillar-score-item {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          padding: 12px 0;
+          padding: 12px;
           border-bottom: 1px solid #2a2a2a;
-        }
-        .pillar-score-row:last-child {
-          border-bottom: none;
+          background: #1a1a1a;
+          border-radius: 4px;
         }
         .pillar-name {
           color: #a1a1aa;
@@ -249,7 +307,8 @@ function generateUserConfirmationEmail(assessment: ReadinessAssessment): string 
         .next-step-number {
           position: absolute;
           left: 0;
-          top: 0;
+          top: 50%;
+          transform: translateY(-50%);
           width: 28px;
           height: 28px;
           background: #6366f1;
@@ -260,6 +319,7 @@ function generateUserConfirmationEmail(assessment: ReadinessAssessment): string 
           justify-content: center;
           font-weight: 600;
           font-size: 14px;
+          line-height: 1;
         }
         .next-step-title {
           font-size: 16px;
@@ -284,6 +344,9 @@ function generateUserConfirmationEmail(assessment: ReadinessAssessment): string 
     <body>
       <div class="container">
         <div class="header">
+          <div class="logo">
+            <img src="https://www.brainmediaconsulting.com/_next/image?url=%2Fimages%2Fbrain__white_official_logo.png&w=128&q=75" alt="BRAIN" />
+          </div>
           <div class="title">Your AI Readiness Assessment Results</div>
         </div>
         
@@ -308,39 +371,92 @@ function generateUserConfirmationEmail(assessment: ReadinessAssessment): string 
           </div>
         </div>
         
+        <div class="roadmap-section">
+          <div class="section-title">AI Readiness Roadmap</div>
+          <div style="color: #a1a1aa; font-size: 14px; margin-bottom: 20px;">
+            Your organization is currently at Stage ${roadmapStage}. Below is the complete roadmap showing all stages of AI readiness:
+          </div>
+          ${[
+            { stage: 1, name: 'Awareness & Literacy', description: 'Focus on Awareness. Your goal is to explain AI basics and address top fears like cost and privacy.' },
+            { stage: 2, name: 'Opportunity Identification', description: 'Focus on Opportunities. Your goal is to map repetitive tasks and identify 1-3 "Quick-Win" use cases.' },
+            { stage: 3, name: 'Pilot Projects', description: 'Focus on Pilots. Your goal is to run small experiments like automated meeting summaries or donor insight reports.' },
+            { stage: 4, name: 'Workflow Integration', description: 'Focus on Workflow Integration. Begin integrating AI into your core operational processes.' },
+            { stage: 5, name: 'Systems Integration', description: 'Focus on Systems Integration. Integrate AI capabilities across your entire technology infrastructure.' },
+            { stage: 6, name: 'Strategic AI Deployment', description: 'Focus on Strategic AI Deployment. You\'re ready for organization-wide strategic AI initiatives.' },
+            { stage: 7, name: 'Fully Integrated, AI-Driven Organization', description: 'Fully Integrated. You have achieved a fully integrated, AI-driven organization.' },
+          ].map((stageInfo) => {
+            const isCurrent = stageInfo.stage === roadmapStage;
+            return `
+              <div class="roadmap-stage ${isCurrent ? 'current' : ''}">
+                <div class="roadmap-stage-title">
+                  Stage ${stageInfo.stage}: ${stageInfo.name}
+                  ${isCurrent ? '<span class="roadmap-current-badge">You are here</span>' : ''}
+                </div>
+                <div class="roadmap-stage-description">${stageInfo.description}</div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+        
         ${Object.keys(assessment.categoryScores || {}).length > 0 ? `
         <div class="section">
           <div class="section-title">Pillar Scores (0-5 Scale)</div>
-          ${Object.entries(assessment.categoryScores || {}).map(([category, score]: [string, any]) => {
-            const pillarNames: Record<string, string> = {
-              'mission-alignment': 'Mission Alignment',
-              'culture-change': 'Culture & Change Readiness',
-              'skills-capacity': 'People, Skills & Capacity',
-              'process-maturity': 'Process Maturity',
-              'data-quality': 'Data Quality & Accessibility',
-              'tech-stack': 'Tech Stack & Integration',
-              'governance': 'Governance, Privacy & Ethics',
-              'security': 'Security Posture',
-              'budget': 'Budget & Financial Readiness',
-              'vendor-readiness': 'Vendor & Tool Readiness'
-            };
-            const pillarName = pillarNames[category] || category.replace(/-/g, ' ');
-            return `
-            <div class="pillar-score-row">
-              <div class="pillar-name">${pillarName}</div>
-              <div class="pillar-score">${score}/5</div>
-            </div>
-          `;
-          }).join('')}
+          <table class="pillar-scores-grid" cellpadding="0" cellspacing="12" style="width: 100%; border-collapse: separate;">
+            ${(() => {
+              const entries = Object.entries(assessment.categoryScores || {});
+              const pillarNames: Record<string, string> = {
+                'mission-alignment': 'Mission Alignment',
+                'culture-change': 'Culture & Change Readiness',
+                'skills-capacity': 'People, Skills & Capacity',
+                'process-maturity': 'Process Maturity',
+                'data-quality': 'Data Quality & Accessibility',
+                'tech-stack': 'Tech Stack & Integration',
+                'governance': 'Governance, Privacy & Ethics',
+                'security': 'Security Posture',
+                'budget': 'Budget & Financial Readiness',
+                'vendor-readiness': 'Vendor & Tool Readiness'
+              };
+              
+              let html = '';
+              for (let i = 0; i < entries.length; i += 2) {
+                html += '<tr>';
+                
+                // First column
+                const [category1, score1] = entries[i];
+                const pillarName1 = pillarNames[category1] || category1.replace(/-/g, ' ');
+                html += `
+                  <td style="width: 50%; vertical-align: top; padding: 0;">
+                    <div class="pillar-score-item">
+                      <div class="pillar-name">${pillarName1}</div>
+                      <div class="pillar-score">${score1}/5</div>
+                    </div>
+                  </td>
+                `;
+                
+                // Second column (if exists)
+                if (i + 1 < entries.length) {
+                  const [category2, score2] = entries[i + 1];
+                  const pillarName2 = pillarNames[category2] || category2.replace(/-/g, ' ');
+                  html += `
+                    <td style="width: 50%; vertical-align: top; padding: 0;">
+                      <div class="pillar-score-item">
+                        <div class="pillar-name">${pillarName2}</div>
+                        <div class="pillar-score">${score2}/5</div>
+                      </div>
+                    </td>
+                  `;
+                } else {
+                  // Empty cell if odd number of items
+                  html += '<td style="width: 50%;"></td>';
+                }
+                
+                html += '</tr>';
+              }
+              return html;
+            })()}
+          </table>
         </div>
         ` : ''}
-        
-        <div class="cta-section">
-          <div class="cta-text" style="color: #ffffff; font-size: 18px; margin-bottom: 24px;">
-            View your complete assessment results and download your personalized report:
-          </div>
-          <a href="${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/ai-readiness-assessment" class="cta-button">View Full Results & Download Report</a>
-        </div>
         
         ${recommendations.length > 0 ? `
         <div class="recommendations">
@@ -363,11 +479,12 @@ function generateUserConfirmationEmail(assessment: ReadinessAssessment): string 
         ` : ''}
         
         <div class="section">
+          
           <div class="section-title">Next Steps</div>
           <div class="next-step-item">
             <div class="next-step-number">1</div>
             <div>
-              <div class="next-step-title"><a href="http://www.brainmediaconsulting.com/booking" style="color: #ffffff; text-decoration: none;">Schedule a Consultation</a></div>
+              <div class="next-step-title"><a href="http://www.brainmediaconsulting.com/booking" style="color: #ffffff; text-decoration: underline;">Schedule a Consultation</a></div>
               <div class="next-step-description">Book a session with our AI readiness experts to discuss your results and develop a customized AI adoption roadmap.</div>
             </div>
           </div>
@@ -388,7 +505,7 @@ function generateUserConfirmationEmail(assessment: ReadinessAssessment): string 
         </div>
         
         <div class="closing">
-          Ready to take the next step? Schedule a consultation with our AI readiness experts to discuss your results and develop a customized AI adoption roadmap tailored to your organization.
+          Ready to take the next step? <a href="http://www.brainmediaconsulting.com/booking" style="color: #ffffff; text-decoration: underline;">Schedule a consultation</a> with our AI readiness experts to discuss your results and develop a customized AI adoption roadmap tailored to your organization.
         </div>
         
         <div class="signature">Best regards,<br>The BRAIN Media Consulting Team</div>
@@ -920,3 +1037,4 @@ export async function POST(request: NextRequest) {
         );
     }
 }
+

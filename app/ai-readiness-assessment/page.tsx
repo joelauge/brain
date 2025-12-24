@@ -11,3 +11,4 @@ const AIReadinessAssessment: NextPage = () => {
 };
 
 export default AIReadinessAssessment;
+
