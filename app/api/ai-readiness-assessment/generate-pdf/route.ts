@@ -41,14 +41,13 @@ export async function POST(request: NextRequest) {
         let buffer: Buffer;
         if (Buffer.isBuffer(pdfBuffer)) {
             buffer = pdfBuffer;
-        } else if (pdfBuffer instanceof Uint8Array) {
-            buffer = Buffer.from(pdfBuffer);
         } else {
+            // renderToBuffer can return Buffer or Uint8Array, convert to Buffer
             buffer = Buffer.from(pdfBuffer as any);
         }
 
         // Return PDF directly
-        return new NextResponse(buffer, {
+        return new NextResponse(buffer as any, {
             headers: {
                 'Content-Type': 'application/pdf',
                 'Content-Length': buffer.length.toString(),

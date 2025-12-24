@@ -464,10 +464,10 @@ export function createAIReadinessDocument(
                 <View style={styles.section}>
                     <Text style={styles.sectionTitle}>Executive Summary</Text>
                     <Text style={styles.text}>
-                        This AI Readiness Assessment evaluates your organization's preparedness for artificial intelligence adoption across ten critical pillars. Your overall readiness score of {overallScore}/100 places you at Stage {roadmapStage}: {roadmapStageName}.
+                        This AI Readiness Assessment evaluates your organization&apos;s preparedness for artificial intelligence adoption across ten critical pillars. Your overall readiness score of {overallScore}/100 places you at Stage {roadmapStage}: {roadmapStageName}.
                     </Text>
                     <Text style={styles.text}>
-                        This report provides detailed insights into your organization's strengths and areas for improvement, along with actionable recommendations to advance your AI readiness journey.
+                        This report provides detailed insights into your organization&apos;s strengths and areas for improvement, along with actionable recommendations to advance your AI readiness journey.
                     </Text>
                 </View>
 
@@ -628,7 +628,7 @@ export function createAIReadinessDocument(
                                 • Map repetitive tasks that could benefit from AI automation
                             </Text>
                             <Text style={styles.text}>
-                                • Identify 1-3 "Quick-Win" use cases where AI can provide immediate value
+                                • Identify 1-3 &quot;Quick-Win&quot; use cases where AI can provide immediate value
                             </Text>
                             <Text style={styles.text}>
                                 • Start with low-risk AI opportunities like automated email responses or document summarization

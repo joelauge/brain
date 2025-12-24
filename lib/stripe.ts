@@ -1,9 +1,16 @@
 import Stripe from 'stripe';
 
-// Initialize Stripe with secret key
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: '2025-09-30.clover',
-});
+// Lazy initialization to avoid build-time errors
+let stripe: Stripe | null = null;
+
+function getStripeClient(): Stripe | null {
+    if (!stripe && process.env.STRIPE_SECRET_KEY) {
+        stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+            apiVersion: '2025-09-30.clover',
+        });
+    }
+    return stripe;
+}
 
 export interface PaymentIntent {
     id: string;
@@ -25,7 +32,11 @@ export const createPaymentIntent = async (bookingData: BookingData): Promise<Pay
     try {
         const amount = bookingData.selectedPrice * 100; // Convert to cents
         
-        const paymentIntent = await stripe.paymentIntents.create({
+        const client = getStripeClient();
+        if (!client) {
+            throw new Error('Stripe client not available');
+        }
+        const paymentIntent = await client.paymentIntents.create({
             amount,
             currency: 'usd',
             metadata: {
@@ -51,7 +62,11 @@ export const createPaymentIntent = async (bookingData: BookingData): Promise<Pay
 
 export const confirmPayment = async (paymentIntentId: string): Promise<boolean> => {
     try {
-        const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+        const client = getStripeClient();
+        if (!client) {
+            throw new Error('Stripe client not available');
+        }
+        const paymentIntent = await client.paymentIntents.retrieve(paymentIntentId);
         return paymentIntent.status === 'succeeded';
     } catch (error) {
         console.error('Error confirming payment:', error);
@@ -63,7 +78,11 @@ export const createCheckoutSession = async (bookingData: BookingData): Promise<s
     try {
         const amount = bookingData.selectedPrice * 100;
         
-        const session = await stripe.checkout.sessions.create({
+        const client = getStripeClient();
+        if (!client) {
+            throw new Error('Stripe client not available');
+        }
+        const session = await client.checkout.sessions.create({
             payment_method_types: ['card'],
             line_items: [{
                 price_data: {

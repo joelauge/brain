@@ -1,9 +1,17 @@
 import OpenAI from 'openai';
 import { PreparednessAssessment } from '@/mocks/ai-preparedness-questions';
 
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-});
+// Lazy initialization to avoid build-time errors
+let openai: OpenAI | null = null;
+
+function getOpenAIClient(): OpenAI | null {
+    if (!openai && process.env.OPENAI_API_KEY) {
+        openai = new OpenAI({
+            apiKey: process.env.OPENAI_API_KEY,
+        });
+    }
+    return openai;
+}
 
 export interface PreparednessReport {
     executiveSummary: string;
@@ -169,7 +177,12 @@ Format your response as a JSON object with these exact keys:
 Each section should be comprehensive (2-4 paragraphs for major sections, 1-2 for shorter ones) and written in a professional, executive-appropriate tone. Be specific and actionable, referencing their role, industry, and stated goals.`;
 
     try {
-        const completion = await openai.chat.completions.create({
+        const client = getOpenAIClient();
+        if (!client) {
+            throw new Error('OpenAI client not available');
+        }
+
+        const completion = await client.chat.completions.create({
             model: model,
             messages: [{ role: 'user', content: prompt }],
             temperature: 0.3,
